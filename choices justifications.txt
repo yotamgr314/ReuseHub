@@ -1,0 +1,80 @@
+DB SCHEMAS CHOICE JUSTIFICATION:
+
+DISCRIMINATORS - BASEAD.JS, DONATIOAD.JS, WISHLISTAD.JS.
+
+REASONS:
+01) We have two ad types (DonationAd and WishlistAd), but they share many common fields, such as:
+    01) title, description, createdBy, location, createdAt.
+02) Instead of duplicating these fields in two separate collections, we created a BaseAd and used discriminators to differentiate between the two ad types.
+03) Each ad has a kind field (automatically created by Mongoose) that specifies whether it's a DonationAd or a WishlistAd.
+
+PROS: 
+01) Without discriminators, we would need two separate collections (donationAds, wishlistAds), which would duplicate all the fields that are common.
+With discriminators, the BaseAd fields are shared in one "ads" collection, and the only field we add is kind.
+This results in smaller data size in the database, which is a big deal if you expect thousands of ads.
+
+02) We frequently need to query for both DonationAd and WishlistAd at the same time.
+    Example: The homepage needs to display all ads together (both donation and wishlist) under a map or a list.
+    By having one "ads" collection instead of two, we can query all ads using const allAds = await.Ads.find();
+
+CONS:
+01) While querying both ad types together is fast, querying fields specific to only one type (like condition for DonationAd) is slightly slower.
+    But since our project is not a real-time application, the performance trade-off is acceptable.
+    If the application ever scales to millions of records, we could consider indexing fields specific to one ad type.
+
+SUMMARY OF WHY WE USED DISCRIMINATORS:
+01) Faster cross-ad queries for homepage and search results.
+02) Space efficiency: We avoid repeating fields like createdBy, createdAt, and location.
+03) Simple to maintain: If you add a new field for all ads, you do it in BaseAd.
+04) Good for this use case because we need to display all ads together frequently.
+
+
+
+
+CREATING A SCHEMA FOR ITEMS, YET EMBEDDING ITEMS SCHEMA IN ADS (DONATIONAD && WISHLIST AD) + ONE ITEM SCHEMA FOR BOTH DONATION ADS AND WISHLIST ADS. 
+
+REASONS:
+01) we need to be able add items for a certain wishlist ad, or delete some of its items.
+01) Both DonationAd and WishlistAd can contain multiple items.
+02) Each item is not independent — it only exists as part of a DonationAd or WishlistAd - make sense that when we delete an ad all the items will get deleted as well.
+03) This justifies using embedding rather than a separate collection.
+
+CONS:
+01) Avoid Orphaned Items - If we used a separate Items collection, we'd have to handle the case where the ad gets deleted but its items remain in the database.
+    By embedding items directly inside the Ad, when the Ad is deleted, the items are deleted too — no extra logic required.
+    This maintains data consistency automatically.
+02) Read Efficiency - When you query for a DonationAd, you automatically get its items in the response.
+03) No need for a second query like Items.find({ adId }).
+04) Since items are small (they only have a few fields), this is more efficient than references.
+05) Custom Behavior for Each Ad Type - Items for DonationAd have images and condition, but items for WishlistAd do not, also condition, and a different status.
+    We control this logic dynamically using this.$__parent?.kind.
+    01) this.$__parent?.kind checks the type of the parent document.
+    02) If the parent ad is a DonationAd, the logic allows for fields like condition and images.
+    03) If the parent ad is a WishlistAd, these fields are ignored.
+
+SUMMARY OF WHY WE USED EMBEDDED ITEMS:
+01) Lifecycle Dependency: Since items only exist as part of a WishlistAd or DonationAd it makes sense to embed them -  If the ad is deleted, the items should be deleted too.
+02) No Orphan Items: Avoids the problem of "floating" items with no associated ad.
+03) Read Efficiency: Single query to get an ad and its items (no join).
+04) Custom Fields for Each Ad Type: We use this.$__parent?.kind to dynamically control which fields exist for each ad type.   
+
+
+
+
+EMBEDDING BADGES INSIDE USES.
+01) Since badges are only relevant to a specific user, it makes sense to embed them. If the User is deleted, all the user's badges are also removed.
+
+
+
+
+
+
+
+RELATIONS: 
+ONE TO MANY:
+User --> ad donatio, wishlsit donation.
+DonationAd --> Item.
+WishListAd --> Item.
+User --> claimRequest.
+User --> badges.
+DonationAd --> claimRequests.
