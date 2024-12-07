@@ -2,10 +2,13 @@
 import React from "react";
 import { BrowserRouter, Route, Routes, Navigate } from "react-router-dom"; // NOTE to control component rendering based on URL.
 
+import DrawerAppBar from "./shared/ulElements/drawerAppBar";
+
 // THIS SECTION TAKES CARE OF RENDERING COMPONENTS BASED ON THE URL.(by BrowserRouter,Router,Route)
 const App = () => {
   return (
     <BrowserRouter>
+      <DrawerAppBar />
       <Routes>
         <Route path="*" element={<Navigate to="/" />} />
       </Routes>
