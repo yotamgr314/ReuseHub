@@ -4,12 +4,23 @@ import { BrowserRouter, Route, Routes, Navigate } from "react-router-dom"; // NO
 
 import DrawerAppBar from "./shared/ulElements/drawerAppBar";
 
+import HomePage from "./homePage/pages/homePage.js";
+import MyAds from "./ads/pages/myAds.js";
+import IncomingOffers from "./offers/pages/incomingOffers.js";
+import IncomingClaims from "./claimRequests/pages/incomingClaims.js";
+import LeaderBoard from "./leaderboard/pages/leaderboard.js";
+
 // THIS SECTION TAKES CARE OF RENDERING COMPONENTS BASED ON THE URL.(by BrowserRouter,Router,Route)
 const App = () => {
   return (
     <BrowserRouter>
       <DrawerAppBar />
       <Routes>
+        <Route path="/homePage" element={<HomePage />} />
+        <Route path="/myAds" element={<MyAds />} />
+        <Route path="/incomingOffers" element={<IncomingOffers />} />
+        <Route path="/incomingClaims" element={<IncomingClaims />} />
+        <Route path="/leaderBoard" element={<LeaderBoard />} />
         <Route path="*" element={<Navigate to="/" />} />
       </Routes>
     </BrowserRouter>
