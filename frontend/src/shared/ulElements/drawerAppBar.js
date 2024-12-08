@@ -13,9 +13,17 @@ import MenuIcon from "@mui/icons-material/Menu";
 import Toolbar from "@mui/material/Toolbar";
 import Typography from "@mui/material/Typography";
 import Button from "@mui/material/Button";
+import Avatar from "@mui/material/Avatar";
 
 const drawerWidth = 240;
-const navItems = ["Home", "About", "Contact"];
+const navItems = [
+  "CREATE AD",
+  "MY ADS",
+  "INCOMING OFFERS ",
+  "INCOMING CLAIMS",
+  "LEADERBOARD",
+  "LOG OUT",
+];
 
 export default function DrawerAppBar(props) {
   const { window } = props;
@@ -28,13 +36,13 @@ export default function DrawerAppBar(props) {
   const drawer = (
     <Box onClick={handleDrawerToggle} sx={{ textAlign: "center" }}>
       <Typography variant="h6" sx={{ my: 2 }}>
-        MUI
+        ReuseHub
       </Typography>
       <Divider />
       <List>
         {navItems.map((item) => (
-          <ListItem key={item} disablePadding>
-            <ListItemButton sx={{ textAlign: "center" }}>
+          <ListItem key={item} disablePadding sx={{ mb: 2.5 }}>
+            <ListItemButton sx={{ textAlign: "center", py: 2 }}>
               <ListItemText primary={item} />
             </ListItemButton>
           </ListItem>
@@ -49,7 +57,7 @@ export default function DrawerAppBar(props) {
   return (
     <Box sx={{ display: "flex" }}>
       <CssBaseline />
-      <AppBar component="nav">
+      <AppBar component="nav" color="navbar">
         <Toolbar>
           <IconButton
             color="inherit"
@@ -65,15 +73,20 @@ export default function DrawerAppBar(props) {
             component="div"
             sx={{ flexGrow: 1, display: { xs: "none", sm: "block" } }}
           >
-            MUI
+            ReuseHub
           </Typography>
-          <Box sx={{ display: { xs: "none", sm: "block" } }}>
+          <Box sx={{ display: { xs: "none", sm: "flex" }, gap: 1.5 }}>
             {navItems.map((item) => (
-              <Button key={item} sx={{ color: "#fff" }}>
+              <Button key={item} sx={{ color: "text.primary" }}>
                 {item}
               </Button>
             ))}
           </Box>
+          <Avatar
+            alt="Profile Picture"
+            src="https://gratisography.com/wp-content/uploads/2024/10/gratisography-cool-cat-800x525.jpg"
+            sx={{ width: 40, height: 40, ml: 2 }}
+          />
         </Toolbar>
       </AppBar>
       <nav>
@@ -98,7 +111,6 @@ export default function DrawerAppBar(props) {
       </nav>
       <Box component="main" sx={{ p: 3 }}>
         <Toolbar />
-        <Typography>Main content goes here.</Typography>
       </Box>
     </Box>
   );
