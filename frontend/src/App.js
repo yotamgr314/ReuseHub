@@ -2,13 +2,14 @@
 import React from "react";
 import { BrowserRouter, Route, Routes, Navigate } from "react-router-dom"; // NOTE to control component rendering based on URL.
 
-import DrawerAppBar from "./shared/ulElements/drawerAppBar";
+import DrawerAppBar from "./shared/ulElements/drawerAppBar"; // NOTE Material UI component - KEREN recommended
 
 import HomePage from "./homePage/pages/homePage.js";
 import MyAds from "./ads/pages/myAds.js";
 import IncomingOffers from "./offers/pages/incomingOffers.js";
 import IncomingClaims from "./claimRequests/pages/incomingClaims.js";
 import LeaderBoard from "./leaderboard/pages/leaderboard.js";
+import Register from "./registration/pages/register.js";
 
 // THIS SECTION TAKES CARE OF RENDERING COMPONENTS BASED ON THE URL.(by BrowserRouter,Router,Route)
 const App = () => {
@@ -21,6 +22,7 @@ const App = () => {
         <Route path="/incomingOffers" element={<IncomingOffers />} />
         <Route path="/incomingClaims" element={<IncomingClaims />} />
         <Route path="/leaderBoard" element={<LeaderBoard />} />
+        <Route path="/LogOut" element={<Register />} />
         <Route path="*" element={<Navigate to="/" />} />
       </Routes>
     </BrowserRouter>

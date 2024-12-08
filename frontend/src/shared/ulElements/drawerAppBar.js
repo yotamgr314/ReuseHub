@@ -15,14 +15,16 @@ import Typography from "@mui/material/Typography";
 import Button from "@mui/material/Button";
 import Avatar from "@mui/material/Avatar";
 
+import { NavLink } from "react-router-dom"; // KEREN recommended it.
+
 const drawerWidth = 240;
 const navItems = [
-  "CREATE AD",
-  "MY ADS",
-  "INCOMING OFFERS ",
-  "INCOMING CLAIMS",
-  "LEADERBOARD",
-  "LOG OUT",
+  { label: "CREATE AD", path: "/createAd" },
+  { label: "MY ADS", path: "/myAds" },
+  { label: "INCOMING OFFERS", path: "/incomingOffers" },
+  { label: "INCOMING CLAIMS", path: "/incomingClaims" },
+  { label: "LEADERBOARD", path: "/leaderBoard" },
+  { label: "LOG OUT", path: "/LogOut" },
 ];
 
 export default function DrawerAppBar(props) {
@@ -43,7 +45,16 @@ export default function DrawerAppBar(props) {
         {navItems.map((item) => (
           <ListItem key={item} disablePadding sx={{ mb: 2.5 }}>
             <ListItemButton sx={{ textAlign: "center", py: 2 }}>
-              <ListItemText primary={item} />
+              <NavLink
+                to={item.path}
+                style={({ isActive }) => ({
+                  textDecoration: "none",
+                  color: isActive ? "blue" : "inherit", // Active link color
+                  fontWeight: isActive ? "bold" : "normal",
+                })}
+              >
+                <ListItemText primary={item.label} />
+              </NavLink>{" "}
             </ListItemButton>
           </ListItem>
         ))}
@@ -78,7 +89,16 @@ export default function DrawerAppBar(props) {
           <Box sx={{ display: { xs: "none", sm: "flex" }, gap: 1.5 }}>
             {navItems.map((item) => (
               <Button key={item} sx={{ color: "text.primary" }}>
-                {item}
+                <NavLink
+                  to={item.path}
+                  style={({ isActive }) => ({
+                    textDecoration: "none",
+                    color: isActive ? "blue" : "inherit", // Active link color
+                    fontWeight: isActive ? "bold" : "normal", // Active link font weight
+                  })}
+                >
+                  {item.label}
+                </NavLink>
               </Button>
             ))}
           </Box>
