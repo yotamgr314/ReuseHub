@@ -7,7 +7,16 @@ const baseAdSchema = new mongoose.Schema(
     description: { type: String },
     location: {
       type: { type: String, enum: ["Point"], default: "Point" },
-      coordinates: { type: [Number], required: true },
+      coordinates: {
+        type: [Number],
+        required: true,
+        validate: {
+          validator: function (value) { 
+            return value.length === 2;
+          },
+          message: "coordinates must be an array with exactly 2 numbers [longitude, latitude]"
+        }
+      }
     },
     createdBy: {
       type: mongoose.Schema.Types.ObjectId,
