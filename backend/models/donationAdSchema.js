@@ -3,13 +3,24 @@ const baseAdSchema = require("./baseAdSchema");
 const itemSchema = require("./itemSchema");
 
 const donationAdSchema = new mongoose.Schema({
-  items: [itemSchema],
+  items: [
+    {
+      type: itemSchema,
+      validate: {
+        validator: function (items) {
+          return items.every((item) => item.itemType === "DonationAd"); // Ensure all items have itemType as "DonationAd"
+        },
+        message: "All items must have itemType 'DonationAd'.",
+      },
+    },
+  ],
   claimRequests: [
     { type: mongoose.Schema.Types.ObjectId, ref: "ClaimRequest" },
   ],
 });
 
-module.exports = mongoose.model("DonationAd", donationAdSchema);
+const DonationAd = baseAdSchema.discriminator('DonationAd', donationAdSchema); // 🔥 Use BaseAd.discriminator
+module.exports = DonationAd;
 
 // const mongoose = require('mongoose');
 

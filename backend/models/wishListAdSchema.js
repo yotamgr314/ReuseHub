@@ -3,65 +3,28 @@ const baseAdSchema = require("./baseAdSchema");
 const itemSchema = require("./itemSchema");
 
 const wishlistAdSchema = new mongoose.Schema({
-  items: [itemSchema],
-  urgency: { type: String, enum: ["Low", "Medium", "High"] },
-  pickupPreference: { type: String, enum: ["public place", "at home"] },
+  items: [
+    {
+      type: itemSchema,
+      validate: {
+        validator: function (items) {
+          return items.every((item) => item.itemType === "WishlistAd"); // Ensure all items have itemType as "WishlistAd"
+        },
+        message: "All items must have itemType 'WishlistAd'.",
+      },
+    },
+  ],
+  urgency: { type: String, enum: ["Low", "Medium", "High"] }
 });
 
-module.exports = mongoose.model("WishlistAd", wishlistAdSchema);
+const WishlistAd = baseAdSchema.discriminator('WishlistAd', wishlistAdSchema); // 🔥 Use BaseAd.discriminator
+module.exports = WishlistAd;
 
-// const mongoose = require("mongoose");
 
-// const WishListAdSchema = new mongoose.Schema(
-//   {
-//     name: {
-//       type: String,
-//       required: true,
-//     },
-//     description: {
-//       type: String,
-//     },
-//     category: {
-//       type: String,
-//       required: true,
-//     },
-//     location: {
-//       type: { type: String, enum: ["Point"], default: "Point" },
-//       coordinates: { type: [Number], required: true }, // [longitude, latitude] for google maps API.
-//     },
-//     status: {
-//       type: String,
-//       enum: ["stillWished", "offered"],
-//       default: "stillWished",
-//     },
-//     donor: {
-//       /* NOTE: EXPLAINED DOWNSTAIRS */
-//       type: mongoose.Schema.Types
-//         .ObjectId /* objectId is an a unique identefifer generated automaticly by MongoDB. */,
-//       ref: "User" /* ref is Mongo'sDB foreign key - Links a field in one document to another document in a different collection by storing the ObjectId of the related document
-//                     later on it will allow easier querries by providing the population(); funcionality.
-//                     for example:
-//                     01) Replaces the ObjectId stored in a ref field with the full document from the referenced collection.
-//                         which it will allow to access all the fields of the references Donor user without the need to manually write join querries!!  */,
-//       required: true,
-//     },
-//     createdAt: {
-//       type: Date,
-//       default: Date.now,
-//     },
-//   },
-//   {
-//     collection: "WishListAds", // Specify the collection name explicitly.
-//   }
-// );
 
 // WishListAdSchema.index({
 //   location: "2dsphere",
 // }); /* NOTE: EXPLAINED DOWNSTAIRS. */
-
-// const WishListAd = mongoose.model("WishListAd", WishListAdSchema); // Define the model.
-
-// module.exports = WishListAd; // Export the model.
 
 /* NOTE: Geospatial index in MONGODB:
 WHY USE it - Simplicity: MongoDB’s built-in geospatial capabilities reduce the complexity of implementing location-based features.

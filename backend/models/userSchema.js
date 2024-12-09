@@ -1,13 +1,14 @@
 const mongoose = require("mongoose");
 const bcrypt = require("bcryptjs");
 
-// Embedded badge schema
+// NOTE: Embedded badge schema
 const badgeSchema = new mongoose.Schema({
-  name: { type: String, required: true }, // Badge name (e.g., Top Donor, Eco Warrior)
-  description: { type: String }, // Short description of what the badge represents
+  name: { type: String, required: true }, 
+  description: { type: String }, 
   icon: { type: String }, // URL to badge icon
-  earnedAt: { type: Date, default: Date.now }, // When the badge was earned
+  earnedAt: { type: Date, default: Date.now }, 
 });
+
 
 const userSchema = new mongoose.Schema({
   name: { type: String, required: [true, "A user must have a name"] },
@@ -17,14 +18,14 @@ const userSchema = new mongoose.Schema({
     unique: true,
   },
   password: { type: String, required: true },
-  profilePicture: { type: String }, // URL to the user's profile picture
+  profilePicture: { type: String }, //NOTE: URL to the user's profile picture
   phone: { type: String },
-  ratingPoints: { type: Number, default: 0 }, // Used for leaderboard sorting
+  ratingPoints: { type: Number, default: 0 }, // NOTE: Used for leaderboard sorting
   badges: [badgeSchema], // **List of embedded badges**
   createdAt: { type: Date, default: Date.now },
 });
 
-// 🔐 **Pre-save Hook** — Automatically hash the password before saving
+// **Pre-save Hook** — Automatically hash the password before saving
 userSchema.pre("save", async function (next) {
   if (!this.isModified("password")) return next(); // Only hash if password is new or changed
   const salt = await bcrypt.genSalt(10);
@@ -32,7 +33,7 @@ userSchema.pre("save", async function (next) {
   next();
 });
 
-// 🔐 **Method to compare password**
+//  **Method to compare password**
 userSchema.methods.matchPassword = async function (enteredPassword) {
   return await bcrypt.compare(enteredPassword, this.password);
 };
