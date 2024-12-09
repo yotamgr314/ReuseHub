@@ -3,7 +3,17 @@ const baseAdSchema = require("./baseAdSchema");
 const itemSchema = require("./itemSchema");
 
 const wishlistAdSchema = new mongoose.Schema({
-  items: [itemSchema],
+  items: [
+    {
+      type: itemSchema,
+      validate: {
+        validator: function (items) {
+          return items.every((item) => item.itemType === "WishlistAd"); // Ensure all items have itemType as "WishlistAd"
+        },
+        message: "All items must have itemType 'WishlistAd'.",
+      },
+    },
+  ],
   urgency: { type: String, enum: ["Low", "Medium", "High"] },
   pickupPreference: { type: String, enum: ["public place", "at home"] },
 });
