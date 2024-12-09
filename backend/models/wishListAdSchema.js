@@ -14,8 +14,7 @@ const wishlistAdSchema = new mongoose.Schema({
       },
     },
   ],
-  urgency: { type: String, enum: ["Low", "Medium", "High"] },
-  pickupPreference: { type: String, enum: ["public place", "at home"] }, // NOTE for google maps API CHECK IF NEED TO UPDATE IT
+  urgency: { type: String, enum: ["Low", "Medium", "High"] }
 });
 
 const WishlistAd = baseAdSchema.discriminator('WishlistAd', wishlistAdSchema); // 🔥 Use BaseAd.discriminator

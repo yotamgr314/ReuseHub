@@ -7,7 +7,7 @@ const { connectDB } = require("./config/db.js");
 
 const adRouter = require("./routes/ad-router.js"); // ✅ Correct path
 const donationAdRouter = require("./routes/donation-ad-router.js"); // ✅ Correct path
-
+const wishlistAdRouter = require("./routes/wishlist-ad-router.js"); // ✅ Correct path
 
 //CONFIGURATION SECTION
 dotenv.config(); /*Load environment variables from .env file  */
@@ -36,6 +36,8 @@ app.use(express.json());// NOTE This middleware parses incoming JSON payloads fr
 app.use("/api/ads", adRouter); // http://localhost:5000/api/ads
 
 app.use("/api/donationAd", donationAdRouter);// http://localhost:5000/api/donationAd
+
+app.use("/api/wishListAd", wishlistAdRouter);// http://localhost:5000/api/wishListAd
 
 app.get("/", (req, res) => {
   res.send("Welcome to the Distributed Cloud Services API");

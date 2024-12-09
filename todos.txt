@@ -47,6 +47,6 @@ NOTE FOCUS:
     what needs to be done is: 
     01) to add the socket.io for real time updates of the list without the user need to refresh the page when a new ad creates.
         01) first implement the backend routes and controllers for: 
-            01) donation ad creation and make sure to emit event upon ad creation. 
+            01) donation ad creation and make sure to emit event upon ad creation DONE 
             02) wishlist ad creation and make sure to emit event upon wishlist ad creation.
-    02) implement the frontend useState and useEffect and listen to the events we emit on the backend. 
+        02) implement the frontend useState and useEffect and listen to the events we emit on the backend. 
