@@ -4,31 +4,45 @@ const mongoose = require("mongoose");
 const baseAdSchema = new mongoose.Schema(
   {
     title: { type: String, required: true },
-    description: { type: String },
+    description: { type: String, default: "" }, // Optional with default
     location: {
-      type: { type: String, enum: ["Point"], default: "Point" },
+      type: { type: String, enum: ["Point"], default: "Point" }, // GeoJSON type
       coordinates: {
-        type: [Number],
+        type: [Number], // Longitude, Latitude
         required: true,
-        validate: {
-          validator: function (value) { 
-            return value.length === 2;
+        validate: [
+          {
+            validator: function (value) {
+              return value.length === 2; // Ensure two values
+            },
+            message: "Coordinates must be an array with exactly 2 numbers [longitude, latitude].",
           },
-          message: "coordinates must be an array with exactly 2 numbers [longitude, latitude]"
-        }
-      }
+          {
+            validator: function (value) {
+              const [lng, lat] = value;
+              return lng >= -180 && lng <= 180 && lat >= -90 && lat <= 90; // Longitude and latitude validation
+            },
+            message: "Coordinates must have valid longitude [-180, 180] and latitude [-90, 90].",
+          },
+        ],
+      },
     },
     createdBy: {
       type: mongoose.Schema.Types.ObjectId,
       ref: "User",
       required: true,
     },
-    createdAt: { type: Date, default: Date.now },
   },
-  { discriminatorKey: "kind", collection: "ads" }
+  { discriminatorKey: "kind", collection: "ads", timestamps: true } // Adds createdAt and updatedAt fields
 );
 
-const BaseAd = mongoose.model("BaseAd", baseAdSchema); // creating a model out of the schema with the name BaseAd.
+// Add geospatial index for location
+baseAdSchema.index({ location: "2dsphere" }); // Required for geospatial queries
 
-module.exports = BaseAd; // exporting the model
+// Add index on createdBy to improve filtering performance
+baseAdSchema.index({ createdBy: 1 });
 
+// Create the BaseAd model
+const BaseAd = mongoose.model("BaseAd", baseAdSchema);
+
+module.exports = BaseAd; // Exporting the model
