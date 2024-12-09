@@ -49,4 +49,4 @@ NOTE FOCUS:
         01) first implement the backend routes and controllers for: 
             01) donation ad creation and make sure to emit event upon ad creation DONE 
             02) wishlist ad creation and make sure to emit event upon wishlist ad creation.DONE
-        02) implement the frontend useState and useEffect like in socketIO repo example (create li components, and on the homePage.js to useCase and useEffect (listen to the backend events))
+        02) implement the frontend useState and useEffect like in socketIO repo example (create li components, and on the homePage.js to useCase and useEffect (listen to the backend events)) DONE
