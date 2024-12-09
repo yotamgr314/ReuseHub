@@ -39,17 +39,41 @@ const HomePage = () => {
              04) the callback function will execute and call setAds() to update the state of our ads with the newly created ad. 
     */
 
-             socket.on("donationAdCreated", (newAd) => {
-              if (newAd && newAd._id) {
-                setAds((prevAds) => [newAd, ...prevAds]);
-              } else {
-                console.error("Invalid ad received from WebSocket:", newAd);
-              }
-            });
+// Ensure no duplicates are added
+socket.on("donationAdCreated", (newAd) => {
+  if (newAd && newAd._id) {
+    setAds((prevAds) => {
+      const adExists = prevAds.some((ad) => ad._id === newAd._id);
+      if (!adExists) {
+        return [newAd, ...prevAds];
+      }
+      return prevAds;
+    });
+  } else {
+    console.error("Invalid ad received from WebSocket:", newAd);
+  }
+});
+
+socket.on("wishListAdCreated", (newAd) => {
+  if (newAd && newAd._id) {
+    setAds((prevAds) => {
+      const adExists = prevAds.some((ad) => ad._id === newAd._id);
+      if (!adExists) {
+        return [newAd, ...prevAds];
+      }
+      return prevAds;
+    });
+  } else {
+    console.error("Invalid ad received from WebSocket:", newAd);
+  }
+});
             
     return () => {
-      socket.off("donationAdCreated");
-      socket.disconnect(); // return statement means Cleanup function - this function will runs when the component is unmounted, here will disconnect from the socket which listens to events.
+      return () => { // return statement means Cleanup function - this function will runs when the component is unmounted, here will disconnect from the socket which listens to events.
+        socket.off("donationAdCreated");
+        socket.off("wishListAdCreated");
+        socket.disconnect(); 
+      };      
     };
   }, []);
 
