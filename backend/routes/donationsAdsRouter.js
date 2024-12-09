@@ -1,6 +1,6 @@
 const express = require('express');
 
-const donationAdsController = require('../controllers/donationAdsController.js');
+const donationAdsController = require('../controllers/'); // ✅ Corrected import
 
 const adDonationRouter = express();const app =express(); /*NOTE calls express constructor, via its instance we will gain access to many express framework methods related to creating a web app,
                                                         for example: 
