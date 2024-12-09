@@ -1,4 +1,4 @@
-const mongoose = require("mongoose");
+const BaseAd = require("../models/baseAdSchema"); 
 
 const getAllAds = async (req, res) => {
   try {
@@ -8,17 +8,13 @@ const getAllAds = async (req, res) => {
     const skip = (page - 1) * limit;
 
     // 🟢 שליפת מודעות מאוסף "ads" (DonationAd + WishlistAd)
-    const ads = await mongoose
-      .model("BaseAd", require("../models/baseAdSchema"))
-      .find()
+    const ads = await BaseAd.find() // 🔥 שימוש ב-Best Practice - גישה ישירה ל-BaseAd
       .sort({ createdAt: -1 }) // סדר לפי יצירה (מהחדש לישן)
       .skip(skip)
       .limit(limit);
 
     // 🟢 חישוב כמות המודעות הכוללת במערכת
-    const totalCount = await mongoose
-      .model("BaseAd", require("../models/baseAdSchema"))
-      .countDocuments();
+    const totalCount = await BaseAd.countDocuments(); // 🔥 שימוש ב-Best Practice - גישה ישירה ל-BaseAd
 
     res.status(200).json({
       success: true,

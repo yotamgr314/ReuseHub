@@ -1,12 +1,14 @@
 const mongoose = require("mongoose");
 const bcrypt = require("bcryptjs");
 
+// NOTE: Embedded badge schema
 const badgeSchema = new mongoose.Schema({
-  name: { type: String, required: true }, // Badge name (e.g., Top Donor, Eco Warrior)
-  description: { type: String }, // Short description of what the badge represents
+  name: { type: String, required: true }, 
+  description: { type: String }, 
   icon: { type: String }, // URL to badge icon
-  earnedAt: { type: Date, default: Date.now }, // When the badge was earned
+  earnedAt: { type: Date, default: Date.now }, 
 });
+
 
 const userSchema = new mongoose.Schema({
   name: { type: String, required: [true, "A user must have a name"] },
@@ -16,9 +18,9 @@ const userSchema = new mongoose.Schema({
     unique: true,
   },
   password: { type: String, required: true },
-  profilePicture: { type: String }, // URL to the user's profile picture
+  profilePicture: { type: String }, //NOTE: URL to the user's profile picture
   phone: { type: String },
-  ratingPoints: { type: Number, default: 0 }, // Used for leaderboard sorting
+  ratingPoints: { type: Number, default: 0 }, // NOTE: Used for leaderboard sorting
   badges: [badgeSchema], // **List of embedded badges**
   createdAt: { type: Date, default: Date.now },
 });

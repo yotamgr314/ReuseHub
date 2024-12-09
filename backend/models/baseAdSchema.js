@@ -1,5 +1,6 @@
 const mongoose = require("mongoose");
 
+// NOTE: BaseSchema - all types of ads will have these fields.
 const baseAdSchema = new mongoose.Schema(
   {
     title: { type: String, required: true },
@@ -18,4 +19,6 @@ const baseAdSchema = new mongoose.Schema(
   { discriminatorKey: "kind", collection: "ads" }
 );
 
-module.exports = baseAdSchema;
+const BaseAd = mongoose.model("BaseAd", baseAdSchema); // creating a model out of the schema with the name BaseAd.
+
+module.exports = BaseAd; // exporting the model
