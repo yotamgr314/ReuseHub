@@ -17,7 +17,7 @@ const App = () => {
     <BrowserRouter>
       <DrawerAppBar />
       <Routes>
-        <Route path="/homePage" element={<HomePage />} />
+        <Route path="/" element={<HomePage />} />
         <Route path="/myAds" element={<MyAds />} />
         <Route path="/incomingOffers" element={<IncomingOffers />} />
         <Route path="/incomingClaims" element={<IncomingClaims />} />

@@ -30,7 +30,7 @@ exports.createDonationAd = async (req, res) => {
     // Emit the event via Socket.IO
     const io = req.app.get("io");
     if (io) {
-      io.emit("donationAdCreated", savedDonationAd);
+        io.emit("donationAdCreated", savedDonationAd);
     }
 
     // Return a successful response

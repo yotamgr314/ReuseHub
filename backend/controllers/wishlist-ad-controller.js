@@ -40,7 +40,7 @@ exports.createWishListAd = async (req, res) => {
     // Emit the event via Socket.IO
     const io = req.app.get("io");
     if (io) {
-      io.emit("wishListAdCreated", savedWishListAd);
+        io.emit("wishListAdCreated", savedWishListAd);
     }
 
     // Return a successful response
