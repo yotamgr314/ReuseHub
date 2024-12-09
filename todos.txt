@@ -1,6 +1,6 @@
 NOTE: my to do list: 
 01) implement the backend routes and controllers for the following requests: 
-    01) list all the ads in our system under a list on the HomePage. --> a request which gets all the ads in the system.
+    01) list all the ads in our system under a list on the HomePage. --> a request which gets all the ads in the system. DONE
     02) set markers on the googlemaps API with all the ADS on our system, different mark for donationAd and different mark for WishListAd. 
     03) list all the donation ads for a specific user.
     04) list all the wishlist ads for a specific user.
@@ -43,7 +43,6 @@ http://localhost:5000/api/users/:id/category/:category - example of multiple pat
 
 
 NOTE FOCUS: 
-01) whats working now is a simple centrelized get request which fetches all the ads in the system via ads.find().
     what needs to be done is: 
     01) to add the socket.io for real time updates of the list without the user need to refresh the page when a new ad creates.
         01) first implement the backend routes and controllers for: 
