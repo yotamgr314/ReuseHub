@@ -1,4 +1,4 @@
-const mongoose = require("mongoose");
+/* const mongoose = require("mongoose");
 
 const itemSchema = new mongoose.Schema({
   name: { type: String, required: true },
@@ -35,3 +35,27 @@ const itemSchema = new mongoose.Schema({
 });
 
 module.exports = itemSchema;
+ */
+
+
+
+const mongoose = require("mongoose");
+
+const itemSchema = new mongoose.Schema({
+  name: { type: String, required: true },
+  description: { type: String },
+  quantity: { type: Number, default: 1 },
+  condition: {
+    type: String,
+    enum: ["Like New", "Gently Used", "Heavily Used"]
+  },
+  status: {
+    type: String,
+    required: true,
+    enum: ["available", "claimed", "offered", "donated", "wished", "promised", "granted"] 
+  }
+});
+
+module.exports = itemSchema;
+
+

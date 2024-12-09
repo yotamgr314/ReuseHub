@@ -8,7 +8,8 @@ const wishlistAdSchema = new mongoose.Schema({
   pickupPreference: { type: String, enum: ["public place", "at home"] },
 });
 
-module.exports = mongoose.model("WishlistAd", wishlistAdSchema);
+const WishlistAd = baseAdSchema.discriminator('WishlistAd', wishlistAdSchema); // 🔥 Use BaseAd.discriminator
+module.exports = WishlistAd;
 
 // const mongoose = require("mongoose");
 

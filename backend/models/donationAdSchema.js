@@ -9,7 +9,8 @@ const donationAdSchema = new mongoose.Schema({
   ],
 });
 
-module.exports = mongoose.model("DonationAd", donationAdSchema);
+const DonationAd = baseAdSchema.discriminator('DonationAd', donationAdSchema); // 🔥 Use BaseAd.discriminator
+module.exports = DonationAd;
 
 // const mongoose = require('mongoose');
 

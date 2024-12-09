@@ -31,3 +31,4 @@ const baseAdSchema = new mongoose.Schema(
 const BaseAd = mongoose.model("BaseAd", baseAdSchema); // creating a model out of the schema with the name BaseAd.
 
 module.exports = BaseAd; // exporting the model
+
