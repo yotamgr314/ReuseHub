@@ -1,22 +1,37 @@
-// const DonationAd = require('../models/donation.ad.model.js');
-// const WishListAd = require('../models/wishlist.ad.model.js');
+const mongoose = require("mongoose");
 
-// exports.getAllAds = async (req, res) => {
-//   try {
-//     // Fetch donation ads and populate donor details
-//     const donationAds = await DonationAd.find().populate('donor', 'name email');
+const getAllAds = async (req, res) => {
+  try {
+    // 🟢 קבלת פרמטרים מה-query (page, limit)
+    const page = parseInt(req.query.page) || 1;
+    const limit = parseInt(req.query.limit) || 10;
+    const skip = (page - 1) * limit;
 
-//     // Fetch wishlist ads and populate donor details
-//     const wishlistAds = await WishListAd.find().populate('donor', 'name email');
+    // 🟢 שליפת מודעות מאוסף "ads" (DonationAd + WishlistAd)
+    const ads = await mongoose
+      .model("BaseAd", require("../models/baseAdSchema"))
+      .find()
+      .sort({ createdAt: -1 }) // סדר לפי יצירה (מהחדש לישן)
+      .skip(skip)
+      .limit(limit);
 
-//     // Combine ads with a `type` field to distinguish them
-//     const combinedAds = [
-//       ...donationAds.map((ad) => ({ ...ad.toObject(), type: 'donation' })),
-//       ...wishlistAds.map((ad) => ({ ...ad.toObject(), type: 'wishlist' })),
-//     ];
+    // 🟢 חישוב כמות המודעות הכוללת במערכת
+    const totalCount = await mongoose
+      .model("BaseAd", require("../models/baseAdSchema"))
+      .countDocuments();
 
-//     res.status(200).json(combinedAds);
-//   } catch (err) {
-//     res.status(500).json({ message: `Server error: ${err.message}` });
-//   }
-// };
+    res.status(200).json({
+      success: true,
+      count: ads.length,
+      total: totalCount,
+      currentPage: page,
+      totalPages: Math.ceil(totalCount / limit),
+      data: ads,
+    });
+  } catch (error) {
+    console.error(`Error fetching ads: ${error.message}`);
+    res.status(500).json({ success: false, message: "Server Error" });
+  }
+};
+
+module.exports = { getAllAds };

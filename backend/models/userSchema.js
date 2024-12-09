@@ -1,7 +1,6 @@
 const mongoose = require("mongoose");
 const bcrypt = require("bcryptjs");
 
-// Embedded badge schema
 const badgeSchema = new mongoose.Schema({
   name: { type: String, required: true }, // Badge name (e.g., Top Donor, Eco Warrior)
   description: { type: String }, // Short description of what the badge represents
@@ -24,7 +23,7 @@ const userSchema = new mongoose.Schema({
   createdAt: { type: Date, default: Date.now },
 });
 
-// 🔐 **Pre-save Hook** — Automatically hash the password before saving
+// **Pre-save Hook** — Automatically hash the password before saving
 userSchema.pre("save", async function (next) {
   if (!this.isModified("password")) return next(); // Only hash if password is new or changed
   const salt = await bcrypt.genSalt(10);
@@ -32,7 +31,7 @@ userSchema.pre("save", async function (next) {
   next();
 });
 
-// 🔐 **Method to compare password**
+//  **Method to compare password**
 userSchema.methods.matchPassword = async function (enteredPassword) {
   return await bcrypt.compare(enteredPassword, this.password);
 };

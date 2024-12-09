@@ -1,9 +1,8 @@
-// const express = require('express');
-// const adsController = require('../controllers/ads.controller.js');
+const express = require("express");
+const router = express.Router();
+const { getAllAds } = require("../controllers/adsController");
 
-// const adsRouter = express.Router();
+// 🔥 בקשה לקבלת כל המודעות (Wishlist + Donation) עם פאגינציה וגלילה אינסופית
+router.get("/", getAllAds);
 
-// Combined ads route
-// adsRouter.get('/', adsController.getAllAds);
-
-// module.exports = adsRouter;
+module.exports = router;
