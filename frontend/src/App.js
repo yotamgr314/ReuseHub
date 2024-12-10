@@ -24,7 +24,7 @@ const App = () => {
         <Route path="/incomingOffers" element={<JwtRouteGuard> <IncomingOffers /></JwtRouteGuard>} />
         <Route path="/incomingClaims" element={<JwtRouteGuard><IncomingClaims /></JwtRouteGuard>} />
         <Route path="/leaderBoard" element={<JwtRouteGuard><LeaderBoard /></JwtRouteGuard>} />
-        <Route path="/register" element={<JwtRouteGuard><Register /></JwtRouteGuard>} />
+        <Route path="/register" element={<Register />} />
         <Route path="/login" element={<Login />} />
         <Route path="*" element={<Navigate to="/" />} />
       </Routes>

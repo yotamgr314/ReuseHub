@@ -1,4 +1,4 @@
-import * as React from "react";
+import React from "react";
 import AppBar from "@mui/material/AppBar";
 import Box from "@mui/material/Box";
 import CssBaseline from "@mui/material/CssBaseline";
@@ -14,22 +14,24 @@ import Toolbar from "@mui/material/Toolbar";
 import Typography from "@mui/material/Typography";
 import Button from "@mui/material/Button";
 import Avatar from "@mui/material/Avatar";
-
-import { NavLink } from "react-router-dom"; // KEREN recommended it.
+import { NavLink, useNavigate } from "react-router-dom"; // Import useNavigate for redirect
+import { handleLogout } from "../utilis/handleLogout"; // Import logout logic
 
 const drawerWidth = 240;
+
 const navItems = [
-  { label: "CREATE AD", path: "/createAd" },
-  { label: "MY ADS", path: "/myAds" },
-  { label: "INCOMING OFFERS", path: "/incomingOffers" },
-  { label: "INCOMING CLAIMS", path: "/incomingClaims" },
-  { label: "LEADERBOARD", path: "/leaderBoard" },
-  { label: "LOG OUT", path: "/LogOut" },
+  { label: "CREATE AD", path: "/createAd", type: "link" },
+  { label: "MY ADS", path: "/myAds", type: "link" },
+  { label: "INCOMING OFFERS", path: "/incomingOffers", type: "link" },
+  { label: "INCOMING CLAIMS", path: "/incomingClaims", type: "link" },
+  { label: "LEADERBOARD", path: "/leaderBoard", type: "link" },
+  { label: "LOG OUT", type: "action" }, // LOG OUT as an action
 ];
 
 export default function DrawerAppBar(props) {
   const { window } = props;
   const [mobileOpen, setMobileOpen] = React.useState(false);
+  const navigate = useNavigate(); // Initialize navigate
 
   const handleDrawerToggle = () => {
     setMobileOpen((prevState) => !prevState);
@@ -43,19 +45,28 @@ export default function DrawerAppBar(props) {
       <Divider />
       <List>
         {navItems.map((item) => (
-          <ListItem key={item} disablePadding sx={{ mb: 2.5 }}>
-            <ListItemButton sx={{ textAlign: "center", py: 2 }}>
-              <NavLink
-                to={item.path}
-                style={({ isActive }) => ({
-                  textDecoration: "none",
-                  color: isActive ? "blue" : "inherit", // Active link color
-                  fontWeight: isActive ? "bold" : "normal",
-                })}
+          <ListItem key={item.label} disablePadding sx={{ mb: 2.5 }}>
+            {item.type === "link" ? (
+              <ListItemButton sx={{ textAlign: "center", py: 2 }}>
+                <NavLink
+                  to={item.path}
+                  style={({ isActive }) => ({
+                    textDecoration: "none",
+                    color: isActive ? "blue" : "inherit",
+                    fontWeight: isActive ? "bold" : "normal",
+                  })}
+                >
+                  <ListItemText primary={item.label} />
+                </NavLink>
+              </ListItemButton>
+            ) : (
+              <ListItemButton
+                sx={{ textAlign: "center", py: 2 }}
+                onClick={() => handleLogout(navigate)} // Call centralized logout function which will delete the jwt token from the localStorage.
               >
                 <ListItemText primary={item.label} />
-              </NavLink>{" "}
-            </ListItemButton>
+              </ListItemButton>
+            )}
           </ListItem>
         ))}
       </List>
@@ -87,20 +98,30 @@ export default function DrawerAppBar(props) {
             ReuseHub
           </Typography>
           <Box sx={{ display: { xs: "none", sm: "flex" }, gap: 1.5 }}>
-            {navItems.map((item) => (
-              <Button key={item} sx={{ color: "text.primary" }}>
-                <NavLink
-                  to={item.path}
-                  style={({ isActive }) => ({
-                    textDecoration: "none",
-                    color: isActive ? "blue" : "inherit", // Active link color
-                    fontWeight: isActive ? "bold" : "normal", // Active link font weight
-                  })}
+            {navItems.map((item) =>
+              item.type === "link" ? (
+                <Button key={item.label} sx={{ color: "text.primary" }}>
+                  <NavLink
+                    to={item.path}
+                    style={({ isActive }) => ({
+                      textDecoration: "none",
+                      color: isActive ? "blue" : "inherit",
+                      fontWeight: isActive ? "bold" : "normal",
+                    })}
+                  >
+                    {item.label}
+                  </NavLink>
+                </Button>
+              ) : (
+                <Button
+                  key={item.label}
+                  onClick={() => handleLogout(navigate)}
+                  sx={{ color: "text.primary" }}
                 >
                   {item.label}
-                </NavLink>
-              </Button>
-            ))}
+                </Button>
+              )
+            )}
           </Box>
           <Avatar
             alt="Profile Picture"
@@ -115,9 +136,7 @@ export default function DrawerAppBar(props) {
           variant="temporary"
           open={mobileOpen}
           onClose={handleDrawerToggle}
-          ModalProps={{
-            keepMounted: true, // Better open performance on mobile.
-          }}
+          ModalProps={{ keepMounted: true }}
           sx={{
             display: { xs: "block", sm: "none" },
             "& .MuiDrawer-paper": {

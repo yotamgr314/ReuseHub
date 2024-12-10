@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { useNavigate } from 'react-router-dom'; 
 import { TextField, Button, Box, Typography, Container } from '@mui/material';
 
 const Login = () => {
@@ -7,6 +8,10 @@ const Login = () => {
     password: '',
   });
   const [error, setError] = useState('');
+
+  // Initialized useNavigate to enable navigation to different routes - without reloading the page
+  const navigate = useNavigate(); 
+
 
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
@@ -32,7 +37,7 @@ const Login = () => {
       }
 
       localStorage.setItem('token', data.token); // saved JWT token to the localStorage. 
-      window.location.href = '/homePage'; // Redirect to the homepage
+      navigate('/homePage'); // Redirect to the homepage
     } catch (err) {
       setError(err.message);
     }

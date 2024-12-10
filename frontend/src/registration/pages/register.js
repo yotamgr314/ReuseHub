@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { TextField, Button, Box, Typography, Container } from '@mui/material';
+import { useNavigate } from 'react-router-dom'; // Added useNavigate from react-router-dom for SPA navigation without page reload
 
 const Register = () => {
   const [formData, setFormData] = useState({
@@ -9,6 +10,8 @@ const Register = () => {
   });
   const [error, setError] = useState('');
   const [success, setSuccess] = useState('');
+
+  const navigate = useNavigate(); //Initialized useNavigate to enable navigation to different routes without reloading the page.
 
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
@@ -35,6 +38,8 @@ const Register = () => {
       }
 
       setSuccess('Registration successful! Please log in.');
+      navigate('/login');
+
     } catch (err) {
       setError(err.message);
     }

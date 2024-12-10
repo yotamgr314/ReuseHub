@@ -56,5 +56,6 @@ NOTE FOCUS:
     03) backend: 
         01) implement the jwt and bycript logic.  DONE
         02) to attach add the middlewhere router to any routes id like to have user autentication over there - comeback to it only after i finish udimy course explainatipn.  
+    04) must implement log out functionality which removes the JWT token from local storage once the user loges out. 
 
         
