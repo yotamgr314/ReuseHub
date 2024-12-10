@@ -52,6 +52,9 @@ NOTE FOCUS:
     02) frontend:
         01) implement a user registration page.DONE
         02) implement a user login page. DONE
+        02) to attach add the middlewhere router to any protected route id like it to verify, so that only logged on users can browse the website DONE 
     03) backend: 
         01) implement the jwt and bycript logic.  DONE
-        02) to attach add the middlewhere router to any protected route id like it to verify. (a)
+        02) to attach add the middlewhere router to any routes id like to have user autentication over there - comeback to it only after i finish udimy course explainatipn.  
+
+        
