@@ -50,7 +50,8 @@ NOTE FOCUS:
             02) wishlist ad creation and make sure to emit event upon wishlist ad creation.DONE
         02) implement the frontend useState and useEffect like in socketIO repo example (create li components, and on the homePage.js to useCase and useEffect (listen to the backend events)) DONE
     02) frontend:
-        01) implement a user registration page.
-        02) implement a user login page. 
+        01) implement a user registration page.DONE
+        02) implement a user login page. DONE
     03) backend: 
-        01) implement the jwt and bycript logic.  
+        01) implement the jwt and bycript logic.  DONE
+        02) to attach add the middlewhere router to any protected route id like it to verify. (a)

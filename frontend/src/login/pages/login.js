@@ -31,8 +31,8 @@ const Login = () => {
         throw new Error(data.message || 'Login failed');
       }
 
-      localStorage.setItem('token', data.token);
-      window.location.href = '/homepage'; // Redirect to the homepage
+      localStorage.setItem('token', data.token); // saved JWT token to the localStorage. 
+      window.location.href = '/homePage'; // Redirect to the homepage
     } catch (err) {
       setError(err.message);
     }
