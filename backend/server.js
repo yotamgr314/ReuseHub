@@ -8,7 +8,7 @@ const { Server } = require("socket.io");
 const newServer = http.createServer(app);
 const io = new Server(newServer, {
   cors: {
-    origin: "http://localhost:3000", 
+    origin: "*", // Allow all origins for WebSocket connections
     methods: ["GET", "POST"],
   },
 });

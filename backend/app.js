@@ -5,9 +5,12 @@ const dotenv = require("dotenv");
 
 const { connectDB } = require("./config/db.js");
 
-const adRouter = require("./routes/ad-router.js"); // ✅ Correct path
-const donationAdRouter = require("./routes/donation-ad-router.js"); // ✅ Correct path
-const wishlistAdRouter = require("./routes/wishlist-ad-router.js"); // ✅ Correct path
+const adRouter = require("./routes/ad-router.js");
+const donationAdRouter = require("./routes/donation-ad-router.js"); 
+const wishlistAdRouter = require("./routes/wishlist-ad-router.js"); 
+const userRouter = require("./routes/user-router.js"); 
+const authRoutes = require('./routes/authenticate-router'); // Import the **router**, not an object
+
 
 //CONFIGURATION SECTION
 dotenv.config(); /*Load environment variables from .env file  */
@@ -38,6 +41,11 @@ app.use("/api/ads", adRouter); // http://localhost:5000/api/ads
 app.use("/api/donationAd", donationAdRouter);// http://localhost:5000/api/donationAd
 
 app.use("/api/wishListAd", wishlistAdRouter);// http://localhost:5000/api/wishListAd
+
+app.use("/api/users", userRouter); // http://localhost:5000/api/users
+
+app.use("/api/authenticate", authRoutes); // Correctly uses the router exported from `authenticate-router.js`
+
 
 app.get("/", (req, res) => {
   res.send("Welcome to the Distributed Cloud Services API");

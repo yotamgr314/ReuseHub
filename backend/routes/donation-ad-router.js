@@ -10,7 +10,6 @@ const donationRouter = express();/*NOTE calls express constructor, via its insta
                                     04) handling static files such as : app.use('/static',express.static('pbulic')).
                                     05) error handling such as : app.use((err,req,res,next))  */
 
-
 // ROUTES SECTION
 donationRouter.post('/', donationAdController.createDonationAd);  // POST/api/donationAds - create a donation ad.
 // donationRouter.get('/:id', donation-ad-controller.getDonationAdById); // GET/api/donationAds - get an Ad by its id.
