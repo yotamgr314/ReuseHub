@@ -10,7 +10,7 @@ import IncomingOffers from "./offers/pages/incomingOffers.js";
 import IncomingClaims from "./claimRequests/pages/incomingClaims.js";
 import LeaderBoard from "./leaderboard/pages/leaderboard.js";
 import Register from "./registration/pages/register.js";
-
+import Login from "./login/pages/login.js";
 // THIS SECTION TAKES CARE OF RENDERING COMPONENTS BASED ON THE URL.(by BrowserRouter,Router,Route)
 const App = () => {
   return (
@@ -22,7 +22,8 @@ const App = () => {
         <Route path="/incomingOffers" element={<IncomingOffers />} />
         <Route path="/incomingClaims" element={<IncomingClaims />} />
         <Route path="/leaderBoard" element={<LeaderBoard />} />
-        <Route path="/LogOut" element={<Register />} />
+        <Route path="/register" element={<Register />} />
+        <Route path="/login" element={<Login />} />
         <Route path="*" element={<Navigate to="/" />} />
       </Routes>
     </BrowserRouter>

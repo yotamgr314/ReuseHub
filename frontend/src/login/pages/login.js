@@ -1,14 +1,12 @@
 import React, { useState } from 'react';
 import { TextField, Button, Box, Typography, Container } from '@mui/material';
 
-const Register = () => {
+const Login = () => {
   const [formData, setFormData] = useState({
-    name: '',
     email: '',
     password: '',
   });
   const [error, setError] = useState('');
-  const [success, setSuccess] = useState('');
 
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
@@ -17,10 +15,9 @@ const Register = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError('');
-    setSuccess('');
 
     try {
-      const response = await fetch('http://localhost:5000/api/authenticate/register', {
+      const response = await fetch('http://localhost:5000/api/authenticate/login', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -31,10 +28,11 @@ const Register = () => {
       const data = await response.json();
 
       if (!response.ok) {
-        throw new Error(data.message || 'Registration failed');
+        throw new Error(data.message || 'Login failed');
       }
 
-      setSuccess('Registration successful! Please log in.');
+      localStorage.setItem('token', data.token);
+      window.location.href = '/homepage'; // Redirect to the homepage
     } catch (err) {
       setError(err.message);
     }
@@ -51,23 +49,13 @@ const Register = () => {
         }}
       >
         <Typography variant="h4" gutterBottom>
-          Register
+          Login
         </Typography>
         <Box
           component="form"
           onSubmit={handleSubmit}
           sx={{ mt: 1, width: '100%' }}
         >
-          <TextField
-            margin="normal"
-            required
-            fullWidth
-            id="name"
-            label="Name"
-            name="name"
-            value={formData.name}
-            onChange={handleChange}
-          />
           <TextField
             margin="normal"
             required
@@ -91,14 +79,13 @@ const Register = () => {
             onChange={handleChange}
           />
           {error && <Typography color="error">{error}</Typography>}
-          {success && <Typography color="primary">{success}</Typography>}
           <Button
             type="submit"
             fullWidth
             variant="contained"
             sx={{ mt: 3, mb: 2 }}
           >
-            Register
+            Login
           </Button>
         </Box>
       </Box>
@@ -106,4 +93,4 @@ const Register = () => {
   );
 };
 
-export default Register;
+export default Login;

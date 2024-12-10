@@ -1,4 +1,4 @@
-const userModel = require("../models/userSchema"); // Import the user schema
+const userModel = require("../models/userSchema"); 
 
 exports.createUser = async (req, res) => {
   try {
