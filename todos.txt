@@ -58,7 +58,7 @@ NOTE FOCUS:
         02) to attach add the middlewhere router to any routes id like to have user autentication over there - comeback to it only after i finish udimy course explainatipn.  
     04) must implement log out functionality which removes the JWT token from local storage once the user loges out. 
 
-    
+    05) add offer.js to the modal and have it store a ref to a wishlsit ad.
 
 NOTE: ROUTES FOR base-ad-routes.js and base-ad-controller.js
 NOTE baseAdController will function for both WishlistAd and DonationAd.

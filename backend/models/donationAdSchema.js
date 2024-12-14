@@ -15,11 +15,11 @@ const donationAdSchema = new mongoose.Schema({
     },
   ],
   claimRequests: [
-    { type: mongoose.Schema.Types.ObjectId, ref: "ClaimRequest" },
+    { type: mongoose.Schema.Types.ObjectId, ref: "ClaimRequest" }, // i think i need to remove it., 
   ],
 });
 
-const DonationAd = baseAdSchema.discriminator('DonationAd', donationAdSchema); // 🔥 Use BaseAd.discriminator
+const DonationAd = baseAdSchema.discriminator('DonationAd', donationAdSchema); // Use BaseAd.discriminator
 module.exports = DonationAd;
 
 // const mongoose = require('mongoose');
