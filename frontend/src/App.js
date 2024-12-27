@@ -6,8 +6,7 @@ import DrawerAppBar from "./shared/ulElements/drawerAppBar"; // NOTE Material UI
 
 import HomePage from "./homePage/pages/homePage.js";
 import MyAds from "./ads/pages/myAds.js";
-import IncomingOffers from "./offers/pages/incomingOffers.js";
-import IncomingClaims from "./claimRequests/pages/incomingClaims.js";
+import Offers from "./offers/pages/offers.js";
 import Chat from "./chat/pages/chat.js";
 import LeaderBoard from "./leaderboard/pages/leaderboard.js";
 import Register from "./registration/pages/register.js";
@@ -22,8 +21,7 @@ const App = () => {
       <Routes>
         <Route path="/" element={<JwtRouteGuard> <HomePage /> </JwtRouteGuard>} /> 
         <Route path="/myAds" element={<JwtRouteGuard> <MyAds /> </JwtRouteGuard>} /> 
-        <Route path="/incomingOffers" element={<JwtRouteGuard> <IncomingOffers /></JwtRouteGuard>} />
-        <Route path="/incomingClaims" element={<JwtRouteGuard><IncomingClaims /></JwtRouteGuard>} />
+        <Route path="/myOffers" element={<JwtRouteGuard> <Offers/></JwtRouteGuard>} />
         <Route path="/Chat" element={<JwtRouteGuard><Chat /></JwtRouteGuard>} />
         <Route path="/leaderBoard" element={<JwtRouteGuard><LeaderBoard /></JwtRouteGuard>} />
         <Route path="/register" element={<Register />} />

@@ -5,8 +5,7 @@ const IncomingOffers = () => {
   return (
     <div>
       <h2>
-        Here all the incoming donation offers will be displayed, based on the
-        user id wish list ads.
+        Here all the incoming donation and claim offers will be displayed of the current logged user.
       </h2>
     </div>
   );
