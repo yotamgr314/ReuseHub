@@ -24,6 +24,7 @@ const navItems = [
   { label: "MY ADS", path: "/myAds", type: "link" },
   { label: "INCOMING OFFERS", path: "/incomingOffers", type: "link" },
   { label: "INCOMING CLAIMS", path: "/incomingClaims", type: "link" },
+  { label: "Chat", path: "/chat", type: "link" },
   { label: "LEADERBOARD", path: "/leaderBoard", type: "link" },
   { label: "LOG OUT", type: "action" }, // LOG OUT as an action
 ];
