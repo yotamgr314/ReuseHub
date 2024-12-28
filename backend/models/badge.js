@@ -1,9 +1,10 @@
 // Import of necessary modules
-const { Schema, model } = require("mongoose");
+const { Schema, model } = require('mongoose');
+
 
 // Schema of badge obtained by user
 const badgeSchema = new Schema({
-    
+
     // Name of badge
     name: { type: String, required: true },
 
@@ -16,8 +17,6 @@ const badgeSchema = new Schema({
     // Date of badge obtainment by specific user
     earned: { type: Date, default: Date.now, required: true }
 
-}, { collection: 'badges', strict: true } );
+}, { _id: false, strict: true });
 
-const Badge = model('Badge', badgeSchema);
-
-module.exports = Badge;
+module.exports = badgeSchema;
