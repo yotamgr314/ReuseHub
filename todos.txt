@@ -1,4 +1,10 @@
 NOTE: my to do list: 
+
+must refactor the structure. 
+1) refactor server.js into 2 files (index.js and server.js)
+   where the server.js will initlize our server, and the index. will just invoke it. 
+   the reason is related to how node.js treats a file named index.js.. (when the server starts he search for index.js file by default).
+
 01) implement the backend routes and controllers for the following requests: 
     01) list all the ads in our system under a list on the HomePage. --> a request which gets all the ads in the system. DONE
     02) set markers on the googlemaps API with all the ADS on our system, different mark for donationAd and different mark for WishListAd. 
@@ -74,3 +80,5 @@ Easier Maintenance	All item logic is in one file (baseAd-controller.js).
 POST /api/ads/:adId/items
 PATCH /api/ads/:adId/items/:itemId
 DELETE /api/ads/:adId/items/:itemId
+
+
