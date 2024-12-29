@@ -1,5 +1,5 @@
 // Import of necessary modules
-const { Schema, model, Types } = require('mongoose');
+const { Schema } = require('mongoose');
 
 
 // Location schema storing 2 coordinates: x-axis and y-axis

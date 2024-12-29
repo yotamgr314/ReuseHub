@@ -1,5 +1,5 @@
 // Import of necessary modules
-const { Schema, model, Types } = require('mongoose');
+const { Schema, Types } = require('mongoose');
 const Ad = require('./ad')
 
 

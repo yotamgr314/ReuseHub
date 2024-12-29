@@ -1,5 +1,5 @@
 // Import of necessary modules
-const { Schema, model } = require('mongoose');
+const { Schema } = require('mongoose');
 
 
 // Schema of badge obtained by user
