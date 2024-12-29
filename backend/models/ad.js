@@ -11,7 +11,7 @@ const adSchema = new Schema({
   adType: { type: Boolean, requred: true },
 
   // ID of user that created ad (referencing the 'User' model)
-  userId: { type: Types.ObjectId, required: true, ref: 'User' },
+  userId: { type: Types.ObjectId, ref: 'User', required: true },
 
   // Title of the ad containing the name of the item specified in it
   title: { type: String, requred: true },
