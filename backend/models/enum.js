@@ -26,4 +26,10 @@ const conditionEnum = [
     'Very Bad'
 ];
 
-module.exports = { categoryEnum, conditionEnum };
+const statusEnum = [
+    'Pending',
+    'Accepted',
+    'Rejected'
+];
+
+module.exports = { categoryEnum, conditionEnum, statusEnum };
