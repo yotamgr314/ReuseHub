@@ -1,5 +1,6 @@
 const AdsList = ({ ads }) => {
-  if (!Array.isArray(ads)) {
+  if (!Array.isArray(ads)) 
+  {
     return <p>No ads available.</p>; // Fallback message if ads is not an array
   }
 
