@@ -3,7 +3,7 @@ import { io } from "socket.io-client";
 import { GoogleMap, LoadScript, OverlayView } from "@react-google-maps/api";
 import StickyNote2TwoToneIcon from "@mui/icons-material/StickyNote2TwoTone";
 import VolunteerActivismTwoToneIcon from "@mui/icons-material/VolunteerActivismTwoTone";
-import AdsList from "../components/ads-list"; // Import AdsList component
+import AdsList from "../../shared/adsCardList/adsCards";
 
 // Import CSS file
 import "../homePage.css";
