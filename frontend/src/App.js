@@ -19,14 +19,14 @@ const App = () => {
     <BrowserRouter>
       <DrawerAppBar />
       <Routes>
-        <Route path="/" element={<JwtRouteGuard> <HomePage /> </JwtRouteGuard>} /> 
-        <Route path="/myAds" element={<JwtRouteGuard> <MyAds /> </JwtRouteGuard>} /> 
+      <Route path="/homePage" element={<JwtRouteGuard> <HomePage /> </JwtRouteGuard>} />
+      <Route path="/myAds" element={<JwtRouteGuard> <MyAds /> </JwtRouteGuard>} /> 
         <Route path="/myOffers" element={<JwtRouteGuard> <Offers/></JwtRouteGuard>} />
         <Route path="/Chat" element={<JwtRouteGuard><Chat /></JwtRouteGuard>} />
         <Route path="/leaderBoard" element={<JwtRouteGuard><LeaderBoard /></JwtRouteGuard>} />
         <Route path="/register" element={<Register />} />
         <Route path="/login" element={<Login />} />
-        <Route path="*" element={<Navigate to="/" />} />
+        <Route path="*" element={<Navigate to="/homePage" />} />
       </Routes>
     </BrowserRouter>
   );

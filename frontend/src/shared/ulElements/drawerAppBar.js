@@ -39,9 +39,13 @@ export default function DrawerAppBar(props) {
 
   const drawer = (
     <Box onClick={handleDrawerToggle} sx={{ textAlign: "center" }}>
-      <Typography variant="h6" sx={{ my: 2 }}>
-        ReuseHub
-      </Typography>
+    <Typography
+      variant="h6"
+      sx={{ my: 2, cursor: "pointer" }} // Add pointer cursor for mobile drawer
+      onClick={() => navigate("/homePage")} // Navigate to /homePage on click
+    >
+      ReuseHub
+    </Typography>
       <Divider />
       <List>
         {navItems.map((item) => (
@@ -91,12 +95,17 @@ export default function DrawerAppBar(props) {
             <MenuIcon />
           </IconButton>
           <Typography
-            variant="h6"
-            component="div"
-            sx={{ flexGrow: 1, display: { xs: "none", sm: "block" } }}
-          >
-            ReuseHub
-          </Typography>
+          variant="h6"
+          component="div"
+          onClick={() => navigate("/homePage")} // Navigate to /homePage on click for desktop
+          sx={{
+            flexGrow: 1,
+            display: { xs: "none", sm: "block" },
+            cursor: "pointer", // Add pointer cursor for desktop navbar
+          }}
+        >
+          ReuseHub
+        </Typography>
           <Box sx={{ display: { xs: "none", sm: "flex" }, gap: 1.5 }}>
             {navItems.map((item) =>
               item.type === "link" ? (
