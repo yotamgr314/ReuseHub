@@ -25,13 +25,12 @@ const AdsList = ({ ads }) => {
           key={ad._id} // Unique key for each card (React requires this for lists)
           sx={{
             maxWidth: "100%", // Ensure the card spans the full width of its container
-            padding: 2, // Add padding inside the card for better spacing
+            padding: 2, 
             backgroundColor: theme.palette.grey[200], // Set a grayish background color from the theme
             boxShadow: theme.shadows[2], // Apply a slight shadow to make the card stand out
           }}
         >
           <CardContent>
-            {/* Display the ad title in a larger font */}
             <Typography variant="h5" component="div" gutterBottom>
               {ad.title}
             </Typography>
