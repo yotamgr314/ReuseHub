@@ -14,18 +14,26 @@ import Toolbar from "@mui/material/Toolbar";
 import Typography from "@mui/material/Typography";
 import Button from "@mui/material/Button";
 import Avatar from "@mui/material/Avatar";
+import HomeIcon from "@mui/icons-material/Home"; // Import Home icon
+import AddCircleIcon from "@mui/icons-material/AddCircle"; // Import Create Ad icon
+import ViewListIcon from "@mui/icons-material/ViewList"; // Import My Ads icon
+import OfferIcon from "@mui/icons-material/LocalOffer"; // Import My Offers icon
+import ChatIcon from "@mui/icons-material/Chat"; // Import Chat icon
+import LeaderboardIcon from "@mui/icons-material/Leaderboard"; // Import Leaderboard icon
+import LogoutIcon from "@mui/icons-material/Logout"; // Import Logout icon
 import { NavLink, useNavigate } from "react-router-dom"; // Import useNavigate for redirect
 import { handleLogout } from "../utilis/handleLogout"; // Import logout logic
 
 const drawerWidth = 240;
 
 const navItems = [
-  { label: "CREATE AD", path: "/createAd", type: "link" },
-  { label: "MY ADS", path: "/myAds", type: "link" },
-  { label: "MY OFFERS", path: "/myOffers", type: "link" },
-  { label: "Chat", path: "/chat", type: "link" },
-  { label: "LEADERBOARD", path: "/leaderBoard", type: "link" },
-  { label: "LOG OUT", type: "action" }, // LOG OUT as an action
+  { label: "HOME", path: "/homePage", type: "link", icon: <HomeIcon /> },
+  { label: "CREATE AD", path: "/createAd", type: "link", icon: <AddCircleIcon /> },
+  { label: "MY ADS", path: "/myAds", type: "link", icon: <ViewListIcon /> },
+  { label: "MY OFFERS", path: "/myOffers", type: "link", icon: <OfferIcon /> },
+  { label: "CHAT", path: "/chat", type: "link", icon: <ChatIcon /> },
+  { label: "LEADERBOARD", path: "/leaderBoard", type: "link", icon: <LeaderboardIcon /> },
+  { label: "LOG OUT", type: "action", icon: <LogoutIcon /> }, // LOG OUT as an action
 ];
 
 export default function DrawerAppBar(props) {
@@ -39,13 +47,13 @@ export default function DrawerAppBar(props) {
 
   const drawer = (
     <Box onClick={handleDrawerToggle} sx={{ textAlign: "center" }}>
-    <Typography
-      variant="h6"
-      sx={{ my: 2, cursor: "pointer" }} // Add pointer cursor for mobile drawer
-      onClick={() => navigate("/homePage")} // Navigate to /homePage on click
-    >
-      ReuseHub
-    </Typography>
+      <Typography
+        variant="h6"
+        sx={{ my: 2, cursor: "pointer" }} // Add pointer cursor for mobile drawer
+        onClick={() => navigate("/homePage")} // Navigate to /homePage on click
+      >
+        ReuseHub
+      </Typography>
       <Divider />
       <List>
         {navItems.map((item) => (
@@ -60,7 +68,8 @@ export default function DrawerAppBar(props) {
                     fontWeight: isActive ? "bold" : "normal",
                   })}
                 >
-                  <ListItemText primary={item.label} />
+                  {item.icon} {/* Add icon to sidebar */}
+                  <ListItemText primary={item.label} sx={{ ml: 1 }} />
                 </NavLink>
               </ListItemButton>
             ) : (
@@ -68,7 +77,8 @@ export default function DrawerAppBar(props) {
                 sx={{ textAlign: "center", py: 2 }}
                 onClick={() => handleLogout(navigate)} // Call centralized logout function which will delete the jwt token from the localStorage.
               >
-                <ListItemText primary={item.label} />
+                {item.icon} {/* Add icon to logout */}
+                <ListItemText primary={item.label} sx={{ ml: 1 }} />
               </ListItemButton>
             )}
           </ListItem>
@@ -95,17 +105,17 @@ export default function DrawerAppBar(props) {
             <MenuIcon />
           </IconButton>
           <Typography
-          variant="h6"
-          component="div"
-          onClick={() => navigate("/homePage")} // Navigate to /homePage on click for desktop
-          sx={{
-            flexGrow: 1,
-            display: { xs: "none", sm: "block" },
-            cursor: "pointer", // Add pointer cursor for desktop navbar
-          }}
-        >
-          ReuseHub
-        </Typography>
+            variant="h6"
+            component="div"
+            onClick={() => navigate("/homePage")} // Navigate to /homePage on click for desktop
+            sx={{
+              flexGrow: 1,
+              display: { xs: "none", sm: "block" },
+              cursor: "pointer", // Add pointer cursor for desktop navbar
+            }}
+          >
+            ReuseHub
+          </Typography>
           <Box sx={{ display: { xs: "none", sm: "flex" }, gap: 1.5 }}>
             {navItems.map((item) =>
               item.type === "link" ? (
@@ -118,6 +128,7 @@ export default function DrawerAppBar(props) {
                       fontWeight: isActive ? "bold" : "normal",
                     })}
                   >
+                    {item.icon} {/* Add icon to navbar */}
                     {item.label}
                   </NavLink>
                 </Button>
@@ -127,6 +138,7 @@ export default function DrawerAppBar(props) {
                   onClick={() => handleLogout(navigate)}
                   sx={{ color: "text.primary" }}
                 >
+                  {item.icon} {/* Add icon to logout */}
                   {item.label}
                 </Button>
               )
