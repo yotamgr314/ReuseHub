@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
-import { TextField, Button, Box, Typography, Container } from '@mui/material';
-import { useNavigate } from 'react-router-dom'; // Added useNavigate from react-router-dom for SPA navigation without page reload
+import { TextField, Button, Box, Typography, Container, Link } from '@mui/material'; // ✅ ADDED IMPORT FOR Link
+import { useNavigate } from 'react-router-dom'; // Added useNavigate for SPA navigation
 
 const Register = () => {
   const [formData, setFormData] = useState({
@@ -11,7 +11,7 @@ const Register = () => {
   const [error, setError] = useState('');
   const [success, setSuccess] = useState('');
 
-  const navigate = useNavigate(); //Initialized useNavigate to enable navigation to different routes without reloading the page.
+  const navigate = useNavigate(); // INITIALIZED NAVIGATION FUNCTION
 
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
@@ -38,7 +38,7 @@ const Register = () => {
       }
 
       setSuccess('Registration successful! Please log in.');
-      navigate('/login');
+      navigate('/login'); // ✅ ADDED NAVIGATION TO LOGIN PAGE AFTER SUCCESSFUL REGISTRATION
 
     } catch (err) {
       setError(err.message);
@@ -101,10 +101,29 @@ const Register = () => {
             type="submit"
             fullWidth
             variant="contained"
-            sx={{ mt: 3, mb: 2 }}
+            sx={{ mt: 3, mb: 3 }} // ✅ INCREASED BOTTOM MARGIN FOR BETTER SPACING
           >
             Register
           </Button>
+
+          {/* STYLED LOGIN LINK BELOW REGISTER BUTTON */}
+          <Typography variant="body2" sx={{ textAlign: 'center', color: "gray" }}>
+            Already have an account?{" "}
+            <Link 
+              component="button"
+              variant="body2"
+              sx={{
+                color: "primary.main",
+                fontWeight: "bold",
+                fontSize: "1rem", // ✅ MADE TEXT SLIGHTLY BIGGER
+                textDecoration: "none",
+                "&:hover": { textDecoration: "underline" }
+              }}
+              onClick={() => navigate('/login')} // ✅ NAVIGATES TO LOGIN PAGE
+            >
+              Log in
+            </Link>
+          </Typography>
         </Box>
       </Box>
     </Container>
