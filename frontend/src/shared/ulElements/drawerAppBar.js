@@ -21,7 +21,7 @@ import OfferIcon from "@mui/icons-material/LocalOffer"; // Import My Offers icon
 import ChatIcon from "@mui/icons-material/Chat"; // Import Chat icon
 import LeaderboardIcon from "@mui/icons-material/Leaderboard"; // Import Leaderboard icon
 import LogoutIcon from "@mui/icons-material/Logout"; // Import Logout icon
-import { NavLink, useNavigate } from "react-router-dom"; // Import useNavigate for redirect
+import { NavLink, useNavigate, useLocation } from "react-router-dom"; // Import useNavigate for redirect
 import { handleLogout } from "../utilis/handleLogout"; // Import logout logic
 
 const drawerWidth = 240;
@@ -40,6 +40,16 @@ export default function DrawerAppBar(props) {
   const { window } = props;
   const [mobileOpen, setMobileOpen] = React.useState(false);
   const navigate = useNavigate(); // Initialize navigate
+  const location = useLocation(); // ✅ GET CURRENT ROUTE
+
+  const hideAppBarRoutes = ["/register", "/login"];
+
+  // ✅ IF THE CURRENT PATH IS IN hideAppBarRoutes, DO NOT RENDER NAVBAR
+  if (hideAppBarRoutes.includes(location.pathname))
+  {
+    return null;
+  }
+
 
   const handleDrawerToggle = () => {
     setMobileOpen((prevState) => !prevState);

@@ -1,6 +1,6 @@
 // NOTE: THE STARTING POINT OF OUR APPLICATION
 import React from "react";
-import { BrowserRouter, Route, Routes, Navigate,useLocation  } from "react-router-dom"; // NOTE to control component rendering based on URL, useLocation will render the DrawerAppBar Conditionally only if it is not /register or /login 
+import { BrowserRouter, Route, Routes, Navigate} from "react-router-dom"; // NOTE to control component rendering based on URL.
 
 import DrawerAppBar from "./shared/ulElements/drawerAppBar"; // NOTE Material UI component - KEREN recommended
 
@@ -13,6 +13,9 @@ import LeaderBoard from "./leaderboard/pages/leaderboard.js";
 import Register from "./registration/pages/register.js";
 import Login from "./login/pages/login.js";
 import JwtRouteGuard from "./shared/jwt/jwtRouteGuard.js";
+
+
+
 
 // THIS SECTION TAKES CARE OF RENDERING COMPONENTS BASED ON THE URL.(by BrowserRouter,Router,Route)
 const App = () => {
