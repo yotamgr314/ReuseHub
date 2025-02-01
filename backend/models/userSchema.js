@@ -12,7 +12,8 @@ const badgeSchema = new mongoose.Schema({
 
 
 const userSchema = new mongoose.Schema({
-  name: { type: String, required: [true, "A user must have a name"] },
+  firstName: { type: String, required: [true, "A user must have a first name"] },
+  lastName: { type: String, required: [true, "A user must have a last name"] },
   email: {
     type: String,
     required: [true, "A user must have an email"],
@@ -33,6 +34,7 @@ const userSchema = new mongoose.Schema({
       }
     ] 
   },
+  ads: [{ type: mongoose.Schema.Types.ObjectId, ref: "BaseAd" }], // or do i need array of donationOffer, and a seperate array of wishlist... idk since both wishlist and donation offfer inherits from BaseAd.
   createdAt: { type: Date, default: Date.now },
 });
 

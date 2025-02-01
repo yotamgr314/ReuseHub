@@ -1,5 +1,5 @@
 // backend/controllers/donation-ad-controller.js
-const donationAdModel = require("../models/donationAdSchema");
+const donationAdModel = require("../models/donationOfferSchema");
 
 exports.createDonationAd = async (req, res) => {
   try {
