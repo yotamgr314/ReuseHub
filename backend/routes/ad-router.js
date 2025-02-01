@@ -1,3 +1,4 @@
+// backend/routes/ad-router
 const express = require("express");
 const adRouter = express.Router();
 const { getAllAds } = require('../controllers/ad-controller.js');

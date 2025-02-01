@@ -1,3 +1,4 @@
+//backend/models/donationAdSchema.js
 const mongoose = require("mongoose");
 const baseAdSchema = require("./baseAdSchema");
 const itemSchema = require("./itemSchema");

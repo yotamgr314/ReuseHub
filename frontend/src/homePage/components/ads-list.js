@@ -1,3 +1,4 @@
+// frontend/src/ads/components/ads-list.js
 const AdsList = ({ ads }) => {
   if (!Array.isArray(ads)) 
   {

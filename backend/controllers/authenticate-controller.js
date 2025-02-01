@@ -1,3 +1,4 @@
+// backend/controllers/authenticate-controller.js
 const userModel = require("../models/userSchema"); 
 const generateToken = require('../utils/jwt-token-generate');
 

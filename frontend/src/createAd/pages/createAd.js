@@ -1,3 +1,4 @@
+// frontend/src/ads/pages/createAd.js
 import React from "react";
 
 const MyAds = () => {

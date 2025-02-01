@@ -1,3 +1,4 @@
+// frontend/src/shared/adsCardList/adsCards.js
 import React from "react";
 import Card from "@mui/material/Card"; // Import Material-UI Card component
 import CardContent from "@mui/material/CardContent"; // Import Material-UI CardContent for card content

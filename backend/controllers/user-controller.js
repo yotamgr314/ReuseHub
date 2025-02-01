@@ -1,3 +1,4 @@
+// backend/controllers/user-controller.js
 const userModel = require("../models/userSchema"); 
 
 exports.createUser = async (req, res) => {

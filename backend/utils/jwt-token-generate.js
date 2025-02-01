@@ -1,3 +1,4 @@
+// backend/utils/jwt-token-generate
 const jwt = require('jsonwebtoken');
 
 const generateToken = (emailAddress) => // generates the token that the backend will send the frontend upon login. 

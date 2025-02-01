@@ -1,3 +1,5 @@
+// frontend/src/ads/pages/homePage.js
+
 import React, { useState, useEffect } from "react";
 import { io } from "socket.io-client";
 import { GoogleMap, LoadScriptNext, OverlayView } from "@react-google-maps/api";

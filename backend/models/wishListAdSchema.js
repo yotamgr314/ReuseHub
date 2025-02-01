@@ -1,3 +1,4 @@
+//backend/models/wishListAdSchema.js
 const mongoose = require("mongoose");
 const baseAdSchema = require("./baseAdSchema");
 const itemSchema = require("./itemSchema");

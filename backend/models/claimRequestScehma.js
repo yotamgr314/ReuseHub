@@ -1,3 +1,4 @@
+//backend/models/claimRequestSchema.js
 const mongoose = require("mongoose");
 
 const claimRequestSchema = new mongoose.Schema({

@@ -1,3 +1,4 @@
+//backend/models/baseAdSchema.js
 const mongoose = require("mongoose");
 
 // NOTE: BaseSchema - all types of ads will have these fields.

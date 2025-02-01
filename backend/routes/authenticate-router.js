@@ -1,3 +1,4 @@
+// backend/routes/authenticate-router
 const express = require('express');
 
 const { registerUser, loginUser } = require('../controllers/authenticate-controller');

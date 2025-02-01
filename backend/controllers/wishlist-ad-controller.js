@@ -1,3 +1,4 @@
+// backend/controllers/wishlist-ad-controller
 const wishListAdModel = require("../models/wishListAdSchema");
 
 exports.createWishListAd = async (req, res) => {
