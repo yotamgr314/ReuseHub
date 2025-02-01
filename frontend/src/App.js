@@ -1,6 +1,6 @@
 // NOTE: THE STARTING POINT OF OUR APPLICATION
 import React from "react";
-import { BrowserRouter, Route, Routes, Navigate } from "react-router-dom"; // NOTE to control component rendering based on URL.
+import { BrowserRouter, Route, Routes, Navigate,useLocation  } from "react-router-dom"; // NOTE to control component rendering based on URL, useLocation will render the DrawerAppBar Conditionally only if it is not /register or /login 
 
 import DrawerAppBar from "./shared/ulElements/drawerAppBar"; // NOTE Material UI component - KEREN recommended
 
@@ -23,12 +23,12 @@ const App = () => {
       <Route path="/homePage" element={<JwtRouteGuard> <HomePage /> </JwtRouteGuard>} />
       <Route path="/createAd" element={<JwtRouteGuard> <CreateAd /> </JwtRouteGuard>} />
       <Route path="/myAds" element={<JwtRouteGuard> <MyAds /> </JwtRouteGuard>} /> 
-        <Route path="/myOffers" element={<JwtRouteGuard> <Offers/></JwtRouteGuard>} />
-        <Route path="/Chat" element={<JwtRouteGuard><Chat /></JwtRouteGuard>} />
-        <Route path="/leaderBoard" element={<JwtRouteGuard><LeaderBoard /></JwtRouteGuard>} />
-        <Route path="/register" element={<Register />} />
-        <Route path="/login" element={<Login />} />
-        <Route path="*" element={<Navigate to="/homePage" />} />
+      <Route path="/myOffers" element={<JwtRouteGuard> <Offers/></JwtRouteGuard>} />
+      <Route path="/Chat" element={<JwtRouteGuard><Chat /></JwtRouteGuard>} />
+      <Route path="/leaderBoard" element={<JwtRouteGuard><LeaderBoard /></JwtRouteGuard>} />
+      <Route path="/register" element={<Register />} />
+      <Route path="/login" element={<Login />} />
+      <Route path="*" element={<Navigate to="/homePage" />} />
       </Routes>
     </BrowserRouter>
   );

@@ -1,17 +1,23 @@
-import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom'; 
-import { TextField, Button, Box, Typography, Container } from '@mui/material';
+import React, { useState } from "react";
+import { useNavigate } from "react-router-dom";
+import {
+  TextField,
+  Button,
+  Box,
+  Typography,
+  Container,
+  Link,
+} from "@mui/material";
 
 const Login = () => {
   const [formData, setFormData] = useState({
-    email: '',
-    password: '',
+    email: "",
+    password: "",
   });
-  const [error, setError] = useState('');
+  const [error, setError] = useState("");
 
   // Initialized useNavigate to enable navigation to different routes - without reloading the page
-  const navigate = useNavigate(); 
-
+  const navigate = useNavigate();
 
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
@@ -19,25 +25,28 @@ const Login = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    setError('');
+    setError("");
 
     try {
-      const response = await fetch('http://localhost:5000/api/authenticate/login', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(formData),
-      });
+      const response = await fetch(
+        "http://localhost:5000/api/authenticate/login",
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(formData),
+        }
+      );
 
       const data = await response.json();
 
       if (!response.ok) {
-        throw new Error(data.message || 'Login failed');
+        throw new Error(data.message || "Login failed");
       }
 
-      localStorage.setItem('token', data.token); // saved JWT token to the localStorage. 
-      navigate('/homePage'); // Redirect to the homepage
+      localStorage.setItem("token", data.token); // saved JWT token to the localStorage.
+      navigate("/homePage"); // Redirect to the homepage
     } catch (err) {
       setError(err.message);
     }
@@ -48,9 +57,9 @@ const Login = () => {
       <Box
         sx={{
           marginTop: 8,
-          display: 'flex',
-          flexDirection: 'column',
-          alignItems: 'center',
+          display: "flex",
+          flexDirection: "column",
+          alignItems: "center",
         }}
       >
         <Typography variant="h4" gutterBottom>
@@ -59,7 +68,7 @@ const Login = () => {
         <Box
           component="form"
           onSubmit={handleSubmit}
-          sx={{ mt: 1, width: '100%' }}
+          sx={{ mt: 1, width: "100%" }}
         >
           <TextField
             margin="normal"
@@ -92,6 +101,28 @@ const Login = () => {
           >
             Login
           </Button>
+
+          {/* STYLED REGISTER LINK BELOW LOGIN BUTTON */}
+          <Typography
+            variant="body2"
+            sx={{ textAlign: "center", color: "gray" }}
+          >
+            Don't have an account?{" "}
+            <Link
+              component="button"
+              variant="body2"
+              sx={{
+                color: "primary.main",
+                fontWeight: "bold",
+                fontSize: "1rem", // MADE TEXT SLIGHTLY BIGGER
+                textDecoration: "none",
+                "&:hover": { textDecoration: "underline" },
+              }}
+              onClick={() => navigate("/register")} // NAVIGATES TO REGISTER PAGE
+            >
+              Register
+            </Link>
+          </Typography>
         </Box>
       </Box>
     </Container>
