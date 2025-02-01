@@ -5,6 +5,7 @@ import { BrowserRouter, Route, Routes, Navigate } from "react-router-dom"; // NO
 import DrawerAppBar from "./shared/ulElements/drawerAppBar"; // NOTE Material UI component - KEREN recommended
 
 import HomePage from "./homePage/pages/homePage.js";
+import CreateAd from "./createAd/pages/createAd.js";
 import MyAds from "./ads/pages/myAds.js";
 import Offers from "./offers/pages/offers.js";
 import Chat from "./chat/pages/chat.js";
@@ -19,14 +20,15 @@ const App = () => {
     <BrowserRouter>
       <DrawerAppBar />
       <Routes>
-        <Route path="/" element={<JwtRouteGuard> <HomePage /> </JwtRouteGuard>} /> 
-        <Route path="/myAds" element={<JwtRouteGuard> <MyAds /> </JwtRouteGuard>} /> 
+      <Route path="/homePage" element={<JwtRouteGuard> <HomePage /> </JwtRouteGuard>} />
+      <Route path="/createAd" element={<JwtRouteGuard> <CreateAd /> </JwtRouteGuard>} />
+      <Route path="/myAds" element={<JwtRouteGuard> <MyAds /> </JwtRouteGuard>} /> 
         <Route path="/myOffers" element={<JwtRouteGuard> <Offers/></JwtRouteGuard>} />
         <Route path="/Chat" element={<JwtRouteGuard><Chat /></JwtRouteGuard>} />
         <Route path="/leaderBoard" element={<JwtRouteGuard><LeaderBoard /></JwtRouteGuard>} />
         <Route path="/register" element={<Register />} />
         <Route path="/login" element={<Login />} />
-        <Route path="*" element={<Navigate to="/" />} />
+        <Route path="*" element={<Navigate to="/homePage" />} />
       </Routes>
     </BrowserRouter>
   );

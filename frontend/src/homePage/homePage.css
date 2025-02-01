@@ -1,0 +1,20 @@
+/* Donation Icon Style */
+.donation-icon {
+    color: #2196F3; /* Material Blue 500 */
+    transition: transform 0.2s ease-in-out; /* Smooth scaling effect */
+  }
+  
+  .donation-icon:hover {
+    transform: scale(1.2); /* Scale up on hover */
+  }
+  
+  /* Wishlist Icon Style */
+  .wishlist-icon {
+    color: #FF9800; /* Material Orange 500 */
+    transition: transform 0.2s ease-in-out; /* Smooth scaling effect */
+  }
+  
+  .wishlist-icon:hover {
+    transform: scale(1.2); /* Scale up on hover */
+  }
+  

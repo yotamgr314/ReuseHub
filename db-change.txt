@@ -1,0 +1,3 @@
+1) first implement the chat - find out the best way.
+    i) adjust the DB schemas according to Rodion.
+    ii) fix the controllers according to Rodion changes. 
