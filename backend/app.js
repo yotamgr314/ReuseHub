@@ -7,11 +7,11 @@ const { connectDB } = require("./config/db.js");
 
 // IMPORT ROUTES SECTION.
 const adRoutes = require("./routes/adRouter");
+const authenticateRoutes = require("./routes/authenticateRouter");
 /* const wishAdRoutes = require("./routes/wishAdRouter");
 const donationAdRoutes = require("./routes/donationAdRouter");
 const offerRoutes = require("./routes/offerRouter");
 const userRoutes = require("./routes/userRouter");
-const authRoutes = require("./routes/authenticateRouter");
 const chatRoutes = require("./routes/chatRouter");
  */
 //CONFIGURATION SECTION
@@ -39,11 +39,12 @@ app.use(express.json());// NOTE This middleware parses incoming JSON payloads fr
 
 // ROUTES SECTION
 app.use("/api/ads", adRoutes);
+app.use("/api/authenticate", authenticateRoutes);
+
 /* app.use("/api/wishAds", wishAdRoutes);
 app.use("/api/donations", donationAdRoutes);
 app.use("/api/offers", offerRoutes);
 app.use("/api/users", userRoutes);
-app.use("/api/auth", authRoutes);
 app.use("/api/chat", chatRoutes); */
 
 
