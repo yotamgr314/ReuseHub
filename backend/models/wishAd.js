@@ -1,10 +1,9 @@
 const mongoose = require("mongoose");
-const baseAdSchema = require("./baseAdSchema");
-const itemSchema = require("./itemSchema");
+const BaseAd = require("./baseAdSchema");
 
-const wishlistAdSchema = new mongoose.Schema({
-  urgency: { type: String, enum: ["Low", "Medium", "High"] },
+const wishAdSchema = new mongoose.Schema({
+  urgency: { type: String, enum: ["Low", "Medium", "High"], required: true },
 });
 
-const wishAd = baseAdSchema.discriminator("wishAd", wishlistAdSchema);
-module.exports = wishAd;
+const WishAd = BaseAd.discriminator("wishAd", wishAdSchema);
+module.exports = WishAd;

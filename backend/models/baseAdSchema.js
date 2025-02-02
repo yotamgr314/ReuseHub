@@ -1,33 +1,49 @@
 const mongoose = require("mongoose");
 
+// embedeed item schema.
 const itemSchema = new mongoose.Schema({
-  name: {
-    type: String,
-    required: true,
-  },
-  description: {
-    type: String,
-  },
+  name: { type: String, required: true, trim: true, minlength: 2, maxlength: 100 },
+  description: { type: String, maxlength: 500 }, // Description length limit
   images: {
     type: [String],
-    required: function () {
-      return this.itemType === "DonationAd"; // Only required if the item belongs to a DonationAd
+    validate: {
+      validator: function () {
+        return this.parent().kind === "donationAd"; // Ensure images exist only for donation ads
+      },
+      message: "Images are required only for donation ads.",
     },
   },
 });
 
 const baseAdSchema = new mongoose.Schema(
   {
-    title: { type: String, required: true },
 
-    description: { type: String, default: "" },
+    adTitle: { type: String, required: true, trim: true, minlength: 5, maxlength: 60 },
+    
+    adDescription: { type: String, default: "", maxlength: 1000}, // Limit description length
 
-    adStatus: {
-      type: Boolean,
-      enum: ["Available", "deleted", "donation completed"], // once offer status changed to accept in offerSchema.js the corresponding ad status will be changed to "donation completed".
+    adStatus: { // once offer status changed to accept in offerSchema.js the corresponding ad status will be changed to "donation completed".
+      type: String,
+      enum: ["Available", "Deleted", "Donation Completed"],
+      default: "Available",
     },
 
     items: [{ type: itemSchema }],
+
+    category: {
+      type: String,
+      enum: [
+        "Furniture",
+        "Clothing",
+        "Electronics",
+        "Household Appliances",
+        "Books",
+        "Toys",
+        "Sports Equipment",
+        "Other"
+      ],
+      required: true,
+    },
 
     location: {
       type: { type: String, enum: ["Point"], default: "Point" },
@@ -53,19 +69,15 @@ const baseAdSchema = new mongoose.Schema(
         ],
       },
     },
-    createdBy: {
-      type: mongoose.Schema.Types.ObjectId,
-      ref: "User",
-      required: true,
-    },
+    createdBy: { type: mongoose.Schema.Types.ObjectId, ref: "User", required: true },
+
+    createdAt: { type: Date, default: Date.now },
   },
+
   { discriminatorKey: "kind", collection: "ads", timestamps: true } // Adds createdAt and updatedAt fields
 );
 
-// Add geospatial index for location
-baseAdSchema.index({ location: "2dsphere" }); // Required for geospatial queries
-
-// Add index on createdBy to improve filtering performance
+baseAdSchema.index({ location: "2dsphere" });
 baseAdSchema.index({ createdBy: 1 });
 
 const BaseAd = mongoose.model("BaseAd", baseAdSchema);

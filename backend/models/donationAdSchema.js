@@ -1,13 +1,10 @@
 const mongoose = require("mongoose");
-const baseAdSchema = require("./baseAdSchema");
-const itemSchema = require("./itemSchema");
+const BaseAd = require("./baseAdSchema");
 
 const donationAdSchema = new mongoose.Schema({
-  ItemCondition: {
-    type: String,
-    enum: ["Like New", "Gently Used", "Heavily Used"],
-  },
+  itemCondition: { type: String, enum: ["Like New", "Gently Used", "Heavily Used"] },
+  donationMethod: { type: String, enum: ["Pickup", "Delivery", "Other"] },
 });
 
-const DonationAd = baseAdSchema.discriminator("DonationAd", donationAdSchema); // Use BaseAd.discriminator
+const DonationAd = BaseAd.discriminator("donationAd", donationAdSchema);
 module.exports = DonationAd;

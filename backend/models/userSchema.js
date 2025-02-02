@@ -4,29 +4,34 @@ const bcrypt = require("bcryptjs");
 // NOTE: Embedded badge schema
 const badgeSchema = new mongoose.Schema({
   name: { type: String, required: true, default: "ReuseRanger" },
-  description: { type: String },
-  icon: { type: String }, // URL to badge icon
+  description: { type: String, maxlength: 200 }, // Limited description length
+  icon: { type: String, match: /^https?:\/\/.*\.(jpg|jpeg|png|svg)$/i }, // Only valid URLs
   earnedAt: { type: Date, default: Date.now },
 });
 
 const userSchema = new mongoose.Schema({
-  firstName: { type: String, required: [true, "A user must have a name"] },
 
-  lastName: { type: String, required: [true, "A user must have a lastName"] },
+  firstName: { type: String, required: [true, "A user must have a first name"], trim: true, minlength: 2 },
+  lastName: { type: String, required: [true, "A user must have a last name"], trim: true, minlength: 2 },
 
   email: {
     type: String,
     required: [true, "A user must have an email"],
     unique: true,
+    trim: true,
+    lowercase: true,
+    match: [/^\S+@\S+\.\S+$/, "Please enter a valid email address"],
   },
 
-  password: { type: String, required: true },
+  password: { type: String, required: true, minlength: 5 }, // Minimum password length
 
-  phone: { type: String },
+  ratingPoints: { type: Number, default: 0, min: 0 }, // Ensure rating is non-negative
+
+  phone: { type: String, match: [/^\+?\d{9,15}$/, "Invalid phone number"] }, // Validate international phone numbers
 
   ratingPoints: { type: Number, default: 0 },
 
-  ads: [{ type: mongoose.Schema.Types.ObjectId, ref: "BaseAd" }], // Wishlist and Donation Ads included
+  ads: [{ type: mongoose.Schema.Types.ObjectId, ref: "BaseAd" }], // User's ads, can be both wishAds or donationAds.
 
   badges: {
     type: [badgeSchema],
@@ -41,7 +46,8 @@ const userSchema = new mongoose.Schema({
   createdAt: { type: Date, default: Date.now },
 });
 
-// **Pre-save Hook** — Automatically hash the password before saving
+
+//Pre-save Hook — Automatically hash the password before saving
 userSchema.pre("save", async function (next) {
   if (!this.isModified("password")) {
     return next();
@@ -51,7 +57,7 @@ userSchema.pre("save", async function (next) {
   next();
 });
 
-//  NOTE: Method to compare password
+//Method to compare password
 userSchema.methods.matchPassword = async function (enteredPassword) {
   return await bcrypt.compare(enteredPassword, this.password); // NOTE : this reffers to the specific user document who called this method. NOTE: this.password refeeres to the hashed password stored in the DB.
 };
