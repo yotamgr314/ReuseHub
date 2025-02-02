@@ -1,16 +1,19 @@
-//IMPORTS SECTION
+//IMPORTS MODELS SECTION.
 const express = require("express");
 const cors = require("cors");
 const dotenv = require("dotenv");
 
 const { connectDB } = require("./config/db.js");
 
-const adRouter = require("./routes/ad-router.js");
-const donationAdRouter = require("./routes/donation-ad-router.js"); 
-const wishlistAdRouter = require("./routes/wishlist-ad-router.js"); 
-const userRouter = require("./routes/user-router.js"); 
-const authRoutes = require('./routes/authenticate-router'); // Import the **router**, not an object
-
+// IMPORT CONTROLLERS SECTION.
+const adController = require("../controllers/ad-controller");
+const wishAdController = require("../controllers/wishAd-controller");
+const donationAdController = require("../controllers/donationAd-controller");
+const offerController = require("../controllers/offer-controller");
+const userController = require("../controllers/user-controller");
+const authController = require("../controllers/authenticate-controller");
+const chatController = require("../controllers/chat-controller");
+const authenticateMiddleware = require("../middlewares/authenticate-middleware");
 
 //CONFIGURATION SECTION
 dotenv.config(); /*Load environment variables from .env file  */
@@ -35,20 +38,57 @@ app.use(cors()); /* NOTE :CORS is a security mechanism implemented by browsers t
 app.use(express.json());// NOTE This middleware parses incoming JSON payloads from the request body and makes them accessible via req.body. It's essential for handling POST or PUT requests where the client sends data in JSON format.
 
 
-//ROUTES SECTION
-app.use("/api/ads", adRouter); // http://localhost:5000/api/ads
+// General ADS routes.
+router.get("api/ads", adController.getAllAds); // http://localhost:3000/
+router.get("api/ads/map", adController.getAdsForMap);
+router.get("api/ads/:id", adController.getAdById);
+router.delete("api/ads/:id", authenticateMiddleware, adController.deleteAd);
+router.put("api/ads/:id", authenticateMiddleware, adController.updateAd);
 
-app.use("/api/donationAd", donationAdRouter);// http://localhost:5000/api/donationAd
 
-app.use("/api/wishListAd", wishlistAdRouter);// http://localhost:5000/api/wishListAd
+// wishedAd routes
+router.get("api/wishAds", wishAdController.getAllWishAds);
+router.get("api/wishAds/user/:userId", wishAdController.getWishAdsByUser);
+router.post("api/wishAds", authenticateMiddleware, wishAdController.createWishAd);
+router.put("api/wishAds/:id", authenticateMiddleware, wishAdController.updateWishAd);
+router.delete("api/wishAds/:id", authenticateMiddleware, wishAdController.deleteWishAd);
 
-app.use("/api/users", userRouter); // http://localhost:5000/api/users
 
-app.use("/api/authenticate", authRoutes); // Correctly uses the router exported from `authenticate-router.js`
+// donationAd routes
+router.get("api/donations", donationAdController.getAllDonationAds);
+router.get("api/donations/user/:userId", donationAdController.getDonationAdsByUser);
+router.post("api/donations", authenticateMiddleware, donationAdController.createDonationAd);
+router.put("api/donations/:id", authenticateMiddleware, donationAdController.updateDonationAd);
+router.delete("api/donations/:id", authenticateMiddleware, donationAdController.deleteDonationAd);
+
+// offer Routes
+router.get("api/offers/user/:userId", offerController.getOffersForUser);
+router.post("api/offers", authenticateMiddleware, offerController.createOffer);
+router.put("api/offers/:id/status", authenticateMiddleware, offerController.updateOfferStatus);
+router.delete("api/offers/:id", authenticateMiddleware, offerController.deleteOffer);
+
+
+// chat routes
+router.post("api/offers/:id/chat", authenticateMiddleware, chatController.addChatMessage);
+router.get("/offers/:id/chat", authenticateMiddleware, chatController.getChatHistory);
+
+// leaderboard routes
+router.get("api/leaderboard", userController.getLeaderboard);
+router.get("api/leaderboard/badge/:badgeName", userController.getUsersByBadge);
+router.post("api/users/rate", authenticateMiddleware, userController.rateUser);
+
+
+// Authenticate && user management routes
+router.post("api/auth/register", authController.register);
+router.post("api/auth/login", authController.login);
+router.get("api/users/:id", authenticateMiddleware, userController.getUserById);
+router.put("api/users/:id", authenticateMiddleware, userController.updateUser);
+router.delete("api/users/:id", authenticateMiddleware, userController.deleteUser);
+
 
 
 app.get("/", (req, res) => {
-  res.send("Welcome to the Distributed Cloud Services API");
+  res.send("Welcome to the ReuseHub project API");
 });
 
 module.exports = app;
