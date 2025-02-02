@@ -1,20 +1,21 @@
-const BaseAd = require("../models/baseAdSchema"); 
+const BaseAd = require("../models/baseAdSchema");
 
-const getAllAds = async (req, res) => {
+exports.getAllAds = async (req, res) => {
   try {
     // 🟢 קבלת פרמטרים מה-query (page, limit)
-    const page = parseInt(req.query.page) || 1;
-    const limit = parseInt(req.query.limit) || 10;
-    const skip = (page - 1) * limit;
+    let page = parseInt(req.query.page) || 1; // Default to page 1
+    let limit = parseInt(req.query.limit) || 10; // Default to 10 ads per page
+    let skip = (page - 1) * limit;
 
-    // 🟢 שליפת מודעות מאוסף "ads" (DonationAd + WishlistAd)
-    const ads = await BaseAd.find() // 🔥 שימוש ב-Best Practice - גישה ישירה ל-BaseAd
-      .sort({ createdAt: -1 }) // סדר לפי יצירה (מהחדש לישן)
+
+    const totalCount = await BaseAd.countDocuments();
+
+    // Fetch ads with pagination & sorting
+    const ads = await BaseAd.find()
+      .populate("createdBy", "firstName lastName") // Include user info
+      .sort({ createdAt: -1 }) // Sort by newest first
       .skip(skip)
       .limit(limit);
-
-    // 🟢 חישוב כמות המודעות הכוללת במערכת
-    const totalCount = await BaseAd.countDocuments(); // 🔥 שימוש ב-Best Practice - גישה ישירה ל-BaseAd
 
     res.status(200).json({
       success: true,
@@ -25,9 +26,46 @@ const getAllAds = async (req, res) => {
       data: ads,
     });
   } catch (error) {
-    console.error(`Error fetching ads: ${error.message}`);
-    res.status(500).json({ success: false, message: "Server Error" });
+    console.error("Error fetching ads:", error);
+    res.status(500).json({ success: false, message: "Internal server error" });
   }
 };
 
-module.exports = { getAllAds };
+
+exports.getAdById = async (req, res) => {
+  try {
+    const ad = await BaseAd.findById(req.params.id).populate("createdBy", "firstName lastName");
+    
+    if (!ad) {
+      return res.status(404).json({ success: false, message: "Ad not found" });
+    }
+
+    res.status(200).json({ success: true, data: ad });
+  } catch (error) {
+    console.error("Error fetching ad:", error);
+    res.status(500).json({ success: false, message: "Internal server error" });
+  }
+};
+
+
+
+exports.deleteAd = async (req, res) => {
+  try {
+    const ad = await BaseAd.findById(req.params.id);
+
+    if (!ad) {
+      return res.status(404).json({ success: false, message: "Ad not found" });
+    }
+
+    if (ad.createdBy.toString() !== req.user.id) {
+      return res.status(403).json({ success: false, message: "Unauthorized to delete this ad" });
+    }
+
+    await ad.remove();
+    res.status(200).json({ success: true, message: "Ad deleted successfully" });
+  } catch (error) {
+    console.error("Error deleting ad:", error);
+    res.status(500).json({ success: false, message: "Internal server error" });
+  }
+};
+
