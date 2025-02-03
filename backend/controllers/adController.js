@@ -2,7 +2,6 @@ const BaseAd = require("../models/baseAdSchema");
 
 exports.getAllAds = async (req, res) => {
   try {
-    // 🟢 קבלת פרמטרים מה-query (page, limit)
     let page = parseInt(req.query.page) || 1; // Default to page 1
     let limit = parseInt(req.query.limit) || 10; // Default to 10 ads per page
     let skip = (page - 1) * limit;
