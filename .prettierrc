@@ -1,6 +1,7 @@
-{
+/* {
     "proseWrap": "preserve",   // Keeps comment wrapping as it is
     "printWidth": 80,          // Adjust the line width to fit comments neatly
     "arrowParens": "avoid"     // Example setting (optional)
   }
   
+ */

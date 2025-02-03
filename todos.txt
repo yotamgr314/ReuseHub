@@ -6,24 +6,26 @@ must refactor the structure.
    the reason is related to how node.js treats a file named index.js.. (when the server starts he search for index.js file by default).
 
 01) implement the backend routes and controllers for the following requests: 
-    01) list all the ads in our system under a list on the HomePage. --> a request which gets all the ads in the system. DONE
-    02) set markers on the googlemaps API with all the ADS on our system, different mark for donationAd and different mark for WishListAd. 
-    03) list all the donation ads for a specific user.
-    04) list all the wishlist ads for a specific user.
-    05) list all the claim requests for a specific user (all the claim requests for all his donationsAds).
-    06) we would want to enable a user to create wishlist ads. 
-    07) we would want to enable a user to create a donatio ads.
+    01) list all the ads in our system under a list on the HomePage. --> a request which gets all the ads in the system.
+    02) set markers on the googlemaps API with all the ADS on our system, different mark for donationAd and different mark for wishAd. 
+    03) display on the homepage a combined list all the ads in the systems, (wish ads and donation ads).
+    04) list all the wish ads for a specific user.
+    05) list all the offers sent to a specific user - in a offers page. 
+    06) list of all the wish list ads. 
+    07) list of all the donation ads. 
+    06) we would want to enable a user to create wish ads. 
+    07) we would want to enable a user to create a donation ads.
     08) we would want to display a leaderboard page which displays all users the top 20 users in the app sorted by their rating.
-        01) we would like to enable an option to sort them by their badges type. (display all users with "generous badge" etc..)
-    09) we would want to allow one user to rate other user after a donation ad was donated sucessfully.
-    10) we would want to allow one user to rate other user after a wishlist ad promise was accepted by the user who created the wishlist ad, and the wish as been granted(donated). 
-    11) we would like to enable the user to delete a donation ad. 
-    12) we would like to enable the user to edit a donation ad details, edit the donation ad items, delete items. 
-    13) we would like to enable the user to delete a wishlist ad.
-    14) we would like to enable the user to edit a wishlist ad, edit its details, and its items, delete items from the wishlist.
-    
-
-
+        01) we would like to enable an option to sort users by their badges type. (display all users with "generous badge" etc..)
+    09) we would want to allow one user to rate other user after a donation ad or wish ad was donated sucessfully.
+    11) we would like to enable the user to delete a donation ad, and a wishAd.
+    12) we would like to enable the user to edit a donation ad details, edit the donation ad item.. 
+    14) we would like to enable the user to edit a wishlist ad details, edit its details, and its item..
+    15) in offerSchema only if both adOwnerApproval and userWhoMadeTheOfferApproval  are true than offer Status changes to accepted, once offer status changed to accepts the referenced ad will status will reduce the items amount that was donated by that offer. if the amount is less than 1 then the referenced ad will update her status to "donation completed" and delete itself.  
+        once the referenced ad status will be changed to "donation completed" if other users create offerSchema object to that ad will try enter that offer object it will display them a sort of modal saying the donation was completed hence do not exist anymore. then the referenced ad will be deleted from the system. 
+        but before the ad deletes itself each offer that was sent to that Ad (either wishAd or donationAd), needs to be alerted the ad was deleted via due to the fact it was donated via another offer, or the user canceled it.       
+    16) update the wishAdController and donationAdController to use socket.io to emitt events from the backend to the frontend each time and ad is created - i need it because on the frontend (react) i want the diplay list of all the ads in the system and each time an new ad is created i want the list to be updated with that newly created ad without the need to reload the page.  
+        and also - on the frontend(react) i will have a map by using google maps API. on that map i want markers for each ad, and the markers on the maps should be updated as well with each ad creation without reloading the page.
 
 client side:
 01) learn all the necessary hooks.
