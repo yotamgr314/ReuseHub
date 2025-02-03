@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import {
   Button,
@@ -13,17 +13,18 @@ import {
   CardContent,
 } from "@mui/material";
 import { GoogleMap, LoadScriptNext, Marker } from "@react-google-maps/api";
+import { jwtDecode } from "jwt-decode";
 
 const CreateAd = () => {
-  const [adType, setAdType] = useState(null); // Select between "donationAd" or "wishAd"
+  const [adType, setAdType] = useState(null); // "donationAd" or "wishAd"
   const [formData, setFormData] = useState({
     adTitle: "",
     adDescription: "",
     category: "",
     amount: 1,
-    urgency: "", // Only for Wish Ads
-    donationMethod: "", // Only for Donation Ads
-    itemCondition: "", // Only for Donation Ads
+    urgency: "Medium", // Default for Wish Ads
+    donationMethod: "Pickup", // Default for Donation Ads
+    itemCondition: "Gently Used", // Default for Donation Ads
     item: {
       name: "",
       description: "",
@@ -36,21 +37,58 @@ const CreateAd = () => {
   });
   const [error, setError] = useState("");
   const [success, setSuccess] = useState("");
+  const [userLocation, setUserLocation] = useState(null);
 
   const navigate = useNavigate();
-  const token = localStorage.getItem("token"); // JWT Token
+  const token = localStorage.getItem("token");
 
-  const defaultCenter = {
-    lat: 32.08088, // Default: Ramat Gan
-    lng: 34.81429,
-  };
+  useEffect(() => {
+    if (!token) {
+      navigate("/login");
+    } else {
+      try {
+        const decodedToken = jwtDecode(token);
+        const currentTime = Date.now() / 1000;
+        if (decodedToken.exp < currentTime) {
+          localStorage.removeItem("token");
+          navigate("/login");
+        }
+      } catch (err) {
+        localStorage.removeItem("token");
+        navigate("/login");
+      }
+    }
+
+    if (navigator.geolocation) {
+      navigator.geolocation.getCurrentPosition(
+        (position) => {
+          setUserLocation({
+            lat: position.coords.latitude,
+            lng: position.coords.longitude,
+          });
+          setFormData((prev) => ({
+            ...prev,
+            location: {
+              type: "Point",
+              coordinates: [position.coords.longitude, position.coords.latitude],
+            },
+          }));
+        },
+        () => {
+          setUserLocation({ lat: 32.08088, lng: 34.81429 }); // Default to Ramat Gan
+        }
+      );
+    } else {
+      setUserLocation({ lat: 32.08088, lng: 34.81429 }); // Default to Ramat Gan
+    }
+  }, [navigate, token]);
 
   const handleMapClick = (event) => {
     setFormData({
       ...formData,
       location: {
         type: "Point",
-        coordinates: [event.latLng.lng(), event.latLng.lat()], // Ensure [longitude, latitude]
+        coordinates: [event.latLng.lng(), event.latLng.lat()],
       },
     });
   };
@@ -79,12 +117,12 @@ const CreateAd = () => {
     setError("");
     setSuccess("");
 
-    if (!token) {
-      setError("You must be logged in to create an ad.");
+    if (!formData.adTitle || formData.adTitle.length < 5) {
+      setError("Ad title must be at least 5 characters long.");
       return;
     }
 
-    if (!formData.adTitle || !formData.adDescription || !formData.category || !formData.amount || !formData.location.coordinates.length) {
+    if (!formData.adDescription || !formData.category || !formData.amount || !formData.location.coordinates.length) {
       setError("All fields are required.");
       return;
     }
@@ -96,7 +134,7 @@ const CreateAd = () => {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
-            Authorization: `Bearer ${token}`, // Include JWT
+            Authorization: `Bearer ${token}`,
           },
           body: JSON.stringify(formData),
         }
@@ -109,7 +147,7 @@ const CreateAd = () => {
       }
 
       setSuccess("Ad created successfully!");
-      navigate("/homePage"); // Redirect to homepage
+      navigate("/homePage");
     } catch (err) {
       setError(err.message);
     }
@@ -128,12 +166,7 @@ const CreateAd = () => {
               <Card onClick={() => setAdType("donationAd")} sx={{ cursor: "pointer", boxShadow: 3 }}>
                 <CardActionArea>
                   <CardContent>
-                    <Typography variant="h5" gutterBottom>
-                      Create a Donation Ad
-                    </Typography>
-                    <Typography variant="body2" color="textSecondary">
-                      Offer an item you no longer need.
-                    </Typography>
+                    <Typography variant="h5">Create a Donation Ad</Typography>
                   </CardContent>
                 </CardActionArea>
               </Card>
@@ -143,12 +176,7 @@ const CreateAd = () => {
               <Card onClick={() => setAdType("wishAd")} sx={{ cursor: "pointer", boxShadow: 3 }}>
                 <CardActionArea>
                   <CardContent>
-                    <Typography variant="h5" gutterBottom>
-                      Make a Wish
-                    </Typography>
-                    <Typography variant="body2" color="textSecondary">
-                      Request an item you need.
-                    </Typography>
+                    <Typography variant="h5">Make a Wish</Typography>
                   </CardContent>
                 </CardActionArea>
               </Card>
@@ -156,88 +184,29 @@ const CreateAd = () => {
           </Grid>
         ) : (
           <Box component="form" onSubmit={handleSubmit} sx={{ mt: 3 }}>
-            <TextField
-              margin="normal"
-              required
-              fullWidth
-              label="Ad Title"
-              name="adTitle"
-              value={formData.adTitle}
-              onChange={handleInputChange}
-            />
+            <TextField id="adTitle" name="adTitle" label="Ad Title" fullWidth required onChange={handleInputChange} />
 
-            <TextField
-              margin="normal"
-              required
-              fullWidth
-              label="Description"
-              name="adDescription"
-              multiline
-              rows={3}
-              value={formData.adDescription}
-              onChange={handleInputChange}
-            />
+            <TextField id="adDescription" name="adDescription" label="Description" fullWidth required multiline rows={3} onChange={handleInputChange} />
 
-            <TextField
-              select
-              margin="normal"
-              required
-              fullWidth
-              label="Category"
-              name="category"
-              value={formData.category}
-              onChange={handleInputChange}
-            >
-              {["Furniture", "Clothing", "Electronics", "Household Appliances", "Books", "Toys", "Sports Equipment", "Other"].map((option) => (
+            <TextField select id="category" name="category" label="Category" fullWidth required onChange={handleInputChange}>
+              {["Furniture", "Clothing", "Electronics", "Books", "Toys", "Other"].map((option) => (
                 <MenuItem key={option} value={option}>
                   {option}
                 </MenuItem>
               ))}
             </TextField>
 
-            <TextField
-              margin="normal"
-              required
-              fullWidth
-              label="Item Name"
-              name="name"
-              value={formData.item.name}
-              onChange={handleItemInputChange}
-            />
-
-            <TextField
-              margin="normal"
-              fullWidth
-              label="Item Description"
-              name="description"
-              multiline
-              rows={2}
-              value={formData.item.description}
-              onChange={handleItemInputChange}
-            />
-
-            <TextField
-              margin="normal"
-              fullWidth
-              label="Image URLs (comma-separated)"
-              name="images"
-              value={formData.item.images.join(", ")}
-              onChange={handleImageUrlsChange}
-            />
-
-            {adType === "wishAd" && (
-              <TextField select margin="normal" required fullWidth label="Urgency" name="urgency" value={formData.urgency} onChange={handleInputChange}>
-                {["Low", "Medium", "High"].map((option) => (
-                  <MenuItem key={option} value={option}>
-                    {option}
-                  </MenuItem>
-                ))}
-              </TextField>
-            )}
-
             {adType === "donationAd" && (
               <>
-                <TextField select margin="normal" required fullWidth label="Item Condition" name="itemCondition" value={formData.itemCondition} onChange={handleInputChange}>
+                <TextField select id="donationMethod" name="donationMethod" label="Donation Method" fullWidth required onChange={handleInputChange}>
+                  {["Pickup", "Delivery", "Other"].map((option) => (
+                    <MenuItem key={option} value={option}>
+                      {option}
+                    </MenuItem>
+                  ))}
+                </TextField>
+
+                <TextField select id="itemCondition" name="itemCondition" label="Item Condition" fullWidth required onChange={handleInputChange}>
                   {["Like New", "Gently Used", "Heavily Used"].map((option) => (
                     <MenuItem key={option} value={option}>
                       {option}
@@ -248,7 +217,7 @@ const CreateAd = () => {
             )}
 
             <LoadScriptNext googleMapsApiKey={process.env.REACT_APP_GOOGLE_MAPS_API_KEY}>
-              <GoogleMap mapContainerStyle={{ width: "100%", height: "400px" }} center={defaultCenter} zoom={12} onClick={handleMapClick}>
+              <GoogleMap mapContainerStyle={{ width: "100%", height: "400px" }} center={userLocation} zoom={12} onClick={handleMapClick}>
                 {formData.location.coordinates.length > 0 && <Marker position={{ lat: formData.location.coordinates[1], lng: formData.location.coordinates[0] }} />}
               </GoogleMap>
             </LoadScriptNext>
