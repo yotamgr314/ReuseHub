@@ -1,5 +1,13 @@
 import React, { useState, useEffect } from "react";
-import { TextField, MenuItem, Button, Box, Typography } from "@mui/material";
+import {
+  TextField,
+  MenuItem,
+  Button,
+  Box,
+  Grid,
+  Paper,
+  Typography,
+} from "@mui/material";
 import { GoogleMap, LoadScriptNext, Marker } from "@react-google-maps/api";
 
 const DonationAdForm = ({ token, navigate }) => {
@@ -13,6 +21,7 @@ const DonationAdForm = ({ token, navigate }) => {
     item: { name: "", description: "", images: [] },
     location: { type: "Point", coordinates: [] },
   });
+
   const [userLocation, setUserLocation] = useState(null);
   const [error, setError] = useState("");
 
@@ -20,10 +29,19 @@ const DonationAdForm = ({ token, navigate }) => {
     if (navigator.geolocation) {
       navigator.geolocation.getCurrentPosition(
         (position) => {
-          setUserLocation({ lat: position.coords.latitude, lng: position.coords.longitude });
+          setUserLocation({
+            lat: position.coords.latitude,
+            lng: position.coords.longitude,
+          });
           setFormData((prev) => ({
             ...prev,
-            location: { type: "Point", coordinates: [position.coords.longitude, position.coords.latitude] },
+            location: {
+              type: "Point",
+              coordinates: [
+                position.coords.longitude,
+                position.coords.latitude,
+              ],
+            },
           }));
         },
         () => {
@@ -78,7 +96,10 @@ const DonationAdForm = ({ token, navigate }) => {
     try {
       const response = await fetch(`http://localhost:5000/api/donationAds`, {
         method: "POST",
-        headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}` },
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
         body: JSON.stringify(formData),
       });
 
@@ -95,55 +116,182 @@ const DonationAdForm = ({ token, navigate }) => {
   };
 
   return (
-    
-    <Box component="form" onSubmit={handleSubmit} sx={{ mt: 3 }}>
-        <Typography variant="h3" gutterBottom fontWeight="bold">
-           Donation Ad
-        </Typography>
-      <TextField name="adTitle" label="Ad Title" fullWidth required onChange={handleInputChange} />
-      <TextField name="adDescription" label="Description" fullWidth required multiline rows={3} onChange={handleInputChange} />
+    <Paper elevation={3} sx={{ padding: 4, marginTop: 2 }}>
+                      <Typography variant="h3" gutterBottom fontWeight="bold">
+                      Grante items a second life
+                      </Typography>
+      <Box component="form" onSubmit={handleSubmit} sx={{ mt: 3 }}>
+        <Grid container spacing={3}>
+          {/* Ad Title */}
+          <Grid item xs={12}>
+            <TextField
+              name="adTitle"
+              label="Ad Title"
+              fullWidth
+              required
+              onChange={handleInputChange}
+            />
+          </Grid>
 
-      <TextField select name="category" label="Category" fullWidth required onChange={handleInputChange}>
-        {["Furniture", "Clothing", "Electronics", "Books", "Toys", "Other"].map((option) => (
-          <MenuItem key={option} value={option}>
-            {option}
-          </MenuItem>
-        ))}
-      </TextField>
+          {/* Ad Description */}
+          <Grid item xs={12}>
+            <TextField
+              name="adDescription"
+              label="Description"
+              fullWidth
+              required
+              multiline
+              rows={3}
+              onChange={handleInputChange}
+            />
+          </Grid>
 
-      <TextField select name="donationMethod" label="Donation Method" fullWidth required onChange={handleInputChange}>
-        {["Pickup", "Delivery", "Other"].map((option) => (
-          <MenuItem key={option} value={option}>
-            {option}
-          </MenuItem>
-        ))}
-      </TextField>
+          {/* Category */}
+          <Grid item xs={12} sm={6}>
+            <TextField
+              select
+              name="category"
+              label="Category"
+              fullWidth
+              required
+              onChange={handleInputChange}
+            >
+              {[
+                "Furniture",
+                "Clothing",
+                "Electronics",
+                "Books",
+                "Toys",
+                "Other",
+              ].map((option) => (
+                <MenuItem key={option} value={option}>
+                  {option}
+                </MenuItem>
+              ))}
+            </TextField>
+          </Grid>
 
-      <TextField select name="itemCondition" label="Item Condition" fullWidth required onChange={handleInputChange}>
-        {["Like New", "Gently Used", "Heavily Used"].map((option) => (
-          <MenuItem key={option} value={option}>
-            {option}
-          </MenuItem>
-        ))}
-      </TextField>
+          {/* Donation Method */}
+          <Grid item xs={12} sm={6}>
+            <TextField
+              select
+              name="donationMethod"
+              label="Donation Method"
+              fullWidth
+              required
+              onChange={handleInputChange}
+            >
+              {["Pickup", "Delivery", "Other"].map((option) => (
+                <MenuItem key={option} value={option}>
+                  {option}
+                </MenuItem>
+              ))}
+            </TextField>
+          </Grid>
 
-      <TextField name="amount" type="number" label="Amount" fullWidth required onChange={handleInputChange} />
+          {/* Item Condition */}
+          <Grid item xs={12} sm={6}>
+            <TextField
+              select
+              name="itemCondition"
+              label="Item Condition"
+              fullWidth
+              required
+              onChange={handleInputChange}
+            >
+              {["Like New", "Gently Used", "Heavily Used"].map((option) => (
+                <MenuItem key={option} value={option}>
+                  {option}
+                </MenuItem>
+              ))}
+            </TextField>
+          </Grid>
 
-      <TextField name="name" label="Item Name" fullWidth required onChange={handleItemInputChange} />
-      <TextField name="description" label="Item Description" fullWidth multiline rows={2} onChange={handleItemInputChange} />
-      <TextField name="images" label="Image URLs (comma separated)" fullWidth onChange={handleImageUrlsChange} />
+          {/* Amount */}
+          <Grid item xs={12} sm={6}>
+            <TextField
+              name="amount"
+              type="number"
+              label="Amount"
+              fullWidth
+              required
+              onChange={handleInputChange}
+            />
+          </Grid>
 
-      <LoadScriptNext googleMapsApiKey={process.env.REACT_APP_GOOGLE_MAPS_API_KEY}>
-        <GoogleMap mapContainerStyle={{ width: "100%", height: "400px" }} center={userLocation} zoom={12} onClick={handleMapClick}>
-          {formData.location.coordinates.length > 0 && <Marker position={{ lat: formData.location.coordinates[1], lng: formData.location.coordinates[0] }} />}
-        </GoogleMap>
-      </LoadScriptNext>
+          {/* Item Name */}
+          <Grid item xs={12} sm={6}>
+            <TextField
+              name="name"
+              label="Item Name"
+              fullWidth
+              required
+              onChange={handleItemInputChange}
+            />
+          </Grid>
 
-      {error && <Typography color="error">{error}</Typography>}
-      <Button type="submit" fullWidth variant="contained" sx={{ mt: 2 }}>
-        Submit Donation Ad
-      </Button>
-    </Box>
+          {/* Item Description */}
+          <Grid item xs={12} sm={6}>
+            <TextField
+              name="description"
+              label="Item Description"
+              fullWidth
+              multiline
+              rows={2}
+              onChange={handleItemInputChange}
+            />
+          </Grid>
+
+          {/* Image URLs */}
+          <Grid item xs={12}>
+            <TextField
+              name="images"
+              label="Image URLs (comma separated)"
+              fullWidth
+              onChange={handleImageUrlsChange}
+            />
+          </Grid>
+
+          {/* Google Maps Location Picker */}
+          <Grid item xs={12}>
+            <Typography gutterBottom>Pick Location</Typography>
+            <LoadScriptNext googleMapsApiKey={process.env.REACT_APP_GOOGLE_MAPS_API_KEY}>
+              <GoogleMap
+                mapContainerStyle={{ width: "100%", height: "350px", borderRadius: 10 }}
+                center={userLocation}
+                zoom={12}
+                onClick={handleMapClick}
+              >
+                {formData.location.coordinates.length > 0 && (
+                  <Marker
+                    position={{
+                      lat: formData.location.coordinates[1],
+                      lng: formData.location.coordinates[0],
+                    }}
+                  />
+                )}
+              </GoogleMap>
+            </LoadScriptNext>
+          </Grid>
+
+          {/* Error Message */}
+          {error && (
+            <Grid item xs={12}>
+              <Typography color="error" textAlign="center">
+                {error}
+              </Typography>
+            </Grid>
+          )}
+
+          {/* Submit Button */}
+          <Grid item xs={12} sx={{ textAlign: "center" }}>
+            <Button type="submit" variant="contained">
+              Submit Donation Ad
+            </Button>
+          </Grid>
+        </Grid>
+      </Box>
+    </Paper>
   );
 };
 
