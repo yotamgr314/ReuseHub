@@ -1,5 +1,14 @@
 import React, { useState, useEffect } from "react";
-import { TextField, MenuItem, Button, Box, Typography } from "@mui/material";
+import {
+  TextField,
+  MenuItem,
+  Button,
+  Box,
+  Grid,
+  Slider,
+  Paper,
+  Typography,
+} from "@mui/material";
 import { GoogleMap, LoadScriptNext, Marker } from "@react-google-maps/api";
 
 const WishAdForm = ({ token, navigate }) => {
@@ -12,6 +21,7 @@ const WishAdForm = ({ token, navigate }) => {
     item: { name: "", description: "" },
     location: { type: "Point", coordinates: [] },
   });
+
   const [userLocation, setUserLocation] = useState(null);
   const [error, setError] = useState("");
 
@@ -41,6 +51,11 @@ const WishAdForm = ({ token, navigate }) => {
       ...formData,
       item: { ...formData.item, [e.target.name]: e.target.value },
     });
+  };
+
+  const handleUrgencyChange = (event, newValue) => {
+    const urgencyLevels = ["Low", "Medium", "High"];
+    setFormData({ ...formData, urgency: urgencyLevels[newValue] });
   };
 
   const handleMapClick = (event) => {
@@ -86,42 +101,143 @@ const WishAdForm = ({ token, navigate }) => {
   };
 
   return (
-    <Box component="form" onSubmit={handleSubmit} sx={{ mt: 3 }}>
-      <TextField name="adTitle" label="Ad Title" fullWidth required onChange={handleInputChange} />
-      <TextField name="adDescription" label="Description" fullWidth required multiline rows={3} onChange={handleInputChange} />
+    
+    <Paper elevation={3} sx={{ padding: 4, marginTop: 2 }}>
+                <Typography variant="h3" gutterBottom fontWeight="bold">
+                   Make a wish
+                </Typography>
+      <Box component="form" onSubmit={handleSubmit} sx={{ mt: 3 }}>
+        <Grid container spacing={3}>
+          {/* Ad Title */}
+          <Grid item xs={12}>
+            <TextField
+              name="adTitle"
+              label="Ad Title"
+              fullWidth
+              required
+              onChange={handleInputChange}
+            />
+          </Grid>
 
-      <TextField select name="category" label="Category" fullWidth required onChange={handleInputChange}>
-        {["Furniture", "Clothing", "Electronics", "Books", "Toys", "Other"].map((option) => (
-          <MenuItem key={option} value={option}>
-            {option}
-          </MenuItem>
-        ))}
-      </TextField>
+          {/* Ad Description */}
+          <Grid item xs={12}>
+            <TextField
+              name="adDescription"
+              label="Description"
+              fullWidth
+              required
+              multiline
+              rows={3}
+              onChange={handleInputChange}
+            />
+          </Grid>
 
-      <TextField select name="urgency" label="Urgency" fullWidth required onChange={handleInputChange}>
-        {["Low", "Medium", "High"].map((option) => (
-          <MenuItem key={option} value={option}>
-            {option}
-          </MenuItem>
-        ))}
-      </TextField>
+          {/* Category */}
+          <Grid item xs={12} sm={6}>
+            <TextField
+              select
+              name="category"
+              label="Category"
+              fullWidth
+              required
+              onChange={handleInputChange}
+            >
+              {["Furniture", "Clothing", "Electronics", "Books", "Toys", "Other"].map((option) => (
+                <MenuItem key={option} value={option}>
+                  {option}
+                </MenuItem>
+              ))}
+            </TextField>
+          </Grid>
 
-      <TextField name="amount" type="number" label="Amount" fullWidth required onChange={handleInputChange} />
+          {/* Amount */}
+          <Grid item xs={12} sm={6}>
+            <TextField
+              name="amount"
+              type="number"
+              label="Amount"
+              fullWidth
+              required
+              onChange={handleInputChange}
+            />
+          </Grid>
 
-      <TextField name="name" label="Item Name" fullWidth required onChange={handleItemInputChange} />
-      <TextField name="description" label="Item Description" fullWidth multiline rows={2} onChange={handleItemInputChange} />
+          {/* Urgency with Scroll Slider */}
+          <Grid item xs={12}>
+            <Typography gutterBottom>Urgency Level</Typography>
+            <Slider
+              value={["Low", "Medium", "High"].indexOf(formData.urgency)}
+              onChange={handleUrgencyChange}
+              min={0}
+              max={2}
+              step={1}
+              marks={[
+                { value: 0, label: "Low" },
+                { value: 1, label: "Medium" },
+                { value: 2, label: "High" },
+              ]}
+              sx={{ mt: 2 }}
+            />
+          </Grid>
 
-      <LoadScriptNext googleMapsApiKey={process.env.REACT_APP_GOOGLE_MAPS_API_KEY}>
-        <GoogleMap mapContainerStyle={{ width: "100%", height: "400px" }} center={userLocation} zoom={12} onClick={handleMapClick}>
-          {formData.location.coordinates.length > 0 && <Marker position={{ lat: formData.location.coordinates[1], lng: formData.location.coordinates[0] }} />}
-        </GoogleMap>
-      </LoadScriptNext>
+          {/* Item Name */}
+          <Grid item xs={12} sm={6}>
+            <TextField
+              name="name"
+              label="Item Name"
+              fullWidth
+              required
+              onChange={handleItemInputChange}
+            />
+          </Grid>
 
-      {error && <Typography color="error">{error}</Typography>}
-      <Button type="submit" fullWidth variant="contained" sx={{ mt: 2 }}>
-        Submit Wish Ad
-      </Button>
-    </Box>
+          {/* Item Description */}
+          <Grid item xs={12} sm={6}>
+            <TextField
+              name="description"
+              label="Item Description"
+              fullWidth
+              multiline
+              rows={2}
+              onChange={handleItemInputChange}
+            />
+          </Grid>
+
+          {/* Google Maps Location Picker */}
+          <Grid item xs={12}>
+            <Typography gutterBottom>Pick Location</Typography>
+            <LoadScriptNext googleMapsApiKey={process.env.REACT_APP_GOOGLE_MAPS_API_KEY}>
+              <GoogleMap
+                mapContainerStyle={{ width: "100%", height: "350px", borderRadius: 10 }}
+                center={userLocation}
+                zoom={12}
+                onClick={handleMapClick}
+              >
+                {formData.location.coordinates.length > 0 && (
+                  <Marker position={{ lat: formData.location.coordinates[1], lng: formData.location.coordinates[0] }} />
+                )}
+              </GoogleMap>
+            </LoadScriptNext>
+          </Grid>
+
+          {/* Error Message */}
+          {error && (
+            <Grid item xs={12}>
+              <Typography color="error" textAlign="center">
+                {error}
+              </Typography>
+            </Grid>
+          )}
+
+          {/* Submit Button */}
+          <Grid item xs={12} sx={{ textAlign: "center" }}>
+            <Button type="submit" variant="contained">
+              Submit Wish Ad
+            </Button>
+          </Grid>
+        </Grid>
+      </Box>
+    </Paper>
   );
 };
 

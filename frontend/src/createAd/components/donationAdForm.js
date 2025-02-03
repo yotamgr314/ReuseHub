@@ -95,7 +95,11 @@ const DonationAdForm = ({ token, navigate }) => {
   };
 
   return (
+    
     <Box component="form" onSubmit={handleSubmit} sx={{ mt: 3 }}>
+        <Typography variant="h3" gutterBottom fontWeight="bold">
+           Donation Ad
+        </Typography>
       <TextField name="adTitle" label="Ad Title" fullWidth required onChange={handleInputChange} />
       <TextField name="adDescription" label="Description" fullWidth required multiline rows={3} onChange={handleInputChange} />
 
