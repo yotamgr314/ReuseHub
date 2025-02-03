@@ -41,7 +41,7 @@ exports.createOffer = async (req, res) => {
 
 
 
-// Gets offers list that was sent to a specific user. 
+// Gets offers list that was sent to a specific
 exports.getUserOffers = async (req, res) => {
   try {
     const offers = await Offer.find({ receiver: req.user._id })
@@ -58,7 +58,6 @@ exports.getUserOffers = async (req, res) => {
     res.status(500).json({ success: false, message: "Internal server error" });
   }
 };
-
 
 
 // ✅ Delete an Offer (Only if ad is deleted or canceled)

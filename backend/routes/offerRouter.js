@@ -18,9 +18,6 @@ router.post("/", createOffer);
 // Get all offers received by the logged-in user
 router.get("/", getUserOffers);
 
-// Update offer status (approve/reject)
-router.patch("/:id", updateOfferStatus);
-
 // Delete an offer
 router.delete("/:id", deleteOffer);
 
