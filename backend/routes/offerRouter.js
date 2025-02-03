@@ -1,6 +1,6 @@
 const express = require("express");
 const {
-  createOffer,
+  sendOffer,
   getUserOffers,
   updateOfferStatus,
   deleteOffer,
@@ -13,12 +13,16 @@ const router = express.Router();
 router.use(protectMiddleware);
 
 // Create a new offer
-router.post("/", createOffer);
+router.post("/", sendOffer);
 
 // Get all offers received by the logged-in user
 router.get("/", getUserOffers);
 
 // Delete an offer
-router.delete("/:id", deleteOffer);
+router.patch("/:id", deleteOffer);
+
+// ✅ Update offer status (Approve/Reject) (PATCH /api/offers/:id)
+router.patch("/:id", updateOfferStatus);
+
 
 module.exports = router;
