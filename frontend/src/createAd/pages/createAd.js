@@ -34,10 +34,6 @@ const CreateAd = () => {
   return (
     <Container maxWidth="md">
       <Box sx={{ marginTop: 5, textAlign: "center" }}>
-        <Typography variant="h3" gutterBottom fontWeight="bold">
-          Create an Ad
-        </Typography>
-
         {!adType ? (
           <Grid container spacing={3} justifyContent="center" sx={{ marginTop: 4 }}>
             {/* Donation Ad Card */}
@@ -54,7 +50,7 @@ const CreateAd = () => {
                 <CardActionArea>
                   <CardContent sx={{ py: 4, display: "flex", flexDirection: "column", alignItems: "center" }}>
                     <VolunteerActivismTwoToneIcon sx={{ fontSize: 50, color: "primary.main", mb: 1 }} />
-                    <Typography variant="h5" fontWeight="medium">Create a Donation Ad</Typography>
+                    <Typography variant="h5" fontWeight="medium"> Donation Ad</Typography>
                   </CardContent>
                 </CardActionArea>
               </Card>
@@ -74,7 +70,7 @@ const CreateAd = () => {
                 <CardActionArea>
                   <CardContent sx={{ py: 4, display: "flex", flexDirection: "column", alignItems: "center" }}>
                     <StickyNote2TwoToneIcon sx={{ fontSize: 50, color: "secondary.main", mb: 1 }} />
-                    <Typography variant="h5" fontWeight="medium">Make a Wish</Typography>
+                    <Typography variant="h5" fontWeight="medium">Wish Ad</Typography>
                   </CardContent>
                 </CardActionArea>
               </Card>
