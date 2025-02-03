@@ -1,3 +1,4 @@
+// frontend/app.js
 // NOTE: THE STARTING POINT OF OUR APPLICATION
 import React from "react";
 import { BrowserRouter, Route, Routes, Navigate} from "react-router-dom"; // NOTE to control component rendering based on URL.
