@@ -21,10 +21,9 @@ must refactor the structure.
     11) we would like to enable the user to delete a donation ad, and a wishAd.
     12) we would like to enable the user to edit a donation ad details, edit the donation ad item.. 
     14) we would like to enable the user to edit a wishlist ad details, edit its details, and its item..
-    15) in offerSchema only if both adOwnerApproval and userWhoMadeTheOfferApproval boolean are true than offerStatus changess to accepted, once offer status changed to accepts the referenced ad status will be changed to "donation completed".
+    15) in offerSchema only if both adOwnerApproval and userWhoMadeTheOfferApproval  are true than offer Status changes to accepted, once offer status changed to accepts the referenced ad will status will reduce the items amount that was donated by that offer. if the amount is less than 1 then the referenced ad will update her status to "donation completed" and delete itself.  
         once the referenced ad status will be changed to "donation completed" if other users create offerSchema object to that ad will try enter that offer object it will display them a sort of modal saying the donation was completed hence do not exist anymore. then the referenced ad will be deleted from the system. 
-     16) each offerSchema is linked to one ad(either wishAd or donationAd), and two users, the one who sent the offer,and the one received. on that offer schema, the users can chat with out other using socket.io, the chat shall be stored, as long as the offer was not deleted.    
-         these two users referenced in the offerSchema can visit their chat, and view it, and message each other. 
+        but before the ad deletes itself each offer that was sent to that Ad (either wishAd or donationAd), needs to be alerted the ad was deleted via due to the fact it was donated via another offer, or the user canceled it.    
     
 
 client side:
