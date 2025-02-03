@@ -28,7 +28,8 @@ const baseAdSchema = new mongoose.Schema(
       default: "Available",
     },
 
-    items: [{ type: itemSchema }],
+    items:{ type: itemSchema}, // store only one item 
+    amount: { type: Number, default: 1, min: 1 }, // 🔹 Store how many of the same item
 
     category: {
       type: String,

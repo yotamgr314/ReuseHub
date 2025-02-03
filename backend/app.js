@@ -9,9 +9,8 @@ const { connectDB } = require("./config/db.js");
 const adRoutes = require("./routes/adRouter");
 const authenticateRoutes = require("./routes/authenticateRouter");
 const donationAdRoutes = require("./routes/donationAdRouter");
-
-/* const wishAdRoutes = require("./routes/wishAdRouter");
-const offerRoutes = require("./routes/offerRouter");
+const wishAdRouter = require("./routes/wishAdRouter");
+/* const offerRoutes = require("./routes/offerRouter");
 const userRoutes = require("./routes/userRouter");
 const chatRoutes = require("./routes/chatRouter");
  */
@@ -42,9 +41,8 @@ app.use(express.json());// NOTE This middleware parses incoming JSON payloads fr
 app.use("/api/ads", adRoutes);
 app.use("/api/authenticate", authenticateRoutes);
 app.use("/api/donationAds", donationAdRoutes);
-
-/* app.use("/api/wishAds", wishAdRoutes);
-app.use("/api/offers", offerRoutes);
+app.use("/api/wishAds", wishAdRouter);
+/* app.use("/api/offers", offerRoutes);
 app.use("/api/users", userRoutes);
 app.use("/api/chat", chatRoutes);
  */

@@ -8,35 +8,32 @@ exports.createDonationAd = async (req, res) => {
       return res.status(401).json({ success: false, message: "Unauthorized: User not found." });
     }
 
-    const { adTitle, adDescription, category, items, donationMethod, itemCondition, location } = req.body;
+    const { adTitle, adDescription, category, item, amount, donationMethod, itemCondition, location } = req.body;
 
     if (!adTitle) return res.status(400).json({ success: false, message: "Ad title is required." });
     if (!adDescription) return res.status(400).json({ success: false, message: "Ad description is required." });
     if (!category) return res.status(400).json({ success: false, message: "Category is required." });
     if (!donationMethod) return res.status(400).json({ success: false, message: "Donation method is required." });
     if (!itemCondition) return res.status(400).json({ success: false, message: "Item condition is required." });
-    if (!items || items.length === 0) return res.status(400).json({ success: false, message: "At least one item is required." });
+    if (!item || !item.name) return res.status(400).json({ success: false, message: "Item name is required." });
 
     // ✅ Validate location coordinates (longitude, latitude)
     if (!location || !Array.isArray(location.coordinates) || location.coordinates.length !== 2) {
       return res.status(400).json({ success: false, message: "Location must include coordinates as [longitude, latitude]." });
     }
 
-    // ✅ Validate that all items are identical
-    const referenceItem = items[0];
-    const areItemsIdentical = items.every(item =>
-      item.name === referenceItem.name &&
-      item.description === referenceItem.description &&
-      JSON.stringify(item.images) === JSON.stringify(referenceItem.images)
-    );
-    if (!areItemsIdentical) return res.status(400).json({ success: false, message: "All items in the donation must be identical." });
+    if (!amount || amount < 1) {
+        return res.status(400).json({ success: false, message: "Amount must be at least 1." });
+    }
+
 
     // ✅ Create a new donation ad
     const newAd = new DonationAd({
       adTitle,
       adDescription,
       category,
-      items,
+      item,
+      amount,
       donationMethod,
       itemCondition,
       location: {
