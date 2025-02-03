@@ -23,8 +23,9 @@ must refactor the structure.
     14) we would like to enable the user to edit a wishlist ad details, edit its details, and its item..
     15) in offerSchema only if both adOwnerApproval and userWhoMadeTheOfferApproval  are true than offer Status changes to accepted, once offer status changed to accepts the referenced ad will status will reduce the items amount that was donated by that offer. if the amount is less than 1 then the referenced ad will update her status to "donation completed" and delete itself.  
         once the referenced ad status will be changed to "donation completed" if other users create offerSchema object to that ad will try enter that offer object it will display them a sort of modal saying the donation was completed hence do not exist anymore. then the referenced ad will be deleted from the system. 
-        but before the ad deletes itself each offer that was sent to that Ad (either wishAd or donationAd), needs to be alerted the ad was deleted via due to the fact it was donated via another offer, or the user canceled it.    
-    
+        but before the ad deletes itself each offer that was sent to that Ad (either wishAd or donationAd), needs to be alerted the ad was deleted via due to the fact it was donated via another offer, or the user canceled it.       
+    16) update the wishAdController and donationAdController to use socket.io to emitt events from the backend to the frontend each time and ad is created - i need it because on the frontend (react) i want the diplay list of all the ads in the system and each time an new ad is created i want the list to be updated with that newly created ad without the need to reload the page.  
+        and also - on the frontend(react) i will have a map by using google maps API. on that map i want markers for each ad, and the markers on the maps should be updated as well with each ad creation without reloading the page.
 
 client side:
 01) learn all the necessary hooks.
