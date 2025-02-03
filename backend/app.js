@@ -11,7 +11,6 @@ const authenticateRoutes = require("./routes/authenticateRouter");
 const donationAdRoutes = require("./routes/donationAdRouter");
 
 /* const wishAdRoutes = require("./routes/wishAdRouter");
-const donationAdRoutes = require("./routes/donationAdRouter");
 const offerRoutes = require("./routes/offerRouter");
 const userRoutes = require("./routes/userRouter");
 const chatRoutes = require("./routes/chatRouter");
@@ -42,7 +41,7 @@ app.use(express.json());// NOTE This middleware parses incoming JSON payloads fr
 // ROUTES SECTION
 app.use("/api/ads", adRoutes);
 app.use("/api/authenticate", authenticateRoutes);
-app.use("/api/donations", donationAdRoutes);
+app.use("/api/donationAds", donationAdRoutes);
 
 /* app.use("/api/wishAds", wishAdRoutes);
 app.use("/api/offers", offerRoutes);

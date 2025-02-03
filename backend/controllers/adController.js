@@ -2,17 +2,23 @@ const BaseAd = require("../models/baseAdSchema");
 
 exports.getAllAds = async (req, res) => {
   try {
-    let page = parseInt(req.query.page) || 1; // Default to page 1
-    let limit = parseInt(req.query.limit) || 10; // Default to 10 ads per page
+    let page = parseInt(req.query.page) || 1;
+    let limit = parseInt(req.query.limit) || 10;
     let skip = (page - 1) * limit;
 
+    let filter = {}; // 🔹 Default: No filter (fetch all ads)
+    if (req.query.kind) {
+      if (!["donationAd", "wishAd"].includes(req.query.kind)) {
+        return res.status(400).json({ success: false, message: "Invalid ad type. Allowed values: donationAd, wishAd" });
+      }
+      filter.kind = req.query.kind; // 🔹 Apply kind filter (optional)
+    }
 
-    const totalCount = await BaseAd.countDocuments();
+    const totalCount = await BaseAd.countDocuments(filter);
 
-    // Fetch ads with pagination & sorting
-    const ads = await BaseAd.find()
-      .populate("createdBy", "firstName lastName") // Include user info
-      .sort({ createdAt: -1 }) // Sort by newest first
+    const ads = await BaseAd.find(filter)
+      .populate("createdBy", "firstName lastName")
+      .sort({ createdAt: -1 })
       .skip(skip)
       .limit(limit);
 
@@ -29,6 +35,7 @@ exports.getAllAds = async (req, res) => {
     res.status(500).json({ success: false, message: "Internal server error" });
   }
 };
+
 
 
 exports.getAdById = async (req, res) => {
