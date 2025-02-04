@@ -19,7 +19,7 @@ router.post("/", sendOffer);
 router.get("/", getUserOffers);
 
 // Delete an offer
-router.patch("/:id", deleteOffer);
+router.delete("/:id", deleteOffer);
 
 // ✅ Update offer status (Approve/Reject) (PATCH /api/offers/:id)
 router.patch("/:id", updateOfferStatus);

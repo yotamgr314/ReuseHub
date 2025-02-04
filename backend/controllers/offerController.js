@@ -57,9 +57,9 @@ exports.updateOfferStatus = async (req, res) => {
     if (userWhoMadeTheOfferApproval !== undefined) offer.offerConfirmation.userWhoMadeTheOfferApproval = userWhoMadeTheOfferApproval;
 
     // Check if both approvals are true
-    if (offer.offerConfirmation.adOwnerApproval && offer.offerConfirmation.userWhoMadeTheOfferApproval) {
+    if (offer.offerConfirmation.adOwnerApproval || offer.offerConfirmation.userWhoMadeTheOfferApproval) {
       offer.offerStatus = "Accepted";
-      
+
       // Reduce the Ad's item amount based on the offer
       ad.amount -= offer.offerAmount;
       
@@ -78,16 +78,15 @@ exports.updateOfferStatus = async (req, res) => {
 
         // Remove the Ad from the system
         await BaseAd.findByIdAndDelete(ad._id);
+
       } else {
         await ad.save(); // Save the updated ad amount
       }
     }
     
-    await offer.save();
-    
     res.status(200).json({
       success: true,
-      message: "Offer updated successfully",
+      message: "Offer updated successfully!",
       data: offer,
     });
   } catch (error) {
@@ -130,7 +129,7 @@ exports.deleteOffer = async (req, res) => {
 
     res.status(200).json({
       success: true,
-      message: "Offer deleted successfully",
+      message: "Offer deleted successfully!",
     });
   } catch (error) {
     console.error("Error deleting offer:", error);
