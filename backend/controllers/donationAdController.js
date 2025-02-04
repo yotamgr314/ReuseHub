@@ -14,6 +14,8 @@ exports.createDonationAd = async (req, res) => {
       return res.status(400).json({ success: false, message: "All fields are required." });
     }
 
+    console.log("🔹 Received Donation Ad Request:", req.body);
+
     const newAd = new DonationAd({
       adTitle,
       adDescription,
@@ -25,11 +27,14 @@ exports.createDonationAd = async (req, res) => {
         type: "Point",
         coordinates: location.coordinates,
       },
-      item,
+      items: {  // 🔹 FIXED: Use 'items' instead of 'item'
+        name: item.name || "N/A",
+        description: item.description || "N/A",
+        images: item.images || [],
+      },
       createdBy: req.user._id,
     });
-
-    await newAd.save();
+        await newAd.save();
 
     // Emit event for real-time update
     io.emit("donationAdCreated", newAd);
