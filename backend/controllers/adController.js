@@ -75,3 +75,31 @@ exports.deleteAd = async (req, res) => {
   }
 };
 
+
+
+exports.getMyAds = async (req, res) => {
+  try {
+    if (!req.user || !req.user._id) {
+      return res.status(401).json({ success: false, message: "Unauthorized: User not found." });
+    }
+
+    let filter = { createdBy: req.user._id };
+
+    if (req.query.kind) {
+      if (!["donationAd", "wishAd"].includes(req.query.kind)) {
+        return res.status(400).json({ success: false, message: "Invalid ad type. Allowed values: donationAd, wishAd" });
+      }
+      filter.kind = req.query.kind; // 🔹 Apply kind filter (optional)
+    }
+
+    const myAds = await BaseAd.find(filter)
+      .sort({ createdAt: -1 });
+
+    res.status(200).json({ success: true, count: myAds.length, data: myAds });
+  } catch (error) {
+    console.error("Error fetching user ads:", error);
+    res.status(500).json({ success: false, message: "Internal server error" });
+  }
+};
+
+
