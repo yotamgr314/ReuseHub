@@ -1,3 +1,4 @@
+// frontend/src/homePage/pages/homePage.js
 import React, { useState, useEffect } from "react";
 import { io } from "socket.io-client";
 import AdsList from "../../shared/adsCardList/adsCards";
