@@ -5,6 +5,52 @@ import CloseIcon from "@mui/icons-material/Close";
 const AdModalDisplay = ({ selectedAd, onClose }) => {
   if (!selectedAd) return null;
 
+  const handleSendOffer = async () => {
+    try {
+      const token = localStorage.getItem("token");
+      const response = await fetch("http://localhost:5000/api/offers", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify({
+          adId: selectedAd._id,
+          offerAmount: 1,
+        }),
+      });
+
+      const data = await response.json();
+      if (!response.ok) throw new Error(data.message || "Failed to send offer.");
+      alert("Offer sent successfully!");
+    } catch (error) {
+      alert(`Error sending offer: ${error.message}`);
+    }
+  };
+
+  const handleSendClaimRequest = async () => {
+    try {
+      const token = localStorage.getItem("token");
+      const response = await fetch("http://localhost:5000/api/offers", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify({
+          adId: selectedAd._id,
+          offerAmount: 1,
+        }),
+      });
+
+      const data = await response.json();
+      if (!response.ok) throw new Error(data.message || "Failed to send claim request.");
+      alert("Claim request sent successfully!");
+    } catch (error) {
+      alert(`Error sending claim request: ${error.message}`);
+    }
+  };
+
   return (
     <Modal open={Boolean(selectedAd)} onClose={onClose} closeAfterTransition>
       <Box
@@ -34,7 +80,6 @@ const AdModalDisplay = ({ selectedAd, onClose }) => {
               {selectedAd.adDescription}
             </Typography>
 
-            {/* Display images if available */}
             {selectedAd.kind === "donationAd" && selectedAd.items?.images?.length > 0 && (
               <ImageList cols={selectedAd.items.images.length > 1 ? 2 : 1} rowHeight={140} sx={{ mb: 2 }}>
                 {selectedAd.items.images.map((imgUrl, index) => (
@@ -45,7 +90,6 @@ const AdModalDisplay = ({ selectedAd, onClose }) => {
               </ImageList>
             )}
 
-            {/* Grid Layout for Cleaner Details */}
             <Grid container spacing={2}>
               <Grid item xs={6}>
                 <Typography variant="body2">
@@ -86,7 +130,7 @@ const AdModalDisplay = ({ selectedAd, onClose }) => {
                     </Typography>
                   </Grid>
                   <Grid item xs={12}>
-                    <Button fullWidth variant="contained" color="primary">
+                    <Button fullWidth variant="contained" color="primary" onClick={handleSendClaimRequest}>
                       Send a Claim Request
                     </Button>
                   </Grid>
@@ -99,7 +143,7 @@ const AdModalDisplay = ({ selectedAd, onClose }) => {
                     </Typography>
                   </Grid>
                   <Grid item xs={12}>
-                    <Button fullWidth variant="contained" color="secondary">
+                    <Button fullWidth variant="contained" color="secondary" onClick={handleSendOffer}>
                       Offer to Donate
                     </Button>
                   </Grid>
