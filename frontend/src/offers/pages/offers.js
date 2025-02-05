@@ -1,3 +1,4 @@
+// frontend/src/offers/pages/offers.js
 import React, { useEffect, useState } from "react";
 import { Container, Typography, Grid, Card, CardContent, Button, Modal, Box } from "@mui/material";
 import { useNavigate } from "react-router-dom";
