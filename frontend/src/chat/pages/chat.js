@@ -19,7 +19,7 @@ const Chat = () => {
                 if (response.ok) {
                     setChats(data.data || []);
                     if (data.data.length === 1) {
-                        navigate(`/chat/${data.data[0]._id}`); // ✅ אם יש רק צ'אט אחד – ננווט אליו אוטומטית
+                        navigate(`/chat/${data.data[0]._id}`); 
                     }
                 } else {
                     console.error(" Error fetching chats:", data.message);

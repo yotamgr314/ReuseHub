@@ -31,7 +31,7 @@ const navItems = [
   { label: "CREATE AD", path: "/createAd", type: "link", icon: <AddCircleIcon /> },
   { label: "MY ADS", path: "/myAds", type: "link", icon: <ViewListIcon /> },
   { label: "MY OFFERS", path: "/myOffers", type: "link", icon: <OfferIcon /> },
-  { label: "CHAT", path: "/chat", type: "chat", icon: <ChatIcon /> }, // ✅ Changed type to 'chat'
+  { label: "CHAT", path: "/chat", type: "chat", icon: <ChatIcon /> }, //  Changed type to 'chat'
   { label: "LEADERBOARD", path: "/leaderBoard", type: "link", icon: <LeaderboardIcon /> },
   { label: "LOG OUT", type: "action", icon: <LogoutIcon /> }, // LOG OUT as an action
 ];
@@ -40,7 +40,7 @@ export default function DrawerAppBar(props) {
   const { window } = props;
   const [mobileOpen, setMobileOpen] = React.useState(false);
   const navigate = useNavigate(); // Initialize navigate
-  const location = useLocation(); // ✅ GET CURRENT ROUTE
+  const location = useLocation(); // 
 
   const hideAppBarRoutes = ["/register", "/login"];
 
@@ -53,15 +53,29 @@ export default function DrawerAppBar(props) {
     setMobileOpen((prevState) => !prevState);
   };
 
-  const handleChatNavigation = () => {
-    const lastChatId = localStorage.getItem("lastChatId"); // ✅ Retrieve last chat session
-    if (lastChatId) {
-      navigate(`/chat/${lastChatId}`);
-    } else {
-      alert("❌ No active chats. Please start a conversation.");
+  const handleChatNavigation = async () => {
+    try {
+      const response = await fetch("http://localhost:5000/api/chat", {
+        headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
+      });
+  
+      const data = await response.json();
+  
+      if (response.ok && data.data.length > 0) {
+        if (data.data.length === 1) {
+          navigate(`/chat/${data.data[0]._id}`);
+        } else {
+          navigate("/chat"); 
+        }
+      } else {
+        alert(" No active chats. Please start a conversation.");
+      }
+    } catch (error) {
+      console.error("Error fetching chats:", error);
+      alert(" Unable to load chats. Please try again.");
     }
   };
-
+  
   const drawer = (
     <Box onClick={handleDrawerToggle} sx={{ textAlign: "center" }}>
       <Typography
@@ -92,7 +106,7 @@ export default function DrawerAppBar(props) {
             ) : item.type === "chat" ? (
               <ListItemButton
                 sx={{ textAlign: "center", py: 2 }}
-                onClick={handleChatNavigation} // ✅ Navigate to last chat
+                onClick={handleChatNavigation} //  Navigate to last chat
               >
                 {item.icon}
                 <ListItemText primary={item.label} sx={{ ml: 1 }} />
