@@ -8,7 +8,8 @@ module.exports = function (io) {
     });
 
     socket.on("sendMessage", (data) => {
-      io.to(data.chatId).emit("newMessage", data);
+      console.log("📩 WebSocket message received:", data);
+      io.to(data.chatId).emit("newMessage", data); // ✅ Send to chat room
     });
 
     socket.on("disconnect", () => {

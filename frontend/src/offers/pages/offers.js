@@ -95,7 +95,6 @@ const Offers = () => {
                 >
                   Approve
                 </Button>
-
                 <Button
   variant="contained"
   color="primary"
@@ -111,6 +110,7 @@ const Offers = () => {
 >
   Start Chat
 </Button>
+
 
               </CardContent>
             </Card>

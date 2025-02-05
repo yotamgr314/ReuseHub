@@ -16,6 +16,7 @@ const Chat = () => {
     }
 
     socket.emit("joinChat", chatId); // ✅ Join chat room
+    console.log(`🔹 Joined chat room: ${chatId}`);
 
     const fetchChat = async () => {
       try {
@@ -36,6 +37,7 @@ const Chat = () => {
 
     fetchChat();
 
+    // ✅ Listen for new messages via WebSocket
     socket.on("newMessage", (newMessage) => {
       console.log("📩 New message received via WebSocket:", newMessage);
       setMessages((prev) => [...prev, newMessage]); // ✅ Real-time update
@@ -50,7 +52,7 @@ const Chat = () => {
     if (!messageText.trim()) return;
 
     try {
-      const response = await fetch(`http://localhost:5000/api/chat/${chatId}/sendMessage`, {
+      const response = await fetch(`http://localhost:5000/api/chat/${chatId}`, { // ✅ Corrected endpoint
         method: "POST",
         headers: {
           "Content-Type": "application/json",
