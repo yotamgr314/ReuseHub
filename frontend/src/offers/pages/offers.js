@@ -111,6 +111,7 @@ const Offers = () => {
 >
   Start Chat
 </Button>
+
               </CardContent>
             </Card>
           </Grid>

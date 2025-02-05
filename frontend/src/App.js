@@ -29,6 +29,7 @@ const App = () => {
       <Route path="/myAds" element={<JwtRouteGuard> <MyAds /> </JwtRouteGuard>} /> 
       <Route path="/chat/:chatId" element={<JwtRouteGuard><Chat /></JwtRouteGuard>} />
       <Route path="/myOffers" element={<JwtRouteGuard> <Offers/></JwtRouteGuard>} />
+      <Route path="/chat/:chatId" element={<JwtRouteGuard><Chat /></JwtRouteGuard>} />
       <Route path="/chat" element={<JwtRouteGuard><Chat /></JwtRouteGuard>} />
       <Route path="/leaderBoard" element={<JwtRouteGuard><LeaderBoard /></JwtRouteGuard>} />
       <Route path="/register" element={<Register />} />

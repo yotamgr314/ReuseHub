@@ -24,7 +24,7 @@ exports.sendOffer = async (req, res) => {
     await newOffer.save();
     console.log("✅ Offer saved:", newOffer);
 
-    // 🔹 Ensure that message is added when creating the chat
+    // 🔹 Ensure chat is created and properly linked
     const newChat = new Chat({
       offerId: newOffer._id,
       participants: [req.user._id, ad.createdBy],
@@ -34,6 +34,7 @@ exports.sendOffer = async (req, res) => {
     await newChat.save();
     console.log("✅ Chat saved:", newChat);
 
+    // Link chat to offer
     newOffer.chat = newChat._id;
     await newOffer.save();
 
@@ -47,7 +48,6 @@ exports.sendOffer = async (req, res) => {
     res.status(500).json({ success: false, message: "Internal server error" });
   }
 };
-
 
 
 exports.updateOfferStatus = async (req, res) => {
