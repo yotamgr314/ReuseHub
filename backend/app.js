@@ -11,8 +11,9 @@ const authenticateRoutes = require("./routes/authenticateRouter");
 const donationAdRoutes = require("./routes/donationAdRouter");
 const wishAdRouter = require("./routes/wishAdRouter");
 const offerRoutes = require("./routes/offerRouter");
-/* const userRoutes = require("./routes/userRouter");
 const chatRoutes = require("./routes/chatRouter");
+
+/* const userRoutes = require("./routes/userRouter");
  */
 //CONFIGURATION SECTION
 dotenv.config(); /*Load environment variables from .env file  */
@@ -43,8 +44,8 @@ app.use("/api/authenticate", authenticateRoutes);
 app.use("/api/donationAds", donationAdRoutes);
 app.use("/api/wishAds", wishAdRouter);
 app.use("/api/offers", offerRoutes);
-/* app.use("/api/users", userRoutes);
 app.use("/api/chat", chatRoutes);
+/* app.use("/api/users", userRoutes);
  */
 
 app.get("/", (req, res) => {
