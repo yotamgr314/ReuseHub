@@ -29,8 +29,8 @@ must refactor the structure.
         but before the ad deletes itself each offer that was sent to that Ad (either wishAd or donationAd), needs to be alerted the ad was deleted via due to the fact it was donated via another offer, or the user canceled it.       
     16) update the wishAdController and donationAdController to use socket.io to emitt events from the backend to the frontend each time and ad is created - i need it because on the frontend (react) i want the diplay list of all the ads in the system and each time an new ad is created i want the list to be updated with that newly created ad without the need to reload the page.  
         and also - on the frontend(react) i will have a map by using google maps API. on that map i want markers for each ad, and the markers on the maps should be updated as well with each ad creation without reloading the page.
-
-
+    17) rating system -chat once offered a library that i can use to mannage rating system.MUI also as nice icons
+    18) all the open MUI tabs. 
 
 client side:
 01) learn all the necessary hooks.
