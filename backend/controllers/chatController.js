@@ -1,30 +1,36 @@
 const Chat = require("../models/chatSchema");
 const Offer = require("../models/offerSchema");
 
+const mongoose = require("mongoose");
+
 exports.getOrCreateChat = async (req, res) => {
     try {
-      const { chatId } = req.params;
-  
-      if (!chatId || chatId === "undefined") {
-        return res.status(400).json({ success: false, message: "Invalid chat ID" });
-      }
-  
-      console.log(`fetching chat for chatId: ${chatId}`);
-  
-      let chat = await Chat.findById(chatId)
-        .populate("messages.sender", "firstName lastName")
-        .populate("participants", "firstName lastName");
-  
-      if (!chat) {
-        return res.status(404).json({ success: false, message: "Chat not found" });
-      }
-  
-      res.status(200).json({ success: true, data: chat });
+        let { chatId } = req.params;
+        
+        console.log(`🛠️ Received chatId:`, chatId, "Type:", typeof chatId);
+
+        if (!mongoose.Types.ObjectId.isValid(chatId)) {
+            console.error("❌ Invalid chatId format:", chatId);
+            return res.status(400).json({ success: false, message: "Invalid chat ID format" });
+        }
+
+        chatId = new mongoose.Types.ObjectId(chatId);  // ✅ Convert to ObjectId
+
+        let chat = await Chat.findById(chatId)
+            .populate("messages.sender", "firstName lastName")
+            .populate("participants", "firstName lastName");
+
+        if (!chat) {
+            console.error("❌ Chat not found for chatId:", chatId);
+            return res.status(404).json({ success: false, message: "Chat not found" });
+        }
+
+        res.status(200).json({ success: true, data: chat });
     } catch (error) {
-      console.error("Error fetching chat:", error);
-      res.status(500).json({ success: false, message: "Internal server error" });
+        console.error("❌ Error fetching chat:", error);
+        res.status(500).json({ success: false, message: "Internal server error" });
     }
-  };
+};
   
 exports.sendMessage = async (req, res) => {
     try {
