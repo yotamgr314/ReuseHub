@@ -1,3 +1,4 @@
+// frontend/src/homePage/components/googleMap.js
 import React, { useState, useEffect } from "react";
 import { GoogleMap, LoadScriptNext, OverlayView, Marker } from "@react-google-maps/api";
 import StickyNote2TwoToneIcon from "@mui/icons-material/StickyNote2TwoTone"; // Wishlist Ad icon

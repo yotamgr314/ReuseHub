@@ -1,23 +1,18 @@
 const Offer = require("../models/offerSchema");
 const BaseAd = require("../models/baseAdSchema");
+const Chat = require("../models/chatSchema");
 
 exports.sendOffer = async (req, res) => {
   try {
-    const { adId, offerAmount } = req.body;
+    const { adId, offerAmount, message } = req.body;
+    console.log("📩 Received sendOffer request:", { adId, offerAmount, message });
 
     if (!adId) return res.status(400).json({ success: false, message: "Ad ID is required." });
     if (!offerAmount || offerAmount < 1) return res.status(400).json({ success: false, message: "Offer amount must be at least 1." });
 
-    // Check if the Ad exists
     const ad = await BaseAd.findById(adId);
     if (!ad) return res.status(404).json({ success: false, message: "Ad not found." });
 
-    // ✅ Prevent user from offering more than available items
-    if (offerAmount > ad.amount) {
-      return res.status(400).json({ success: false, message: `Only ${ad.amount} items are available for donation.` });
-    }
-
-    // ✅ Create a new offer
     const newOffer = new Offer({
       sender: req.user._id,
       receiver: ad.createdBy,
@@ -27,14 +22,28 @@ exports.sendOffer = async (req, res) => {
     });
 
     await newOffer.save();
+    console.log("✅ Offer saved:", newOffer);
+
+    // 🔹 Ensure that message is added when creating the chat
+    const newChat = new Chat({
+      offerId: newOffer._id,
+      participants: [req.user._id, ad.createdBy],
+      messages: message ? [{ sender: req.user._id, text: message }] : [],
+    });
+
+    await newChat.save();
+    console.log("✅ Chat saved:", newChat);
+
+    newOffer.chat = newChat._id;
+    await newOffer.save();
 
     res.status(201).json({
       success: true,
-      message: "Offer sent successfully",
-      data: newOffer,
+      message: "Offer and chat created successfully",
+      data: { newOffer, newChat },
     });
   } catch (error) {
-    console.error("Error creating offer:", error);
+    console.error("❌ Error creating offer:", error);
     res.status(500).json({ success: false, message: "Internal server error" });
   }
 };
@@ -98,12 +107,18 @@ exports.updateOfferStatus = async (req, res) => {
 
 
 
-// Gets offers list that was sent to a specific
 exports.getUserOffers = async (req, res) => {
   try {
     const offers = await Offer.find({ receiver: req.user._id })
       .populate("sender", "firstName lastName")
-      .populate("adId", "adTitle adStatus amount");
+      .populate("adId", "adTitle adStatus amount")
+      .populate({
+        path: "chat",
+        populate: {
+          path: "messages",
+          select: "text sender timestamp", // Select only required fields
+        },
+      });
 
     res.status(200).json({
       success: true,

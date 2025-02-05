@@ -28,26 +28,38 @@ exports.getOrCreateChat = async (req, res) => {
   }
 };
 
-// ✅ Send a Chat Message
 exports.sendMessage = async (req, res) => {
-  try {
-    const { offerId } = req.params;
-    const { text } = req.body;
-
-    let chat = await Chat.findOne({ offerId });
-    if (!chat) return res.status(404).json({ success: false, message: "Chat not found" });
-
-    const message = { sender: req.user._id, text };
-    chat.messages.push(message);
-
-    await chat.save();
-
-    const io = req.app.get("io");
-    io.to(offerId.toString()).emit("newMessage", message); // 🔹 Notify participants via WebSocket
-
-    res.status(201).json({ success: true, data: message });
-  } catch (error) {
-    console.error("Error sending message:", error);
-    res.status(500).json({ success: false, message: "Internal server error" });
-  }
-};
+    try {
+      const { offerId } = req.params;
+      const { text } = req.body;
+  
+      console.log("📩 Received sendMessage request:", { offerId, text, sender: req.user._id });
+  
+      if (!offerId || offerId === "undefined") {
+        console.error("❌ Missing offerId in sendMessage API");
+        return res.status(400).json({ success: false, message: "Offer ID is required." });
+      }
+  
+      let chat = await Chat.findOne({ offerId });
+      if (!chat) {
+        console.error("❌ Chat not found for offerId:", offerId);
+        return res.status(404).json({ success: false, message: "Chat not found" });
+      }
+  
+      const message = { sender: req.user._id, text };
+      chat.messages.push(message);
+  
+      await chat.save();
+      console.log("✅ Message saved to chat:", message);
+  
+      // Notify participants via WebSocket
+      const io = req.app.get("io");
+      io.to(offerId.toString()).emit("newMessage", message);
+  
+      res.status(201).json({ success: true, data: message });
+    } catch (error) {
+      console.error("❌ Error sending message:", error);
+      res.status(500).json({ success: false, message: "Internal server error" });
+    }
+  };
+  

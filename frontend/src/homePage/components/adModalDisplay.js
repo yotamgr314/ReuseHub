@@ -1,8 +1,10 @@
-import React from "react";
-import { Modal, Box, Typography, IconButton, ImageList, ImageListItem, Card, CardContent, CardMedia, Grid, Button } from "@mui/material";
+import React, { useState } from "react";
+import { Modal, Box, Typography, IconButton, ImageList, ImageListItem, Card, CardContent, CardMedia, Grid, Button, TextField } from "@mui/material";
 import CloseIcon from "@mui/icons-material/Close";
 
 const AdModalDisplay = ({ selectedAd, onClose }) => {
+  const [message, setMessage] = useState(""); // Chat message input
+
   if (!selectedAd) return null;
 
   const handleSendOffer = async () => {
@@ -17,37 +19,16 @@ const AdModalDisplay = ({ selectedAd, onClose }) => {
         body: JSON.stringify({
           adId: selectedAd._id,
           offerAmount: 1,
+          message, // ✅ Attach initial chat message
         }),
       });
 
       const data = await response.json();
       if (!response.ok) throw new Error(data.message || "Failed to send offer.");
       alert("Offer sent successfully!");
+      onClose();
     } catch (error) {
       alert(`Error sending offer: ${error.message}`);
-    }
-  };
-
-  const handleSendClaimRequest = async () => {
-    try {
-      const token = localStorage.getItem("token");
-      const response = await fetch("http://localhost:5000/api/offers", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`,
-        },
-        body: JSON.stringify({
-          adId: selectedAd._id,
-          offerAmount: 1,
-        }),
-      });
-
-      const data = await response.json();
-      if (!response.ok) throw new Error(data.message || "Failed to send claim request.");
-      alert("Claim request sent successfully!");
-    } catch (error) {
-      alert(`Error sending claim request: ${error.message}`);
     }
   };
 
@@ -75,7 +56,6 @@ const AdModalDisplay = ({ selectedAd, onClose }) => {
             <Typography variant="h5" fontWeight="bold" sx={{ mb: 1 }}>
               {selectedAd.adTitle}
             </Typography>
-
             <Typography variant="body1" color="textSecondary" sx={{ mb: 2 }}>
               {selectedAd.adDescription}
             </Typography>
@@ -89,6 +69,16 @@ const AdModalDisplay = ({ selectedAd, onClose }) => {
                 ))}
               </ImageList>
             )}
+
+            {/* Chat Message Input */}
+            <TextField
+              label="Message to Receiver"
+              variant="outlined"
+              fullWidth
+              value={message}
+              onChange={(e) => setMessage(e.target.value)}
+              sx={{ mb: 2 }}
+            />
 
             <Grid container spacing={2}>
               <Grid item xs={6}>
@@ -130,7 +120,7 @@ const AdModalDisplay = ({ selectedAd, onClose }) => {
                     </Typography>
                   </Grid>
                   <Grid item xs={12}>
-                    <Button fullWidth variant="contained" color="primary" onClick={handleSendClaimRequest}>
+                    <Button fullWidth variant="contained" color="primary" onClick={handleSendOffer}>
                       Send a Claim Request
                     </Button>
                   </Grid>
