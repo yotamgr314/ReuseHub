@@ -1,3 +1,4 @@
+// backend/server.js
 // IMPORTS SECTION
 const app = require("./app.js");
 const http = require("http");

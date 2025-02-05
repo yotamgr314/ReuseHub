@@ -1,3 +1,4 @@
+// backend/app.js
 //IMPORTS MODELS SECTION.
 const express = require("express");
 const cors = require("cors");
@@ -37,6 +38,7 @@ app.use(cors()); /* NOTE :CORS is a security mechanism implemented by browsers t
                 */
 app.use(express.json());// NOTE This middleware parses incoming JSON payloads from the request body and makes them accessible via req.body. It's essential for handling POST or PUT requests where the client sends data in JSON format.
 
+app.use("/uploads", express.static("uploads"));
 
 // ROUTES SECTION
 app.use("/api/ads", adRoutes);

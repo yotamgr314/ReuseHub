@@ -1,3 +1,7 @@
+// backend/routes/donationAdRouter.js
+const upload = require("../middlewares/uploadMiddleware"); // ⬅️ הוספת Multer
+const protectMiddleware = require("../middlewares/authenticateMiddleware");
+
 const express = require("express");
 const { 
   createDonationAd, 
@@ -5,15 +9,17 @@ const {
   getDonationAdById, 
   deleteDonationAd 
 } = require("../controllers/donationAdController");
-const protectMiddleware = require("../middlewares/authenticateMiddleware");
 
 const router = express.Router();
+
+
+
 
 // Debugging: Ensure functions are correctly imported
 console.log("createDonationAd:", createDonationAd);
 
 // ✅ Create a new donation ad (Protected Route)
-router.post("/", protectMiddleware, createDonationAd);
+router.post("/", protectMiddleware, upload.array("images", 5), createDonationAd);
 
 
 module.exports = router;

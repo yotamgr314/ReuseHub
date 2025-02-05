@@ -1,3 +1,4 @@
+// frontend/src/createAd/pages/createAd.js
 import React, { useState, useEffect } from "react";
 import { Container, Box, Typography, Grid, Card, CardActionArea, CardContent } from "@mui/material";
 import { useNavigate } from "react-router-dom";

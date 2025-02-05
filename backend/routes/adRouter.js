@@ -1,3 +1,4 @@
+// backend/routes/adRouter.js
 const express = require("express");
 const { getAllAds, getAdById, deleteAd, getMyAds } = require("../controllers/adController");
 const authenticateMiddleware = require("../middlewares/authenticateMiddleware");

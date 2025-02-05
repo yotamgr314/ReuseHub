@@ -1,3 +1,4 @@
+// backend/models/wishAdSchema.js
 const mongoose = require("mongoose");
 const BaseAd = require("./baseAdSchema");
 

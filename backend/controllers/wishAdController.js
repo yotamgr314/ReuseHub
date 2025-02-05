@@ -1,3 +1,4 @@
+// backend/controllers/wishAdController.js
 const WishAd = require("../models/wishAdSchema");
 
 // ✅ Create a new wish ad
