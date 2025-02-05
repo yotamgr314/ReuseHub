@@ -9,7 +9,7 @@ exports.getOrCreateChat = async (req, res) => {
         return res.status(400).json({ success: false, message: "Invalid chat ID" });
       }
   
-      console.log(`📢 Fetching chat for chatId: ${chatId}`);
+      console.log(`fetching chat for chatId: ${chatId}`);
   
       let chat = await Chat.findById(chatId)
         .populate("messages.sender", "firstName lastName")
@@ -31,16 +31,16 @@ exports.sendMessage = async (req, res) => {
       const { chatId } = req.params;  // 🔹 Use chatId, not offerId
       const { text } = req.body;
 
-      console.log("📩 Received sendMessage request:", { chatId, text, sender: req.user._id });
+      console.log(" Received sendMessage request:", { chatId, text, sender: req.user._id });
 
       if (!chatId || chatId === "undefined") {
-        console.error("❌ Missing chatId in sendMessage API");
+        console.error("Missing chatId in sendMessage API");
         return res.status(400).json({ success: false, message: "Chat ID is required." });
       }
 
       let chat = await Chat.findById(chatId);
       if (!chat) {
-        console.error("❌ Chat not found for chatId:", chatId);
+        console.error("Chat not found for chatId:", chatId);
         return res.status(404).json({ success: false, message: "Chat not found" });
       }
 
@@ -48,7 +48,7 @@ exports.sendMessage = async (req, res) => {
       chat.messages.push(message);
 
       await chat.save();
-      console.log("✅ Message saved to chat:", message);
+      console.log("Message saved to chat:", message);
 
       // ✅ Notify both participants via WebSocket
       const io = req.app.get("io");
@@ -58,7 +58,7 @@ exports.sendMessage = async (req, res) => {
 
       res.status(201).json({ success: true, data: message });
     } catch (error) {
-      console.error("❌ Error sending message:", error);
+      console.error("Error sending message:", error);
       res.status(500).json({ success: false, message: "Internal server error" });
     }
 };
