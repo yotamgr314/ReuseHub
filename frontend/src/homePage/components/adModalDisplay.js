@@ -19,7 +19,7 @@ const AdModalDisplay = ({ selectedAd, onClose }) => {
         body: JSON.stringify({
           adId: selectedAd._id,
           offerAmount: 1,
-          message, // ✅ Attach initial chat message
+          message, //  Attach initial chat message
         }),
       });
 

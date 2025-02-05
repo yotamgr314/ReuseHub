@@ -31,7 +31,7 @@ const navItems = [
   { label: "CREATE AD", path: "/createAd", type: "link", icon: <AddCircleIcon /> },
   { label: "MY ADS", path: "/myAds", type: "link", icon: <ViewListIcon /> },
   { label: "MY OFFERS", path: "/myOffers", type: "link", icon: <OfferIcon /> },
-  { label: "CHAT", path: "/chat", type: "link", icon: <ChatIcon /> },
+  { label: "CHAT", path: "/chat", type: "chat", icon: <ChatIcon /> }, // ✅ Changed type to 'chat'
   { label: "LEADERBOARD", path: "/leaderBoard", type: "link", icon: <LeaderboardIcon /> },
   { label: "LOG OUT", type: "action", icon: <LogoutIcon /> }, // LOG OUT as an action
 ];
@@ -45,14 +45,21 @@ export default function DrawerAppBar(props) {
   const hideAppBarRoutes = ["/register", "/login"];
 
   // ✅ IF THE CURRENT PATH IS IN hideAppBarRoutes, DO NOT RENDER NAVBAR
-  if (hideAppBarRoutes.includes(location.pathname))
-  {
+  if (hideAppBarRoutes.includes(location.pathname)) {
     return null;
   }
 
-
   const handleDrawerToggle = () => {
     setMobileOpen((prevState) => !prevState);
+  };
+
+  const handleChatNavigation = () => {
+    const lastChatId = localStorage.getItem("lastChatId"); // ✅ Retrieve last chat session
+    if (lastChatId) {
+      navigate(`/chat/${lastChatId}`);
+    } else {
+      alert("❌ No active chats. Please start a conversation.");
+    }
   };
 
   const drawer = (
@@ -82,10 +89,18 @@ export default function DrawerAppBar(props) {
                   <ListItemText primary={item.label} sx={{ ml: 1 }} />
                 </NavLink>
               </ListItemButton>
+            ) : item.type === "chat" ? (
+              <ListItemButton
+                sx={{ textAlign: "center", py: 2 }}
+                onClick={handleChatNavigation} // ✅ Navigate to last chat
+              >
+                {item.icon}
+                <ListItemText primary={item.label} sx={{ ml: 1 }} />
+              </ListItemButton>
             ) : (
               <ListItemButton
                 sx={{ textAlign: "center", py: 2 }}
-                onClick={() => handleLogout(navigate)} // Call centralized logout function which will delete the jwt token from the localStorage.
+                onClick={() => handleLogout(navigate)} // Call centralized logout function
               >
                 {item.icon} {/* Add icon to logout */}
                 <ListItemText primary={item.label} sx={{ ml: 1 }} />
@@ -141,6 +156,11 @@ export default function DrawerAppBar(props) {
                     {item.icon} {/* Add icon to navbar */}
                     {item.label}
                   </NavLink>
+                </Button>
+              ) : item.type === "chat" ? (
+                <Button key={item.label} onClick={handleChatNavigation} sx={{ color: "text.primary" }}>
+                  {item.icon} {/* Add icon to chat */}
+                  {item.label}
                 </Button>
               ) : (
                 <Button

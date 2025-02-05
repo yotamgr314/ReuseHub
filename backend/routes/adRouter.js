@@ -6,7 +6,7 @@ const adRouter = express.Router();
 
 // Public routes
 adRouter.get("/",authenticateMiddleware, getAllAds); // Get all ads
-adRouter.get("/myAds", authenticateMiddleware, getMyAds); // ✅ Get logged-in user's ads
+adRouter.get("/myAds", authenticateMiddleware, getMyAds); //  Get logged-in user's ads
 adRouter.get("/:id",authenticateMiddleware, getAdById); // Get single ad by ID
 
 // Protected routes

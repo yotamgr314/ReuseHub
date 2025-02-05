@@ -5,7 +5,7 @@ import Typography from "@mui/material/Typography";
 import Box from "@mui/material/Box";
 import { useTheme } from "@mui/material/styles";
 
-const AdsList = ({ ads = [] }) => {  // ✅ Ensure ads is always an array
+const AdsList = ({ ads = [] }) => {  //  Ensure ads is always an array
   const theme = useTheme();
 
   return (
@@ -24,7 +24,7 @@ const AdsList = ({ ads = [] }) => {  // ✅ Ensure ads is always an array
       ) : (
         ads.map((ad) => (
           <Card
-            key={ad._id || Math.random()} // ✅ Prevent React key errors
+            key={ad._id || Math.random()} //  Prevent React key errors
             sx={{
               maxWidth: "100%",
               padding: 2,

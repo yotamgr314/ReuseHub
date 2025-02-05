@@ -3,7 +3,7 @@ import React, { useState, useEffect } from "react";
 import { GoogleMap, LoadScriptNext, OverlayView, Marker } from "@react-google-maps/api";
 import StickyNote2TwoToneIcon from "@mui/icons-material/StickyNote2TwoTone"; // Wishlist Ad icon
 import VolunteerActivismTwoToneIcon from "@mui/icons-material/VolunteerActivismTwoTone"; // Donation Ad icon
-import AdModalDisplay from "./adModalDisplay"; // ✅ Updated import
+import AdModalDisplay from "./adModalDisplay"; //  Updated import
 
 const GoogleMapComponent = ({ ads }) => {
   const [userLocation, setUserLocation] = useState(null);

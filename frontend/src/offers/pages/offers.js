@@ -101,24 +101,22 @@ const Offers = () => {
   onClick={() => {
     console.log("🔗 Navigating to chat:", offer.chat?._id);
     if (offer.chat && offer.chat._id) {
-      navigate(`/chat/${offer.chat._id}`);  // ✅ Correct navigation
+      navigate(`/chat/${offer.chat._id}`);  //  Correct navigation
     } else {
-      alert("❌ Chat not found for this offer.");
+      alert(" Chat not found for this offer.");
     }
   }}
   disabled={!offer.chat}
 >
   Start Chat
 </Button>
-
-
               </CardContent>
             </Card>
           </Grid>
         ))}
       </Grid>
 
-      {/* ✅ Modal for confirmation messages */}
+      {/*  Modal for confirmation messages */}
       <Modal open={openModal} onClose={() => setOpenModal(false)}>
         <Box
           sx={{

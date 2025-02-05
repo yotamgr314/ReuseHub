@@ -9,7 +9,7 @@ module.exports = function (io) {
 
     socket.on("sendMessage", (data) => {
       console.log("📩 WebSocket message received:", data);
-      io.to(data.chatId).emit("newMessage", data); // ✅ Send to chat room
+      io.to(data.chatId).emit("newMessage", data); // Broadcast to all in the room
     });
 
     socket.on("disconnect", () => {

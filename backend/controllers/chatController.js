@@ -10,31 +10,32 @@ exports.getOrCreateChat = async (req, res) => {
         console.log(`🛠️ Received chatId:`, chatId, "Type:", typeof chatId);
 
         if (!mongoose.Types.ObjectId.isValid(chatId)) {
-            console.error("❌ Invalid chatId format:", chatId);
+            console.error("Invalid chatId format:", chatId);
             return res.status(400).json({ success: false, message: "Invalid chat ID format" });
         }
 
-        chatId = new mongoose.Types.ObjectId(chatId);  // ✅ Convert to ObjectId
+        chatId = new mongoose.Types.ObjectId(chatId);  // Convert to ObjectId
 
         let chat = await Chat.findById(chatId)
             .populate("messages.sender", "firstName lastName")
-            .populate("participants", "firstName lastName");
+            .populate("participants", "firstName lastName")
+            .sort({ "messages.timestamp": 1 });  
 
         if (!chat) {
-            console.error("❌ Chat not found for chatId:", chatId);
+            console.error("Chat not found for chatId:", chatId);
             return res.status(404).json({ success: false, message: "Chat not found" });
         }
 
         res.status(200).json({ success: true, data: chat });
     } catch (error) {
-        console.error("❌ Error fetching chat:", error);
+        console.error("Error fetching chat:", error);
         res.status(500).json({ success: false, message: "Internal server error" });
     }
 };
   
 exports.sendMessage = async (req, res) => {
     try {
-      const { chatId } = req.params;  // 🔹 Use chatId, not offerId
+      const { chatId } = req.params;  //  Use chatId, not offerId
       const { text } = req.body;
 
       console.log(" Received sendMessage request:", { chatId, text, sender: req.user._id });
@@ -56,7 +57,7 @@ exports.sendMessage = async (req, res) => {
       await chat.save();
       console.log("Message saved to chat:", message);
 
-      // ✅ Notify both participants via WebSocket
+      //Notify both participants via WebSocket
       const io = req.app.get("io");
       chat.participants.forEach((user) => {
         io.to(user.toString()).emit("newMessage", message);
@@ -66,5 +67,22 @@ exports.sendMessage = async (req, res) => {
     } catch (error) {
       console.error("Error sending message:", error);
       res.status(500).json({ success: false, message: "Internal server error" });
+    }
+};
+
+
+exports.getUserChats = async (req, res) => {
+    try {
+        const userId = req.user._id;
+
+        const chats = await Chat.find({ participants: userId }) 
+            .populate("participants", "firstName lastName") 
+            .populate("messages.sender", "firstName lastName")
+            .sort({ updatedAt: -1 }); // 
+
+        res.status(200).json({ success: true, data: chats });
+    } catch (error) {
+        console.error(" Error fetching user chats:", error);
+        res.status(500).json({ success: false, message: "Internal server error" });
     }
 };
