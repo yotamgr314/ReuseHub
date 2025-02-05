@@ -1,3 +1,4 @@
+// backend/routes/chatRouter.js
 const express = require("express");
 const { getOrCreateChat, sendMessage, getUserChats } = require("../controllers/chatController");
 const authenticateMiddleware = require("../middlewares/authenticateMiddleware");

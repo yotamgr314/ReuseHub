@@ -1,3 +1,4 @@
+// backend/routes/wishAdRouter.js
 const express = require("express");
 const { createWishAd } = require("../controllers/wishAdController");
 const protectMiddleware = require("../middlewares/authenticateMiddleware");

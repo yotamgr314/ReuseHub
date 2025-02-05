@@ -1,3 +1,4 @@
+// backend/controllers/chatController.js
 const Chat = require("../models/chatSchema");
 const Offer = require("../models/offerSchema");
 

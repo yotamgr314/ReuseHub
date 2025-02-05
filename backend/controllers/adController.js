@@ -1,3 +1,4 @@
+// backend/controllers/adController.js
 const BaseAd = require("../models/baseAdSchema");
 
 exports.getAllAds = async (req, res) => {

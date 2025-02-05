@@ -1,3 +1,4 @@
+// backend/controllers/authenticateController.js
 const UserModel = require("../models/userSchema");
 const jwt = require("jsonwebtoken");
 

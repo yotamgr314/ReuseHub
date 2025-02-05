@@ -1,3 +1,4 @@
+// backend/models/baseAdSchema.js
 const mongoose = require("mongoose");
 
 // embedeed item schema.
