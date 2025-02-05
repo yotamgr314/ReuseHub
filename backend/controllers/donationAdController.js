@@ -1,4 +1,3 @@
-// backend/controllers/donationAdController.js
 const DonationAd = require("../models/donationAdSchema");
 
 exports.createDonationAd = async (req, res) => {
@@ -17,6 +16,16 @@ exports.createDonationAd = async (req, res) => {
 
     console.log("🔹 Received Donation Ad Request:", req.body);
 
+    // המר את location לערך JSON אם הוא מגיע כמחרוזת
+    const parsedLocation = typeof location === "string" ? JSON.parse(location) : location;
+
+    if (!parsedLocation || !Array.isArray(parsedLocation.coordinates) || parsedLocation.coordinates.length !== 2) {
+      return res.status(400).json({ success: false, message: "Invalid location coordinates. Must be [longitude, latitude]." });
+    }
+
+    // עיבוד התמונות שהועלו ושמירת הנתיבים שלהן
+    const imagePaths = req.files ? req.files.map((file) => "/uploads/" + file.filename) : [];
+
     const newAd = new DonationAd({
       adTitle,
       adDescription,
@@ -26,16 +35,17 @@ exports.createDonationAd = async (req, res) => {
       itemCondition,
       location: {
         type: "Point",
-        coordinates: location.coordinates,
+        coordinates: parsedLocation.coordinates,
       },
-      items: {  // 🔹 FIXED: Use 'items' instead of 'item'
+      items: {
         name: item.name || "N/A",
         description: item.description || "N/A",
-        images: item.images || [],
+        images: imagePaths.length > 0 ? imagePaths : item.images || [],
       },
       createdBy: req.user._id,
     });
-        await newAd.save();
+
+    await newAd.save();
 
     // Emit event for real-time update
     io.emit("donationAdCreated", newAd);

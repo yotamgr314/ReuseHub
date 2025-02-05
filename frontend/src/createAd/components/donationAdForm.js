@@ -11,17 +11,20 @@ import {
 } from "@mui/material";
 import { GoogleMap, LoadScriptNext, Marker } from "@react-google-maps/api";
 
+
 const DonationAdForm = ({ token, navigate }) => {
+  const [selectedImages, setSelectedImages] = useState([]);
   const [formData, setFormData] = useState({
     adTitle: "",
     adDescription: "",
-    category: "",
+    category: "Furniture", // יש לוודא שיש ערך ברירת מחדל
     amount: 1,
     donationMethod: "Pickup",
     itemCondition: "Gently Used",
     item: { name: "", description: "", images: [] },
-    location: { type: "Point", coordinates: [] },
-  });
+    location: { type: "Point", coordinates: [0, 0] }, // תיקון ברירת המחדל
+    });
+  
 
   const [userLocation, setUserLocation] = useState(null);
   const [error, setError] = useState("");
@@ -56,6 +59,12 @@ const DonationAdForm = ({ token, navigate }) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
 
+  const handleImageUpload = (e) => {
+    const files = Array.from(e.target.files);
+    setSelectedImages(files);
+  };
+  
+
   const handleItemInputChange = (e) => {
     setFormData({
       ...formData,
@@ -63,13 +72,13 @@ const DonationAdForm = ({ token, navigate }) => {
     });
   };
 
-  const handleImageUrlsChange = (e) => {
+/*   const handleImageUrlsChange = (e) => {
     const urls = e.target.value.split(",").map((url) => url.trim());
     setFormData({
       ...formData,
       item: { ...formData.item, images: urls },
     });
-  };
+  }; */
 
   const handleMapClick = (event) => {
     setFormData({
@@ -84,37 +93,47 @@ const DonationAdForm = ({ token, navigate }) => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError("");
-
-    if (!formData.adTitle || formData.adTitle.length < 5) {
-      setError("Ad title must be at least 5 characters long.");
-      return;
-    }
-    if (!formData.adDescription || !formData.category || !formData.amount || !formData.location.coordinates.length) {
-      setError("All fields are required.");
-      return;
-    }
-
+  
+    console.log("🔹 Form Data Before Submission:", formData);
+  
+    const formDataToSend = new FormData();
+    formDataToSend.append("adTitle", formData.adTitle);
+    formDataToSend.append("adDescription", formData.adDescription);
+    formDataToSend.append("category", formData.category);
+    formDataToSend.append("amount", formData.amount);
+    formDataToSend.append("donationMethod", formData.donationMethod);
+    formDataToSend.append("itemCondition", formData.itemCondition);
+    formDataToSend.append("location", JSON.stringify(formData.location));
+    formDataToSend.append("item[name]", formData.item.name);
+    formDataToSend.append("item[description]", formData.item.description);
+  
+    selectedImages.forEach((image) => {
+      formDataToSend.append("images", image);
+    });
+  
     try {
       const response = await fetch(`http://localhost:5000/api/donationAds`, {
         method: "POST",
         headers: {
-          "Content-Type": "application/json",
           Authorization: `Bearer ${token}`,
         },
-        body: JSON.stringify(formData),
+        body: formDataToSend,
       });
-
+  
       const data = await response.json();
-
+  
       if (!response.ok) {
         throw new Error(data.message || "Ad creation failed");
       }
-
+  
+      console.log("🔹 Server Response:", data);
       navigate("/homePage");
     } catch (err) {
       setError(err.message);
+      console.error("🔺 Error:", err);
     }
   };
+    
 
   return (
     <Paper elevation={3} sx={{ padding: 4, marginTop: 2 }}>
@@ -245,12 +264,16 @@ const DonationAdForm = ({ token, navigate }) => {
 
           {/* Image URLs */}
           <Grid item xs={12}>
-            <TextField
-              name="images"
-              label="Image URLs (comma separated)"
-              fullWidth
-              onChange={handleImageUrlsChange}
-            />
+          <Grid item xs={12}>
+  <Typography>Upload Images</Typography>
+  <input
+    type="file"
+    multiple
+    accept="image/*"
+    onChange={handleImageUpload}
+  />
+</Grid>
+
           </Grid>
 
           {/* Google Maps Location Picker */}
