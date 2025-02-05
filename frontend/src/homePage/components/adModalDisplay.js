@@ -62,15 +62,17 @@ const AdModalDisplay = ({ selectedAd, onClose }) => {
             </Typography>
 
             {selectedAd.kind === "donationAd" && selectedAd.items?.images?.length > 0 && (
-              <ImageList cols={selectedAd.items.images.length > 1 ? 2 : 1} rowHeight={140} sx={{ mb: 2 }}>
-                {selectedAd.items.images.map((imgUrl, index) => (
-                  <ImageListItem key={index}>
-                    <CardMedia component="img" height="140" image={imgUrl} alt={`Ad Image ${index}`} sx={{ borderRadius: 2 }} />
-                  </ImageListItem>
-                ))}
-              </ImageList>
-            )}
-
+  <ImageList cols={selectedAd.items.images.length > 1 ? 2 : 1} rowHeight={140} sx={{ mb: 2 }}>
+    {selectedAd.items.images.map((imgUrl, index) => {
+      const imageUrl = imgUrl.startsWith("http") ? imgUrl : `http://localhost:5000${imgUrl}`;
+      return (
+        <ImageListItem key={index}>
+          <CardMedia component="img" height="140" image={imageUrl} alt={`Ad Image ${index}`} sx={{ borderRadius: 2 }} />
+        </ImageListItem>
+      );
+    })}
+  </ImageList>
+)}
             {/* Chat Message Input */}
             <TextField
               label="Message to Receiver"
