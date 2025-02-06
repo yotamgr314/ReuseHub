@@ -1,4 +1,3 @@
-// frontend/src/createAd/pages/createAd.js
 import React, { useState, useEffect } from "react";
 import { Container, Box, Typography, Grid, Card, CardActionArea, CardContent } from "@mui/material";
 import { useNavigate } from "react-router-dom";
@@ -11,7 +10,7 @@ import { jwtDecode } from "jwt-decode";
 const CreateAd = () => {
   const [adType, setAdType] = useState(null); // "donationAd" or "wishAd"
   const navigate = useNavigate();
-  const [token, setToken] = useState(localStorage.getItem("token"));
+  const token = localStorage.getItem("token"); // No need for setToken, just use token
 
   // Validate token and redirect if expired
   useEffect(() => {
@@ -33,45 +32,61 @@ const CreateAd = () => {
   }, [navigate, token]);
 
   return (
-    <Container maxWidth="md">
-      <Box sx={{ marginTop: 5, textAlign: "center" }}>
+    <Container maxWidth="lg">
+      <Box sx={{ display: "flex", justifyContent: "center", alignItems: "center", minHeight: "80vh" }}>
         {!adType ? (
-          <Grid container spacing={3} justifyContent="center" sx={{ marginTop: 4 }}>
+          <Grid container spacing={4} justifyContent="center" sx={{ display: "flex", flexDirection: "row" }}>
             {/* Donation Ad Card */}
-            <Grid item xs={12} sm={6}>
+            <Grid item xs={12} sm={6} md={5}> {/* Cards now stand side by side */}
               <Card
                 onClick={() => setAdType("donationAd")}
                 sx={{
                   cursor: "pointer",
-                  boxShadow: 3,
+                  boxShadow: 4,
+                  borderRadius: 3,
+                  width: "100%",
+                  height: 250, // Increased height
+                  display: "flex",
+                  flexDirection: "column",
+                  justifyContent: "center",
+                  alignItems: "center",
                   transition: "0.3s",
-                  "&:hover": { boxShadow: 6, transform: "scale(1.05)", backgroundColor: "#f0f0f0" },
+                  backgroundColor: "white",
+                  "&:hover": { boxShadow: 8, transform: "scale(1.05)", backgroundColor: "#f8f8f8" },
                 }}
               >
-                <CardActionArea>
-                  <CardContent sx={{ py: 4, display: "flex", flexDirection: "column", alignItems: "center" }}>
-                    <VolunteerActivismTwoToneIcon sx={{ fontSize: 50, color: "primary.main", mb: 1 }} />
-                    <Typography variant="h5" fontWeight="medium"> Donation Ad</Typography>
+                <CardActionArea sx={{ width: "100%", height: "100%" }}> {/* Makes the entire card clickable */}
+                  <CardContent sx={{ py: 5, display: "flex", flexDirection: "column", alignItems: "center" }}>
+                    <VolunteerActivismTwoToneIcon sx={{ fontSize: 80, color: "primary.main", mb: 2 }} />
+                    <Typography variant="h4" fontWeight="bold">Donation Ad</Typography>
                   </CardContent>
                 </CardActionArea>
               </Card>
             </Grid>
 
             {/* Wish Ad Card */}
-            <Grid item xs={12} sm={6}>
+            <Grid item xs={12} sm={6} md={5}> {/* Cards now stand side by side */}
               <Card
                 onClick={() => setAdType("wishAd")}
                 sx={{
                   cursor: "pointer",
-                  boxShadow: 3,
+                  boxShadow: 4,
+                  borderRadius: 3,
+                  width: "100%",
+                  height: 250, // Increased height
+                  display: "flex",
+                  flexDirection: "column",
+                  justifyContent: "center",
+                  alignItems: "center",
                   transition: "0.3s",
-                  "&:hover": { boxShadow: 6, transform: "scale(1.05)", backgroundColor: "#f0f0f0" },
+                  backgroundColor: "white",
+                  "&:hover": { boxShadow: 8, transform: "scale(1.05)", backgroundColor: "#f8f8f8" },
                 }}
               >
-                <CardActionArea>
-                  <CardContent sx={{ py: 4, display: "flex", flexDirection: "column", alignItems: "center" }}>
-                    <StickyNote2TwoToneIcon sx={{ fontSize: 50, color: "secondary.main", mb: 1 }} />
-                    <Typography variant="h5" fontWeight="medium">Wish Ad</Typography>
+                <CardActionArea sx={{ width: "100%", height: "100%" }}> {/* Makes the entire card clickable */}
+                  <CardContent sx={{ py: 5, display: "flex", flexDirection: "column", alignItems: "center" }}>
+                    <StickyNote2TwoToneIcon sx={{ fontSize: 80, color: "secondary.main", mb: 2 }} />
+                    <Typography variant="h4" fontWeight="bold">Wish Ad</Typography>
                   </CardContent>
                 </CardActionArea>
               </Card>
