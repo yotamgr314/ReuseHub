@@ -125,14 +125,8 @@ const Offers = () => {
                 "&:hover": { boxShadow: "0px 8px 30px rgba(0,0,0,0.15)" },
               }}
             >
-              {/* Left Side - Image */}
-              <CardMedia
-                component="img"
-                sx={{ width: 120, height: 120, borderRadius: 2, objectFit: "cover" }}
-                image={offer.adId?.image || "https://via.placeholder.com/120"}
-                alt={offer.adId?.adTitle || "Offer Image"}
-              />
-
+              {/* Left Side - Image Fix Applied */}
+ 
               {/* Right Side - Details */}
               <CardContent sx={{ flex: 1, ml: 2 }}>
                 <Stack direction="row" justifyContent="space-between" alignItems="center">
