@@ -341,9 +341,19 @@ const DonationAdForm = ({ token, navigate }) => {
 
           {/* Submit Button */}
           <Grid item xs={12} sx={{ textAlign: "center" }}>
-            <Button type="submit" variant="contained">
-              Submit Donation Ad
-            </Button>
+          <Button 
+  type="submit" 
+  variant="contained"
+  sx={{ 
+    padding: "12px 24px", 
+    fontSize: "1.2rem", 
+    width: "75%", 
+    bgcolor: "#1976D2", 
+    "&:hover": { bgcolor: "#1565C0" } 
+  }}
+>
+  Submit Donation Ad
+</Button>
           </Grid>
         </Grid>
       </Box>
