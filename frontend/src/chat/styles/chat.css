@@ -2,7 +2,7 @@
     max-width: 500px;
     margin: auto;
     padding: 16px;
-    background-color: #f5f5f5;
+    background-color: #ffffff;
     border-radius: 8px;
     box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
 }
@@ -17,7 +17,7 @@
     max-height: 400px;
     overflow-y: auto;
     padding: 12px;
-    background: white;
+    background: #f8f9fa;
     border-radius: 8px;
     display: flex;
     flex-direction: column;
@@ -33,6 +33,8 @@
     font-size: 14px;
     word-wrap: break-word;
     position: relative;
+    transition: background-color 0.3s ease;
+    box-shadow: 0px 2px 5px rgba(0, 0, 0, 0.15);
 }
 
 /* שם השולח */
@@ -41,26 +43,13 @@
     margin-bottom: 4px;
 }
 
-/* ✅ לכל משתמש יהיה צבע שונה */
-.message {
-    color: white;
-    font-weight: bold;
+/* ✅ 2 צבעים בלבד */
+.message.green {
+    background-color: #A8D5BA !important; /* ירקרק בהיר */
+    color: #333;
 }
 
-/* ✅ אפקט בועה */
-.message::after {
-    content: "";
-    width: 10px;
-    height: 10px;
-    border-radius: 50%;
-    position: absolute;
-    bottom: -5px;
-}
-
-.message.me::after {
-    right: -5px;
-}
-
-.message.other::after {
-    left: -5px;
+.message.gray {
+    background-color: #D3D3D3 !important; /* אפור עדין */
+    color: #333;
 }

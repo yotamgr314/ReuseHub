@@ -6,14 +6,12 @@ import "../styles/chat.css"; // ✅ ייבוא קובץ CSS לעיצוב
 
 const socket = io("http://localhost:5000");
 
-// ✅ פונקציה שיוצרת צבע ייחודי לפי ה-token
-const generateColorFromToken = (token) => {
-    let hash = 0;
-    for (let i = 0; i < token.length; i++) {
-        hash = token.charCodeAt(i) + ((hash << 5) - hash);
-    }
-    const color = `hsl(${hash % 360}, 80%, 70%)`; // ✅ יוצר צבע בגוון ייחודי
-    return color;
+// ✅ 2 צבעים בלבד
+const COLORS = ["green", "gray"];
+
+const getUserColor = (userToken, otherToken) => {
+    if (!userToken) return COLORS[0]; // ברירת מחדל במקרה של בעיה
+    return userToken > otherToken ? COLORS[0] : COLORS[1]; // משתמשים בסדר קבוע לפי ה-token
 };
 
 const Chat = () => {
@@ -22,7 +20,8 @@ const Chat = () => {
     const [messageText, setMessageText] = useState("");
     const [participants, setParticipants] = useState([]);
     const [userId, setUserId] = useState(null);
-    const [userColor, setUserColor] = useState("#000");
+    const [userToken, setUserToken] = useState("");
+    const [otherUserToken, setOtherUserToken] = useState("");
 
     useEffect(() => {
         const fetchUserId = async () => {
@@ -32,7 +31,7 @@ const Chat = () => {
             const data = await response.json();
             if (response.ok) {
                 setUserId(data.user._id);
-                setUserColor(generateColorFromToken(localStorage.getItem("token"))); // ✅ צבע ייחודי למשתמש הנוכחי
+                setUserToken(localStorage.getItem("token")); // ✅ שומר את הטוקן של המשתמש
             }
         };
         fetchUserId();
@@ -50,10 +49,16 @@ const Chat = () => {
             if (response.ok) {
                 setMessages(data.data.messages || []);
                 setParticipants(data.data.participants);
+                
+                // ✅ מגדיר את הטוקן של הצד השני
+                const otherUser = data.data.participants.find((p) => p._id !== userId);
+                if (otherUser) {
+                    setOtherUserToken(otherUser._id); // סימון משתמש שני
+                }
             }
         };
         fetchChatMessages();
-    }, [chatId]);
+    }, [chatId, userId]);
 
     useEffect(() => {
         socket.on("newMessage", (data) => {
@@ -90,14 +95,10 @@ const Chat = () => {
             <Paper className="chat-messages">
                 {messages.map((msg, index) => {
                     const isCurrentUser = msg.sender?._id === userId;
-                    const messageColor = generateColorFromToken(msg.sender?._id || "default");
+                    const userColor = getUserColor(msg.sender?._id, otherUserToken);
 
                     return (
-                        <Box
-                            key={index}
-                            className={`message ${isCurrentUser ? "me" : "other"}`}
-                            sx={{ backgroundColor: messageColor }} // ✅ קובע צבע ייחודי לכל משתמש
-                        >
+                        <Box key={index} className={`message ${userColor}`}>
                             <Typography variant="body2" className="message-sender">
                                 {msg.sender?.firstName}
                             </Typography>
