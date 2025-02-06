@@ -56,26 +56,23 @@ export default function DrawerAppBar(props) {
 
   const handleChatNavigation = async () => {
     try {
-      const response = await fetch("http://localhost:5000/api/chat", {
-        headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
-      });
-  
-      const data = await response.json();
-  
-      if (response.ok && data.data.length > 0) {
-        if (data.data.length === 1) {
-          navigate(`/chat/${data.data[0]._id}`);
+        const response = await fetch("http://localhost:5000/api/chat", {
+            headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
+        });
+
+        const data = await response.json();
+        if (response.ok && data.data.length > 0) {
+            const lastChat = data.data[0]._id;  // ✅ בוחר את הצ'אט האחרון
+            navigate("/chat"); // ✅ מעביר את המשתמש לרשימת כל הצ'אטים שלוביר את המשתמש לרשימת כל הצ'אטים שלו
         } else {
-          navigate("/chat"); 
+            alert("No active chats found. Please start a conversation.");
         }
-      } else {
-        alert(" No active chats. Please start a conversation.");
-      }
     } catch (error) {
-      console.error("Error fetching chats:", error);
-      alert(" Unable to load chats. Please try again.");
+        console.error("Error fetching chats:", error);
+        alert("Unable to load chats. Please try again.");
     }
-  };
+};
+
   
   const drawer = (
     <Box onClick={handleDrawerToggle} sx={{ textAlign: "center" }}>

@@ -1,0 +1,55 @@
+.chat-container {
+    max-width: 500px;
+    margin: auto;
+    padding: 16px;
+    background-color: #ffffff;
+    border-radius: 8px;
+    box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
+}
+
+.chat-title {
+    text-align: center;
+    margin-bottom: 16px;
+    font-weight: bold;
+}
+
+.chat-messages {
+    max-height: 400px;
+    overflow-y: auto;
+    padding: 12px;
+    background: #f8f9fa;
+    border-radius: 8px;
+    display: flex;
+    flex-direction: column;
+}
+
+.message {
+    display: flex;
+    flex-direction: column;
+    padding: 8px 12px;
+    border-radius: 8px;
+    max-width: 70%;
+    margin-bottom: 8px;
+    font-size: 14px;
+    word-wrap: break-word;
+    position: relative;
+    transition: background-color 0.3s ease;
+    box-shadow: 0px 2px 5px rgba(0, 0, 0, 0.15);
+}
+
+/* שם השולח */
+.message-sender {
+    font-weight: bold;
+    margin-bottom: 4px;
+}
+
+/* ✅ 2 צבעים בלבד */
+.message.green {
+    background-color: #A8D5BA !important; /* ירקרק בהיר */
+    color: #333;
+}
+
+.message.gray {
+    background-color: #D3D3D3 !important; /* אפור עדין */
+    color: #333;
+}
