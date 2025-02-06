@@ -2,16 +2,16 @@ import React, { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import io from "socket.io-client";
 import { Box, Typography, TextField, Button, Paper } from "@mui/material";
-import "../styles/chat.css"; // ✅ ייבוא קובץ CSS לעיצוב
+import "../styles/chat.css"; // ✅ קובץ CSS לעיצוב נוסף
 
 const socket = io("http://localhost:5000");
 
-// ✅ 2 צבעים בלבד
-const COLORS = ["green", "gray"];
+// ✅ צבעים שונים לכל משתמש
+const COLORS = ["#FFDD94", "#AFCBFF"];
 
 const getUserColor = (userToken, otherToken) => {
-    if (!userToken) return COLORS[0]; // ברירת מחדל במקרה של בעיה
-    return userToken > otherToken ? COLORS[0] : COLORS[1]; // משתמשים בסדר קבוע לפי ה-token
+    if (!userToken) return COLORS[0]; // ברירת מחדל
+    return userToken > otherToken ? COLORS[0] : COLORS[1];
 };
 
 const Chat = () => {
@@ -31,7 +31,7 @@ const Chat = () => {
             const data = await response.json();
             if (response.ok) {
                 setUserId(data.user._id);
-                setUserToken(localStorage.getItem("token")); // ✅ שומר את הטוקן של המשתמש
+                setUserToken(localStorage.getItem("token"));
             }
         };
         fetchUserId();
@@ -49,11 +49,11 @@ const Chat = () => {
             if (response.ok) {
                 setMessages(data.data.messages || []);
                 setParticipants(data.data.participants);
-                
-                // ✅ מגדיר את הטוקן של הצד השני
+
+                // ✅ הגדרת המשתמש השני
                 const otherUser = data.data.participants.find((p) => p._id !== userId);
                 if (otherUser) {
-                    setOtherUserToken(otherUser._id); // סימון משתמש שני
+                    setOtherUserToken(otherUser._id);
                 }
             }
         };
@@ -88,18 +88,51 @@ const Chat = () => {
     };
 
     return (
-        <Box className="chat-container">
-            <Typography variant="h5" className="chat-title">
+        <Box 
+            sx={{
+                width: "100vw", // ✅ כעת תופס את כל המסך
+                height: "100vh",
+                display: "flex",
+                flexDirection: "column",
+                alignItems: "center",
+                bgcolor: "#f8f9fa",
+                overflow: "hidden", // ✅ מסיר את הסקרול בר החיצוני
+            }}
+        >
+            <Typography variant="h5" sx={{ mt: 2, mb: 2, fontWeight: "bold", color: "#222" }}>
                 Chat with {participants.map((p) => p.firstName).join(", ")}
             </Typography>
-            <Paper className="chat-messages">
+
+            {/* חלון הצ'אט מתפרס על כל המסך */}
+            <Paper
+                sx={{
+                    flexGrow: 1,
+                    width: "100%", // ✅ מתפרס על כל רוחב הדף
+                    display: "flex",
+                    flexDirection: "column",
+                    p: 2,
+                    overflowY: "auto",
+                }}
+            >
                 {messages.map((msg, index) => {
                     const isCurrentUser = msg.sender?._id === userId;
                     const userColor = getUserColor(msg.sender?._id, otherUserToken);
 
                     return (
-                        <Box key={index} className={`message ${userColor}`}>
-                            <Typography variant="body2" className="message-sender">
+                        <Box
+                            key={index}
+                            sx={{
+                                maxWidth: "70%",
+                                width: "fit-content",
+                                bgcolor: userColor,
+                                p: 2,
+                                borderRadius: "10px",
+                                mb: 1,
+                                alignSelf: isCurrentUser ? "flex-end" : "flex-start",
+                                boxShadow: "0px 2px 5px rgba(0,0,0,0.1)",
+                            }}
+                        >
+                            <Typography variant="body2" sx={{ fontWeight: "bold", mb: 0.5 }}>
                                 {msg.sender?.firstName}
                             </Typography>
                             <Typography variant="body2">{msg.text}</Typography>
@@ -107,16 +140,30 @@ const Chat = () => {
                     );
                 })}
             </Paper>
-            <TextField
-                fullWidth
-                placeholder="Type a message..."
-                value={messageText}
-                onChange={(e) => setMessageText(e.target.value)}
-                sx={{ mt: 2 }}
-            />
-            <Button fullWidth variant="contained" color="primary" onClick={sendMessage} sx={{ mt: 1 }}>
-                Send
-            </Button>
+
+            {/* שורת ההקלדה */}
+            <Box
+                sx={{
+                    width: "100%", // ✅ מתאים לכל רוחב העמוד
+                    display: "flex",
+                    alignItems: "center",
+                    bgcolor: "white",
+                    p: 1,
+                    borderTop: "1px solid #ddd",
+                    boxShadow: "0px -2px 5px rgba(0,0,0,0.1)"
+                }}
+            >
+                <TextField
+                    fullWidth
+                    placeholder="Type a message..."
+                    value={messageText}
+                    onChange={(e) => setMessageText(e.target.value)}
+                    sx={{ mr: 1 }}
+                />
+                <Button variant="contained" color="primary" onClick={sendMessage}>
+                    Send
+                </Button>
+            </Box>
         </Box>
     );
 };
