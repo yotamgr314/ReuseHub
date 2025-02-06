@@ -1,11 +1,12 @@
-// frontend/src/homePage/pages/homePage.js
 import React, { useState, useEffect } from "react";
 import { io } from "socket.io-client";
 import AdsList from "../../shared/adsCardList/adsCards";
 import GoogleMapComponent from "../components/googleMap";
+import AdModalDisplay from "../components/adModalDisplay";
 
 const HomePage = () => {
   const [ads, setAds] = useState([]);
+  const [selectedAd, setSelectedAd] = useState(null);
 
   useEffect(() => {
     const fetchAds = async () => {
@@ -68,10 +69,19 @@ const HomePage = () => {
   }, []);
 
   return (
-    <div>
-      <h1>All Ads</h1>
-      <GoogleMapComponent ads={ads} />
-      <AdsList ads={ads} />
+    <div style={{ padding: "20px", maxWidth: "95vw", margin: "auto" }}>
+      <h1 style={{ textAlign: "center", fontSize: "2rem", marginBottom: "20px" }}></h1>
+
+      {/* Google Map - Full Width */}
+      <div style={{ borderRadius: "12px", overflow: "hidden", boxShadow: "0 4px 8px rgba(0, 0, 0, 0.1)", width: "100%" }}>
+        <GoogleMapComponent ads={ads} onSelectAd={setSelectedAd} />
+      </div>
+
+      {/* Ads List - Clickable */}
+      <AdsList ads={ads} onSelectAd={setSelectedAd} />
+
+      {/* Ad Modal Display */}
+      {selectedAd && <AdModalDisplay selectedAd={selectedAd} onClose={() => setSelectedAd(null)} />}
     </div>
   );
 };

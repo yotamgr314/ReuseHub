@@ -1,53 +1,44 @@
-// frontend/src/shared/adsCards.js
 import React from "react";
-import Card from "@mui/material/Card"; 
-import CardContent from "@mui/material/CardContent";
-import Typography from "@mui/material/Typography";
-import Box from "@mui/material/Box";
-import { useTheme } from "@mui/material/styles";
+import { Card, CardContent, Typography, Grid, IconButton } from "@mui/material";
+import ArrowForwardIosIcon from "@mui/icons-material/ArrowForwardIos";
 
-const AdsList = ({ ads = [] }) => {  //  Ensure ads is always an array
-  const theme = useTheme();
-
+const AdsList = ({ ads, onSelectAd }) => {
   return (
-    <Box 
-      sx={{ 
-        display: "flex",
-        flexDirection: "column",
-        gap: 2,
-        mt: 3,
-      }}
-    >
-      {ads.length === 0 ? (
-        <Typography variant="h6" color="text.secondary">
-          No ads available.
-        </Typography>
-      ) : (
-        ads.map((ad) => (
+    <Grid container spacing={2} sx={{ marginTop: 2, width: "100%" }}>
+      {ads.map((ad) => (
+        <Grid item xs={12} key={ad._id}>
           <Card
-            key={ad._id || Math.random()} //  Prevent React key errors
+            onClick={() => onSelectAd(ad)}
             sx={{
-              maxWidth: "100%",
-              padding: 2,
-              backgroundColor: theme.palette.grey[200],
-              boxShadow: theme.shadows[2],
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "space-between",
+              padding: "12px",
+              cursor: "pointer",
+              transition: "0.2s",
+              boxShadow: "0px 4px 8px rgba(0, 0, 0, 0.1)",
+              "&:hover": {
+                boxShadow: "0px 6px 12px rgba(0, 0, 0, 0.2)",
+                transform: "scale(1.02)",
+              },
             }}
           >
-            <CardContent>
-              <Typography variant="h5" component="div" gutterBottom>
+            <CardContent sx={{ flexGrow: 1 }}>
+              <Typography variant="h6" fontWeight="bold">
                 {ad.adTitle}
               </Typography>
-              <Typography variant="body2" color="text.secondary">
+              <Typography variant="body2" color="textSecondary">
                 {ad.adDescription}
               </Typography>
-              <Typography variant="caption" color="primary">
-                {ad.kind === "donationAd" ? "Donation Ad" : "Wishlist Ad"}
-              </Typography>
             </CardContent>
+            {/* Right Arrow Icon */}
+            <IconButton edge="end" aria-label="view details">
+              <ArrowForwardIosIcon sx={{ fontSize: 20, color: "gray" }} />
+            </IconButton>
           </Card>
-        ))
-      )}
-    </Box>
+        </Grid>
+      ))}
+    </Grid>
   );
 };
 

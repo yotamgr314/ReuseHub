@@ -1,11 +1,10 @@
-// frontend/src/homePage/components/googleMap.js
 import React, { useState, useEffect } from "react";
 import { GoogleMap, LoadScriptNext, OverlayView, Marker } from "@react-google-maps/api";
 import StickyNote2TwoToneIcon from "@mui/icons-material/StickyNote2TwoTone"; // Wishlist Ad icon
 import VolunteerActivismTwoToneIcon from "@mui/icons-material/VolunteerActivismTwoTone"; // Donation Ad icon
-import AdModalDisplay from "./adModalDisplay"; //  Updated import
+import AdModalDisplay from "./adModalDisplay"; 
 
-const GoogleMapComponent = ({ ads }) => {
+const GoogleMapComponent = ({ ads, onSelectAd }) => {
   const [userLocation, setUserLocation] = useState(null);
   const [mapAds, setMapAds] = useState([]);
   const [selectedAd, setSelectedAd] = useState(null);
@@ -36,7 +35,11 @@ const GoogleMapComponent = ({ ads }) => {
 
   return (
     <LoadScriptNext googleMapsApiKey={process.env.REACT_APP_GOOGLE_MAPS_API_KEY}>
-      <GoogleMap mapContainerStyle={{ width: "100%", height: "500px" }} center={userLocation || { lat: 32.08088, lng: 34.81429 }} zoom={12}>
+      <GoogleMap
+        mapContainerStyle={{ width: "100%", height: "500px", borderRadius: "12px", boxShadow: "0 4px 8px rgba(0, 0, 0, 0.1)" }}
+        center={userLocation || { lat: 32.08088, lng: 34.81429 }}
+        zoom={12}
+      >
         {userLocation && <Marker position={userLocation} />}
 
         {mapAds.map((ad) =>
@@ -47,17 +50,30 @@ const GoogleMapComponent = ({ ads }) => {
               mapPaneName={OverlayView.OVERLAY_MOUSE_TARGET}
             >
               {ad.kind === "donationAd" ? (
-                <VolunteerActivismTwoToneIcon fontSize="large" style={{ color: "blue", cursor: "pointer" }} onClick={() => setSelectedAd(ad)} />
+                <VolunteerActivismTwoToneIcon
+                  fontSize="large"
+                  style={{ color: "blue", cursor: "pointer" }}
+                  onClick={() => {
+                    setSelectedAd(ad);
+                    onSelectAd(ad);
+                  }}
+                />
               ) : (
-                <StickyNote2TwoToneIcon fontSize="large" style={{ color: "green", cursor: "pointer" }} onClick={() => setSelectedAd(ad)} />
+                <StickyNote2TwoToneIcon
+                  fontSize="large"
+                  style={{ color: "green", cursor: "pointer" }}
+                  onClick={() => {
+                    setSelectedAd(ad);
+                    onSelectAd(ad);
+                  }}
+                />
               )}
             </OverlayView>
           ) : null
         )}
       </GoogleMap>
 
-      {/* Use the new AdModalDisplay component */}
-      <AdModalDisplay selectedAd={selectedAd} onClose={() => setSelectedAd(null)} />
+      {selectedAd && <AdModalDisplay selectedAd={selectedAd} onClose={() => setSelectedAd(null)} />}
     </LoadScriptNext>
   );
 };
