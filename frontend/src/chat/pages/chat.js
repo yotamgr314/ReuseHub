@@ -2,8 +2,19 @@ import React, { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import io from "socket.io-client";
 import { Box, Typography, TextField, Button, Paper } from "@mui/material";
+import "../styles/chat.css"; // ✅ ייבוא קובץ CSS לעיצוב
 
 const socket = io("http://localhost:5000");
+
+// ✅ פונקציה שיוצרת צבע ייחודי לפי ה-token
+const generateColorFromToken = (token) => {
+    let hash = 0;
+    for (let i = 0; i < token.length; i++) {
+        hash = token.charCodeAt(i) + ((hash << 5) - hash);
+    }
+    const color = `hsl(${hash % 360}, 80%, 70%)`; // ✅ יוצר צבע בגוון ייחודי
+    return color;
+};
 
 const Chat = () => {
     const { chatId } = useParams();
@@ -11,6 +22,7 @@ const Chat = () => {
     const [messageText, setMessageText] = useState("");
     const [participants, setParticipants] = useState([]);
     const [userId, setUserId] = useState(null);
+    const [userColor, setUserColor] = useState("#000");
 
     useEffect(() => {
         const fetchUserId = async () => {
@@ -20,6 +32,7 @@ const Chat = () => {
             const data = await response.json();
             if (response.ok) {
                 setUserId(data.user._id);
+                setUserColor(generateColorFromToken(localStorage.getItem("token"))); // ✅ צבע ייחודי למשתמש הנוכחי
             }
         };
         fetchUserId();
@@ -48,14 +61,12 @@ const Chat = () => {
                 setMessages((prev) => [...prev, data.message]);
             }
         });
-    
+
         return () => socket.off("newMessage");
     }, [chatId]);
-    
 
     const sendMessage = async () => {
         if (!messageText.trim()) return;
-
         const response = await fetch(`http://localhost:5000/api/chat/${chatId}`, {
             method: "POST",
             headers: {
@@ -72,35 +83,36 @@ const Chat = () => {
     };
 
     return (
-        <Box sx={{ maxWidth: 500, margin: "auto", p: 2, bgcolor: "#f5f5f5", borderRadius: 2, boxShadow: 3 }}>
-            <Typography variant="h5" textAlign="center" sx={{ mb: 2 }}>
+        <Box className="chat-container">
+            <Typography variant="h5" className="chat-title">
                 Chat with {participants.map((p) => p.firstName).join(", ")}
             </Typography>
-            <Paper sx={{ maxHeight: 400, overflowY: "auto", p: 2 }}>
-                {messages.map((msg, index) => (
-                    <Box
-                        key={index}
-                        sx={{
-                            display: "flex",
-                            flexDirection: "column",
-                            alignSelf: msg.sender?._id === userId ? "flex-end" : "flex-start",
-                            bgcolor: msg.sender?._id === userId ? "#1976D2" : "#E0E0E0",
-                            color: msg.sender?._id === userId ? "white" : "black",
-                            padding: "8px 12px",
-                            borderRadius: 2,
-                            maxWidth: "70%",
-                            mb: 1,
-                        }}
-                    >
-                        {/* ✅ הצגת שם השולח */}
-                        <Typography variant="body2" fontWeight="bold">
-                            {msg.sender?.firstName ? msg.sender.firstName : "Unknown"}
-                        </Typography>
-                        <Typography variant="body2">{msg.text}</Typography>
-                    </Box>
-                ))}
+            <Paper className="chat-messages">
+                {messages.map((msg, index) => {
+                    const isCurrentUser = msg.sender?._id === userId;
+                    const messageColor = generateColorFromToken(msg.sender?._id || "default");
+
+                    return (
+                        <Box
+                            key={index}
+                            className={`message ${isCurrentUser ? "me" : "other"}`}
+                            sx={{ backgroundColor: messageColor }} // ✅ קובע צבע ייחודי לכל משתמש
+                        >
+                            <Typography variant="body2" className="message-sender">
+                                {msg.sender?.firstName}
+                            </Typography>
+                            <Typography variant="body2">{msg.text}</Typography>
+                        </Box>
+                    );
+                })}
             </Paper>
-            <TextField fullWidth placeholder="Type a message..." value={messageText} onChange={(e) => setMessageText(e.target.value)} sx={{ mt: 2 }} />
+            <TextField
+                fullWidth
+                placeholder="Type a message..."
+                value={messageText}
+                onChange={(e) => setMessageText(e.target.value)}
+                sx={{ mt: 2 }}
+            />
             <Button fullWidth variant="contained" color="primary" onClick={sendMessage} sx={{ mt: 1 }}>
                 Send
             </Button>
