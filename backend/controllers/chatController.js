@@ -48,11 +48,20 @@ exports.sendMessage = async (req, res) => {
             return res.status(404).json({ success: false, message: "Chat not found" });
         }
 
-        const message = { sender: req.user._id, text, timestamp: new Date() };
+        const message = {
+            sender: {
+                _id: req.user._id,
+                firstName: req.user.firstName,  // ✅ שולחים את השם של המשתמש
+                lastName: req.user.lastName
+            },
+            text,
+            timestamp: new Date()
+        };
+
         chat.messages.push(message);
         await chat.save();
 
-        // ✅ שליחת ההודעה בזמן אמת דרך WebSocket
+        // ✅ שליחת ההודעה עם שם המשתמש המלא בזמן אמת
         const io = req.app.get("io");
         chat.participants.forEach((user) => {
             io.to(user.toString()).emit("newMessage", { chatId, message });
@@ -64,6 +73,7 @@ exports.sendMessage = async (req, res) => {
         res.status(500).json({ success: false, message: "Internal server error" });
     }
 };
+
 
 
 exports.getUserChats = async (req, res) => {

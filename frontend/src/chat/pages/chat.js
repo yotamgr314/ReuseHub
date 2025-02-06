@@ -48,12 +48,14 @@ const Chat = () => {
                 setMessages((prev) => [...prev, data.message]);
             }
         });
-
+    
         return () => socket.off("newMessage");
     }, [chatId]);
+    
 
     const sendMessage = async () => {
         if (!messageText.trim()) return;
+
         const response = await fetch(`http://localhost:5000/api/chat/${chatId}`, {
             method: "POST",
             headers: {
@@ -65,7 +67,6 @@ const Chat = () => {
         const data = await response.json();
         if (response.ok) {
             socket.emit("sendMessage", { chatId, message: data.data });
-            setMessages((prev) => [...prev, data.data]);
             setMessageText("");
         }
     };
@@ -91,8 +92,9 @@ const Chat = () => {
                             mb: 1,
                         }}
                     >
+                        {/* ✅ הצגת שם השולח */}
                         <Typography variant="body2" fontWeight="bold">
-                            {msg.sender?.firstName}
+                            {msg.sender?.firstName ? msg.sender.firstName : "Unknown"}
                         </Typography>
                         <Typography variant="body2">{msg.text}</Typography>
                     </Box>
