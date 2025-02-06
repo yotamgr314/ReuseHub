@@ -63,7 +63,7 @@ export default function DrawerAppBar(props) {
         const data = await response.json();
         if (response.ok && data.data.length > 0) {
             const lastChat = data.data[0]._id;  // ✅ בוחר את הצ'אט האחרון
-            navigate(`/chat/${lastChat}`);
+            navigate("/chat"); // ✅ מעביר את המשתמש לרשימת כל הצ'אטים שלוביר את המשתמש לרשימת כל הצ'אטים שלו
         } else {
             alert("No active chats found. Please start a conversation.");
         }

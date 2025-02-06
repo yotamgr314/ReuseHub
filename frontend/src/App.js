@@ -14,6 +14,7 @@ import LeaderBoard from "./leaderboard/pages/leaderboard.js";
 import Register from "./registration/pages/register.js";
 import Login from "./login/pages/login.js";
 import JwtRouteGuard from "./shared/jwt/jwtRouteGuard.js";
+import ChatList from "./chat/pages/chatList.js";
 
 
 
@@ -26,6 +27,7 @@ const App = () => {
       <Routes>
       <Route path="/homePage" element={<JwtRouteGuard> <HomePage /> </JwtRouteGuard>} />
       <Route path="/createAd" element={<JwtRouteGuard> <CreateAd /> </JwtRouteGuard>} />
+      <Route path="/chat" element={<JwtRouteGuard><ChatList /></JwtRouteGuard>} />
       <Route path="/myAds" element={<JwtRouteGuard> <MyAds /> </JwtRouteGuard>} /> 
       <Route path="/chat/:chatId" element={<JwtRouteGuard><Chat /></JwtRouteGuard>} />
       <Route path="/chat" element={<JwtRouteGuard><Chat /></JwtRouteGuard>} />
