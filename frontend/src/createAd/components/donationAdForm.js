@@ -8,8 +8,11 @@ import {
   Grid,
   Paper,
   Typography,
+  IconButton,
+  Stack,
 } from "@mui/material";
 import { GoogleMap, LoadScriptNext, Marker } from "@react-google-maps/api";
+import { PhotoCamera, Delete } from "@mui/icons-material";
 
 
 const DonationAdForm = ({ token, navigate }) => {
@@ -64,21 +67,16 @@ const DonationAdForm = ({ token, navigate }) => {
     setSelectedImages(files);
   };
   
-
+  const removeImage = (index) => {
+    setSelectedImages((prevImages) => prevImages.filter((_, i) => i !== index));
+  };
+  
   const handleItemInputChange = (e) => {
     setFormData({
       ...formData,
       item: { ...formData.item, [e.target.name]: e.target.value },
     });
   };
-
-/*   const handleImageUrlsChange = (e) => {
-    const urls = e.target.value.split(",").map((url) => url.trim());
-    setFormData({
-      ...formData,
-      item: { ...formData.item, images: urls },
-    });
-  }; */
 
   const handleMapClick = (event) => {
     setFormData({
@@ -264,14 +262,48 @@ const DonationAdForm = ({ token, navigate }) => {
 
           {/* Image URLs */}
           <Grid item xs={12}>
-          <Grid item xs={12}>
-  <Typography>Upload Images</Typography>
-  <input
-    type="file"
-    multiple
-    accept="image/*"
-    onChange={handleImageUpload}
-  />
+{/* Upload Images */}
+<Grid item xs={12}>
+  <Typography variant="h6">Upload Images</Typography>
+  <Button
+    variant="contained"
+    component="label"
+    startIcon={<PhotoCamera />}
+    sx={{ bgcolor: "#1976D2", "&:hover": { bgcolor: "#1565C0" }, mt: 1 }}
+  >
+    Choose Files
+    <input type="file" multiple accept="image/*" hidden onChange={handleImageUpload} />
+  </Button>
+
+  {/* Image Previews */}
+  <Stack direction="row" spacing={2} mt={2} flexWrap="wrap">
+    {selectedImages.map((image, index) => (
+      <Box key={index} sx={{ position: "relative", width: 100, height: 100 }}>
+        <img
+          src={URL.createObjectURL(image)}
+          alt="Preview"
+          style={{
+            width: "100%",
+            height: "100%",
+            objectFit: "cover",
+            borderRadius: 8,
+          }}
+        />
+        <IconButton
+          size="small"
+          onClick={() => removeImage(index)}
+          sx={{
+            position: "absolute",
+            top: -10,
+            right: -10,
+            backgroundColor: "rgba(255, 255, 255, 0.8)",
+          }}
+        >
+          <Delete sx={{ color: "red" }} />
+        </IconButton>
+      </Box>
+    ))}
+  </Stack>
 </Grid>
 
           </Grid>
