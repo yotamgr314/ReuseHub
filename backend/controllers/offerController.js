@@ -2,6 +2,8 @@
 const Offer = require("../models/offerSchema");
 const BaseAd = require("../models/baseAdSchema");
 const Chat = require("../models/chatSchema");
+const User = require("../models/userSchema");
+const { updateUserBadge } = require("../utils/badgeHelper");
 
 exports.sendOffer = async (req, res) => {
   try {
@@ -56,6 +58,7 @@ exports.updateOfferStatus = async (req, res) => {
     const { id } = req.params;
     const { adOwnerApproval, userWhoMadeTheOfferApproval } = req.body;
     
+    // Find the offer and populate the ad
     const offer = await Offer.findById(id).populate("adId");
     if (!offer) return res.status(404).json({ success: false, message: "Offer not found." });
 
@@ -66,32 +69,44 @@ exports.updateOfferStatus = async (req, res) => {
     if (adOwnerApproval !== undefined) offer.offerConfirmation.adOwnerApproval = adOwnerApproval;
     if (userWhoMadeTheOfferApproval !== undefined) offer.offerConfirmation.userWhoMadeTheOfferApproval = userWhoMadeTheOfferApproval;
 
-    // Check if both approvals are true
+    // Check if the offer should be accepted
     if (offer.offerConfirmation.adOwnerApproval || offer.offerConfirmation.userWhoMadeTheOfferApproval) {
       offer.offerStatus = "Accepted";
 
-      // Reduce the Ad's item amount based on the offer
+      // Decrement ad.amount by the offerAmount
       ad.amount -= offer.offerAmount;
-      
+
       if (ad.amount < 1) {
-        // Mark the Ad as "Donation Completed"
+        // Donation completed
         ad.adStatus = "Donation Completed";
 
-        // Reject all pending offers related to this Ad
-        await Offer.updateMany(
-          { adId: ad._id, offerStatus: "Pending" },
-          { offerStatus: "Rejected" }
-        );
+        // Award points to donor and receiver, update badges, etc.
+        const donor = await User.findByIdAndUpdate(ad.createdBy, { $inc: { ratingPoints: 10 } }, { new: true });
+        const receiver = await User.findByIdAndUpdate(offer.sender, { $inc: { ratingPoints: 10 } }, { new: true });
+        await updateUserBadge(donor);
+        await updateUserBadge(receiver);
 
-        // Delete all offers related to the completed Ad
+        // Reject pending offers and remove all offers for this ad
+        await Offer.updateMany({ adId: ad._id, offerStatus: "Pending" }, { offerStatus: "Rejected" });
         await Offer.deleteMany({ adId: ad._id });
 
-        // Remove the Ad from the system
+        // Remove the ad from the system
         await BaseAd.findByIdAndDelete(ad._id);
 
+        // Instead of saving the offer, return a response indicating completion
+        return res.status(200).json({
+          success: true,
+          message: "Donation completed; ad and related offers removed."
+        });
       } else {
-        await ad.save(); // Save the updated ad amount
+        // Save updated ad if donation is still active
+        await ad.save();
+        // Save updated offer
+        await offer.save();
       }
+    } else {
+      // If no approval is given yet, simply save the offer changes
+      await offer.save();
     }
     
     res.status(200).json({

@@ -13,6 +13,8 @@ const donationAdRoutes = require("./routes/donationAdRouter");
 const wishAdRouter = require("./routes/wishAdRouter");
 const offerRoutes = require("./routes/offerRouter");
 const chatRoutes = require("./routes/chatRouter");
+const ratingRouter = require("./routes/ratingRouter");  // <-- ADD THIS
+const leaderboardRouter = require("./routes/leaderboardRouter");
 
 /* const userRoutes = require("./routes/userRouter");
  */
@@ -47,6 +49,9 @@ app.use("/api/donationAds", donationAdRoutes);
 app.use("/api/wishAds", wishAdRouter);
 app.use("/api/offers", offerRoutes);
 app.use("/api/chat", chatRoutes);
+app.use("/api/ratings", ratingRouter);  // <-- REGISTER ROUTER
+app.use("/api/leaderboard", leaderboardRouter);
+
 /* app.use("/api/users", userRoutes);
  */
 
@@ -55,3 +60,6 @@ app.get("/", (req, res) => {
 });
 
 module.exports = app;
+
+
+
