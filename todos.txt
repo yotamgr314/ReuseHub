@@ -13,7 +13,7 @@ NOTE: my to do list:
 11) make a connection relation between offers sent long with the chat page, (users who sent offers shall be able to see the offer status somethwere in our web..)
 12) make user be able to delete an ad( need to attach x button on each ad display modal) - this button should be only visible to the user if he created the ad.
 13) need to make sure a who created an ad can not send an offer request of donation request to this ad. - the button of sending offer request / donation request should not be visible to him. 
-
+14) on the ad display of wishAd its shows N/A value for the fields item: and item description: even tho the user did filled valid values upon creating the wishAd into this fields. 
 
 
 
