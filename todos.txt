@@ -1,5 +1,27 @@
 NOTE: my to do list: 
 
+1) implement stock badges pre defined in the backend so it will actully put image instead of txt message with the name of the badge.
+2) increace the leaderBoard size and style 
+3) increace the ad creations form size and add gap to it from the bottom. 
+4) problem : now map is only updated with newly created ads, but for deleted ads i need to refresh the map page to reflect the changes.
+5) problem : after an offer is approved is still showed under "my offers" page as approved. only when the ad is 
+6) fix: user can't register with the same email.
+7) fix the bug where i check if both user approval before removal - its a mistake. 
+8) make a morgan && winston commit
+9) every user message in the chat should appear in different color. 
+10) when an ad is deleted (wheter if due to user deleteion or auto delete becuse every sent offer to it which eventully caused caused all its items to be donation ) all users who sent offer to this is Ad are rejected. 
+11) make a connection relation between offers sent long with the chat page, (users who sent offers shall be able to see the offer status somethwere in our web..)
+12) make user be able to delete an ad( need to attach x button on each ad display modal) - this button should be only visible to the user if he created the ad.
+13) need to make sure a who created an ad can not send an offer request of donation request to this ad. - the button of sending offer request / donation request should not be visible to him. 
+
+
+
+
+
+
+
+
+
 
 
 

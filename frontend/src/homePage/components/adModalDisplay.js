@@ -1,14 +1,34 @@
 // frontend/src/homePage/components/adModalDisplay.js
 import React, { useState } from "react";
-import { Modal, Box, Typography, IconButton, ImageList, ImageListItem, Card, CardContent, CardMedia, Grid, Button, TextField } from "@mui/material";
+import {
+  Modal,
+  Box,
+  Typography,
+  IconButton,
+  ImageList,
+  ImageListItem,
+  Card,
+  CardContent,
+  CardMedia,
+  Grid,
+  Button,
+  TextField,
+} from "@mui/material";
 import CloseIcon from "@mui/icons-material/Close";
 
 const AdModalDisplay = ({ selectedAd, onClose }) => {
   const [message, setMessage] = useState(""); // Chat message input
+  const [itemCount, setItemCount] = useState(1); // New state: number of items to donate/claim
 
   if (!selectedAd) return null;
 
   const handleSendOffer = async () => {
+    // Validate itemCount
+    if (!itemCount || isNaN(itemCount) || itemCount < 1) {
+      alert("Please enter a valid number of items.");
+      return;
+    }
+
     try {
       const token = localStorage.getItem("token");
       const response = await fetch("http://localhost:5000/api/offers", {
@@ -19,8 +39,8 @@ const AdModalDisplay = ({ selectedAd, onClose }) => {
         },
         body: JSON.stringify({
           adId: selectedAd._id,
-          offerAmount: 1,
-          message, //  Attach initial chat message
+          offerAmount: parseInt(itemCount, 10),
+          message, // Attach initial chat message
         }),
       });
 
@@ -41,16 +61,19 @@ const AdModalDisplay = ({ selectedAd, onClose }) => {
           top: "50%",
           left: "50%",
           transform: "translate(-50%, -50%)",
-          width: 480,
+          width: 600, // Increased modal width for a larger display
           bgcolor: "background.paper",
           boxShadow: 24,
-          p: 3,
+          p: 4,
           borderRadius: 3,
         }}
       >
         <Card sx={{ boxShadow: 3 }}>
           <CardContent sx={{ position: "relative", p: 3 }}>
-            <IconButton onClick={onClose} sx={{ position: "absolute", top: 10, right: 10, color: "gray" }}>
+            <IconButton
+              onClick={onClose}
+              sx={{ position: "absolute", top: 10, right: 10, color: "gray" }}
+            >
               <CloseIcon />
             </IconButton>
 
@@ -61,26 +84,63 @@ const AdModalDisplay = ({ selectedAd, onClose }) => {
               {selectedAd.adDescription}
             </Typography>
 
-            {selectedAd.kind === "donationAd" && selectedAd.items?.images?.length > 0 && (
-  <ImageList cols={selectedAd.items.images.length > 1 ? 2 : 1} rowHeight={140} sx={{ mb: 2 }}>
-    {selectedAd.items.images.map((imgUrl, index) => {
-      const imageUrl = imgUrl.startsWith("http") ? imgUrl : `http://localhost:5000${imgUrl}`;
-      return (
-        <ImageListItem key={index}>
-          <CardMedia component="img" height="140" image={imageUrl} alt={`Ad Image ${index}`} sx={{ borderRadius: 2 }} />
-        </ImageListItem>
-      );
-    })}
-  </ImageList>
-)}
+            {selectedAd.kind === "donationAd" &&
+              selectedAd.items?.images?.length > 0 && (
+                <ImageList
+                  cols={selectedAd.items.images.length > 1 ? 2 : 1}
+                  rowHeight={140}
+                  sx={{ mb: 2 }}
+                >
+                  {selectedAd.items.images.map((imgUrl, index) => {
+                    const imageUrl = imgUrl.startsWith("http")
+                      ? imgUrl
+                      : `http://localhost:5000${imgUrl}`;
+                    return (
+                      <ImageListItem key={index}>
+                        <CardMedia
+                          component="img"
+                          height="140"
+                          image={imageUrl}
+                          alt={`Ad Image ${index}`}
+                          sx={{ borderRadius: 2 }}
+                        />
+                      </ImageListItem>
+                    );
+                  })}
+                </ImageList>
+              )}
+
             {/* Chat Message Input */}
             <TextField
-              label="Message to Receiver"
+  label="Message to Receiver"
+  variant="outlined"
+  fullWidth
+  multiline
+  value={message}
+  onChange={(e) => setMessage(e.target.value)}
+  sx={{ mb: 2 }}
+  minRows={4}       // Fixed number of rows
+  maxRows={4}       // Fixed number of rows
+  inputProps={{
+    style: {
+      overflowY: "auto", // Show vertical scrollbar when content exceeds 4 rows
+      resize: "none",    // Disable manual resizing
+    },
+  }}
+/>
+
+
+
+            {/* New: Input for the number of items */}
+            <TextField
+              label="Number of Items"
               variant="outlined"
+              type="number"
               fullWidth
-              value={message}
-              onChange={(e) => setMessage(e.target.value)}
+              value={itemCount}
+              onChange={(e) => setItemCount(e.target.value)}
               sx={{ mb: 2 }}
+              inputProps={{ min: 1 }}
             />
 
             <Grid container spacing={2}>
@@ -91,7 +151,7 @@ const AdModalDisplay = ({ selectedAd, onClose }) => {
               </Grid>
               <Grid item xs={6}>
                 <Typography variant="body2">
-                  <strong>Amount:</strong> {selectedAd.amount}
+                  <strong>Ad Amount:</strong> {selectedAd.amount}
                 </Typography>
               </Grid>
               <Grid item xs={6}>
@@ -101,7 +161,8 @@ const AdModalDisplay = ({ selectedAd, onClose }) => {
               </Grid>
               <Grid item xs={6}>
                 <Typography variant="body2">
-                  <strong>Item Description:</strong> {selectedAd.items?.description || "N/A"}
+                  <strong>Item Description:</strong>{" "}
+                  {selectedAd.items?.description || "N/A"}
                 </Typography>
               </Grid>
 
@@ -109,12 +170,14 @@ const AdModalDisplay = ({ selectedAd, onClose }) => {
                 <>
                   <Grid item xs={6}>
                     <Typography variant="body2">
-                      <strong>Condition:</strong> {selectedAd.itemCondition || "N/A"}
+                      <strong>Condition:</strong>{" "}
+                      {selectedAd.itemCondition || "N/A"}
                     </Typography>
                   </Grid>
                   <Grid item xs={6}>
                     <Typography variant="body2">
-                      <strong>Method:</strong> {selectedAd.donationMethod || "N/A"}
+                      <strong>Method:</strong>{" "}
+                      {selectedAd.donationMethod || "N/A"}
                     </Typography>
                   </Grid>
                   <Grid item xs={12}>
@@ -123,7 +186,12 @@ const AdModalDisplay = ({ selectedAd, onClose }) => {
                     </Typography>
                   </Grid>
                   <Grid item xs={12}>
-                    <Button fullWidth variant="contained" color="primary" onClick={handleSendOffer}>
+                    <Button
+                      fullWidth
+                      variant="contained"
+                      color="primary"
+                      onClick={handleSendOffer}
+                    >
                       Send a Claim Request
                     </Button>
                   </Grid>
@@ -136,7 +204,12 @@ const AdModalDisplay = ({ selectedAd, onClose }) => {
                     </Typography>
                   </Grid>
                   <Grid item xs={12}>
-                    <Button fullWidth variant="contained" color="secondary" onClick={handleSendOffer}>
+                    <Button
+                      fullWidth
+                      variant="contained"
+                      color="secondary"
+                      onClick={handleSendOffer}
+                    >
                       Offer to Donate
                     </Button>
                   </Grid>
