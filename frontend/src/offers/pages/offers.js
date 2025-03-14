@@ -155,7 +155,7 @@ const Offers = () => {
                     onClick={() => handleOpenApprovalModal(offer._id, offer.adId?._id)}
                     sx={{ bgcolor: "#28A745", "&:hover": { bgcolor: "#218838" } }}
                   >
-                    Approve
+                    Accept
                   </Button>
 
                   <Button

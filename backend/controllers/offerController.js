@@ -14,16 +14,19 @@ exports.sendOffer = async (req, res) => {
     const { adId, offerAmount, message } = req.body;
     console.log("📩 Received sendOffer request:", { adId, offerAmount, message });
 
-    if (!adId)
+    if (!adId) {
       return res.status(400).json({ success: false, message: "Ad ID is required." });
-    if (!offerAmount || offerAmount < 1)
+    }
+    if (!offerAmount || offerAmount < 1) {
       return res
         .status(400)
         .json({ success: false, message: "Offer amount must be at least 1." });
+    }
 
     const ad = await BaseAd.findById(adId);
-    if (!ad)
+    if (!ad) {
       return res.status(404).json({ success: false, message: "Ad not found." });
+    }
 
     const newOffer = new Offer({
       sender: req.user._id,
@@ -36,7 +39,7 @@ exports.sendOffer = async (req, res) => {
     await newOffer.save();
     console.log("✅ Offer saved:", newOffer);
 
-    // 🔹 Create and link chat
+    // Create and link chat
     const newChat = new Chat({
       offerId: newOffer._id,
       participants: [req.user._id, ad.createdBy],
@@ -61,9 +64,9 @@ exports.sendOffer = async (req, res) => {
 };
 
 /**
- * Merged "approval" + "rating" in one request.
+ * Merges approval and rating in one request.
  * PATCH /api/offers/:id
- * 
+ *
  * The request body can include:
  * {
  *   "adOwnerApproval": true, // or "userWhoMadeTheOfferApproval": true,
@@ -73,7 +76,7 @@ exports.sendOffer = async (req, res) => {
  *     "descriptionAccuracy": 3
  *   }
  * }
- * If no ratings are provided, defaults (0) will be used.
+ * If no ratings are provided, they default to 0.
  */
 exports.updateOfferStatus = async (req, res) => {
   try {
@@ -82,38 +85,39 @@ exports.updateOfferStatus = async (req, res) => {
     
     // 1) Find the Offer and its related Ad
     const offer = await Offer.findById(id).populate("adId");
-    if (!offer)
+    if (!offer) {
       return res.status(404).json({ success: false, message: "Offer not found." });
+    }
 
     const ad = offer.adId;
-    if (!ad)
+    if (!ad) {
       return res.status(404).json({ success: false, message: "Referenced Ad not found." });
+    }
 
     // 2) Update offer confirmations
-    if (typeof adOwnerApproval !== "undefined")
+    if (typeof adOwnerApproval !== "undefined") {
       offer.offerConfirmation.adOwnerApproval = adOwnerApproval;
-    if (typeof userWhoMadeTheOfferApproval !== "undefined")
+    }
+    if (typeof userWhoMadeTheOfferApproval !== "undefined") {
       offer.offerConfirmation.userWhoMadeTheOfferApproval = userWhoMadeTheOfferApproval;
+    }
 
     // 3) If either side approves, process the offer as "Accepted"
     if (offer.offerConfirmation.adOwnerApproval || offer.offerConfirmation.userWhoMadeTheOfferApproval) {
       offer.offerStatus = "Accepted";
 
-      // 3a) Process ratings if provided (default values are 0)
+      // 3a) Process ratings if provided (default missing values to 0)
       if (ratings) {
         const criteria = ["timeliness", "itemCondition", "descriptionAccuracy"];
         let total = 0;
         let count = 0;
-
         criteria.forEach((key) => {
-          // Use parseInt with fallback to 0 if not provided
           const val = parseInt(ratings[key] ?? 0, 10);
           if (!isNaN(val)) {
             total += val;
             count++;
           }
         });
-
         const avgRating = count > 0 ? total / count : 0;
         if (avgRating > 0) {
           const userToRate = await User.findById(offer.sender);
@@ -128,11 +132,14 @@ exports.updateOfferStatus = async (req, res) => {
       // 3b) Decrement ad.amount by the offerAmount
       ad.amount -= offer.offerAmount;
 
-      // 3c) Check if the donation is complete
+      // 3c) Prepare a note that applies in every case
+      let noteMessage = "Note: once the offer is approved it will get auto-deleted from the system.";
+
+      // 3d) If the ad is fully donated, complete donation flow
       if (ad.amount < 1) {
         ad.adStatus = "Donation Completed";
 
-        // Award +10 points to both donor and receiver
+        // Award +10 points each to donor and receiver, update badges
         const donor = await User.findByIdAndUpdate(
           ad.createdBy,
           { $inc: { ratingPoints: 10 } },
@@ -146,7 +153,10 @@ exports.updateOfferStatus = async (req, res) => {
         if (donor) await updateUserBadge(donor);
         if (receiver) await updateUserBadge(receiver);
 
-        // Reject all pending offers and remove all offers for this ad
+        // Append extra note if the offer covers full quantity (donation completed)
+        noteMessage += " As well as your Ad.";
+
+        // Reject pending offers and remove all offers for this ad
         await Offer.updateMany(
           { adId: ad._id, offerStatus: "Pending" },
           { offerStatus: "Rejected" }
@@ -158,21 +168,21 @@ exports.updateOfferStatus = async (req, res) => {
 
         return res.status(200).json({
           success: true,
-          message: "Donation completed; ad and related offers removed."
+          message: `Donation completed; ad and related offers removed. ${noteMessage}`,
         });
       } else {
-        // Donation is still active, save changes
+        // Donation is still active: save changes
         await ad.save();
         await offer.save();
       }
     } else {
-      // No approvals given yet, just save the offer changes
+      // If no approvals yet, simply save the offer changes
       await offer.save();
     }
     
     return res.status(200).json({
       success: true,
-      message: "Offer updated successfully!",
+      message: `Offer updated successfully! ${"Note: once the offer is approved it will get auto-deleted from the system."}`,
       data: offer,
     });
   } catch (error) {
@@ -216,8 +226,9 @@ exports.deleteOffer = async (req, res) => {
     const { id } = req.params;
 
     const offer = await Offer.findById(id);
-    if (!offer)
+    if (!offer) {
       return res.status(404).json({ success: false, message: "Offer not found." });
+    }
 
     await offer.remove();
 
