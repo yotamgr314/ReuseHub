@@ -264,12 +264,16 @@ exports.getSentOffers = async (req, res) => {
   try {
     const offers = await Offer.find({
       sender: req.user._id,
-      offerStatus: { $in: ["Pending", "Rejected"] } // כולל גם Pending וגם Rejected
+      offerStatus: { $in: ["Pending", "Rejected"] }
     })
       .populate("adId", "adTitle adStatus amount createdBy")
-      .populate("receiver", "firstName lastName");
+      .populate("receiver", "firstName lastName")
+      .populate({
+        path: "chat",
+        populate: { path: "messages", select: "text sender timestamp" }
+      });
 
-    // סינון הצעות על מודעות שהמשתמש עצמו יצר (edge-case)
+    // סינון edge-case: לא להציג הצעות על מודעות שהמשתמש עצמו יצר
     const filteredOffers = offers.filter(offer =>
       offer.adId && offer.adId.createdBy.toString() !== req.user._id.toString()
     );
@@ -285,6 +289,7 @@ exports.getSentOffers = async (req, res) => {
   }
 };
 
+
 /**
  * Get pending offers received by the logged-in user (for ads that the user created).
  */
@@ -295,10 +300,14 @@ exports.getReceivedOffers = async (req, res) => {
       offerStatus: "Pending"
     })
       .populate("adId", "adTitle adStatus amount createdBy")
-      .populate("sender", "firstName lastName");
+      .populate("sender", "firstName lastName")
+      .populate({
+        path: "chat",
+        populate: { path: "messages", select: "text sender timestamp" }
+      });
 
-    // סינון הצעות אם במקרה השולח הוא המשתמש (לא הגיוני, אבל למנוע edge-case)
-    const filteredOffers = offers.filter(offer => 
+    // סינון edge-case: לא להציג הצעות אם השולח הוא המשתמש עצמו
+    const filteredOffers = offers.filter(offer =>
       offer.sender && offer.sender._id.toString() !== req.user._id.toString()
     );
 
