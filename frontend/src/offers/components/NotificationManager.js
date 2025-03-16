@@ -1,10 +1,11 @@
 // frontend/offers/components/NotificationManager.js
 import React, { useEffect, useState } from 'react';
 import { Modal, Box, Typography, Button, Stack } from '@mui/material';
+import AutoAwesomeIcon from '@mui/icons-material/AutoAwesome';
 import io from 'socket.io-client';
-import { jwtDecode } from 'jwt-decode'; // שימוש בייבוא בשם
+import { jwtDecode } from 'jwt-decode';
 
-// אתחל את ה־socket פעם אחת (ניתן לשמור זאת בקובץ נפרד או בניהול Context)
+// Initialize socket (can be managed globally or here)
 const socket = io("http://localhost:5000");
 
 const NotificationManager = () => {
@@ -13,13 +14,13 @@ const NotificationManager = () => {
     message: '',
   });
 
-  // סעיף 1: הצטרפות לחדר (joinRoom) באמצעות הטוקן
+  // Join the user's room based on the token
   useEffect(() => {
     const token = localStorage.getItem("token");
     if (token) {
       try {
         const decoded = jwtDecode(token);
-        const userId = decoded.id; // ודא שהטוקן מכיל את השדה "id"
+        const userId = decoded.id; // Ensure the token contains the "id" field
         console.log("🔹 [NotificationManager] joinRoom userId:", userId);
         socket.emit("joinRoom", userId);
       } catch (error) {
@@ -28,17 +29,15 @@ const NotificationManager = () => {
     }
   }, []);
 
-  // סעיף 4: הוספת לוג לבדיקת האירוע "offerApproved"
+  // Listen for the "offerApproved" event
   useEffect(() => {
     socket.on("offerApproved", (data) => {
       console.log("🔸 [NotificationManager] Received offerApproved event:", data);
-      // data אמור לכלול את השדה message
       setNotification({
         open: true,
         message: data.message,
       });
     });
-
     return () => {
       socket.off("offerApproved");
     };
@@ -63,7 +62,8 @@ const NotificationManager = () => {
           borderRadius: 2,
         }}
       >
-        <Typography variant="h6" gutterBottom>
+        <Typography variant="h6" gutterBottom sx={{ display: 'flex', alignItems: 'center' }}>
+          <AutoAwesomeIcon sx={{ fontSize: '2rem', mr: 1, color: "#FFD700" }} />
           Offer Approved!
         </Typography>
         <Typography variant="body1" gutterBottom>

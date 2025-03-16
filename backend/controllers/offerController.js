@@ -80,45 +80,34 @@ exports.updateOfferStatus = async (req, res) => {
     if (!offer) {
       return res.status(404).json({ success: false, message: "Offer not found." });
     }
-
     const ad = offer.adId;
     if (!ad) {
       return res.status(404).json({ success: false, message: "Referenced Ad not found." });
     }
-
-    // Logs to debug who is approving and who is the sender
-    console.log("🔹 The user (req.user) who is attempting to update offer:", req.user._id);
-    console.log("🔹 ad.createdBy is:", ad.createdBy.toString());
-    console.log("🔹 offer.sender is:", offer.sender.toString());
-
-    // A) If request wants to set offerStatus === "Rejected"
+    
+    // A) טיפול בערך offerStatus === "Rejected"
     if (offerStatus === "Rejected") {
       offer.offerStatus = "Rejected";
       await offer.save();
-      console.log("🔹 Offer is now Rejected");
       return res.status(200).json({
         success: true,
         message: "Offer rejected successfully",
         data: offer,
       });
     }
-
-    // B) If approvals exist -> Offer becomes Accepted
+    
+    // B) טיפול באישורים לאישור ההצעה
     if (typeof adOwnerApproval !== "undefined") {
       offer.offerConfirmation.adOwnerApproval = adOwnerApproval;
     }
     if (typeof userWhoMadeTheOfferApproval !== "undefined") {
       offer.offerConfirmation.userWhoMadeTheOfferApproval = userWhoMadeTheOfferApproval;
     }
-
-    // If at least one side approved -> Offer is accepted
+    
+    // אם לפחות אחד מהצדדים אישר – ההצעה מתקבלת
     if (offer.offerConfirmation.adOwnerApproval || offer.offerConfirmation.userWhoMadeTheOfferApproval) {
-      console.log("🔹 The user (req.user) who approved is:", req.user._id);
-      console.log("🔹 offer.sender is:", offer.sender.toString());
-      console.log("🔹 ad.createdBy is:", ad.createdBy.toString());
-
       offer.offerStatus = "Accepted";
-
+      
       // Award 10 points to the sender
       const updatedSender = await User.findByIdAndUpdate(
         offer.sender,
@@ -128,8 +117,8 @@ exports.updateOfferStatus = async (req, res) => {
       if (updatedSender) {
         await updateUserBadge(updatedSender);
       }
-
-      // 3a) Process ratings if provided
+      
+      // עיבוד דירוגים אם סופקו
       if (ratings) {
         const criteria = ["timeliness", "itemCondition", "descriptionAccuracy"];
         let total = 0;
@@ -151,17 +140,15 @@ exports.updateOfferStatus = async (req, res) => {
           }
         }
       }
-
-      // 3b) Decrement ad.amount
+      
+      // הפחתת הכמות במודעה
       ad.amount -= offer.offerAmount;
-
+      
       let noteMessage = "Note: once the offer is approved it will get auto-deleted from the system.";
-
-      // 3d) If the ad is fully donated, complete donation flow
+      
+      // במקרה שהמודעה הושלמה
       if (ad.amount < 1) {
         ad.adStatus = "Donation Completed";
-
-        // Award additional 10 points each to donor and receiver
         const donor = await User.findByIdAndUpdate(
           ad.createdBy,
           { $inc: { ratingPoints: 10 } },
@@ -174,45 +161,37 @@ exports.updateOfferStatus = async (req, res) => {
         );
         if (donor) await updateUserBadge(donor);
         if (receiver) await updateUserBadge(receiver);
-
         noteMessage += " As well as your Ad.";
-
-        // Reject pending offers for this ad
+        
         await Offer.updateMany(
           { adId: ad._id, offerStatus: "Pending" },
           { offerStatus: "Rejected" }
         );
         await Offer.deleteMany({ adId: ad._id });
         await BaseAd.findByIdAndDelete(ad._id);
-
+        
         const io = req.app.get("io");
         io.to(offer.sender.toString()).emit("offerApproved", {
           offerTitle: ad.adTitle,
-          receiverName: req.user.firstName + " " + req.user.lastName,
-          awardedPoints: 10,
-          message: `Congrats, the donation Ad Claim request "${ad.adTitle}" you sent to user ${req.user.firstName} was approved. You are awarded 10 points.`,
+          message: `Congratulations! Your offer for the Ad "${ad.adTitle}" has been officially approved by its owner: ${req.user.firstName} ${req.user.lastName}. You have been awarded 10 points for your contribution! Keep on Reusing!`,
         });
-
+        
         return res.status(200).json({
           success: true,
           message: `Donation completed; ad and related offers removed. ${noteMessage}`,
         });
       } else {
-        // Donation is still active
         await ad.save();
         await offer.save();
       }
-
-      // Emit socket event to notify the sender
+      
+      // Emit socket event to notify the sender of approval
       const io = req.app.get("io");
       io.to(offer.sender.toString()).emit("offerApproved", {
         offerTitle: ad.adTitle,
-        receiverName: req.user.firstName + " " + req.user.lastName,
-        awardedPoints: 10,
-        message: `Congrats, the offer "${ad.adTitle}" sent to user ${req.user.firstName} was approved. You are awarded 10 points.`,
+        message: `Congratulations! Your offer for the Ad "${ad.adTitle}" has been officially approved by its owner: ${req.user.firstName} ${req.user.lastName}. You have been awarded 10 points for your contribution!`,
       });
     } else {
-      // If no approvals yet, just save
       await offer.save();
     }
     

@@ -18,7 +18,7 @@ const App = () => {
   return (
     <BrowserRouter>
       <DrawerAppBar />
-      {/* NotificationManager מופיע כאן – כך הוא זמין בכל העמודים */}
+      {/* NotificationManager יהיה זמין בכל הדפים */}
       <NotificationManager />
       <Routes>
         <Route path="/homePage" element={<JwtRouteGuard><HomePage /></JwtRouteGuard>} />
