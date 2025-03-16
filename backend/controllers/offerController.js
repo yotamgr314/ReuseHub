@@ -1,5 +1,3 @@
-// backend/controllers/offerController.js
-
 const Offer = require("../models/offerSchema");
 const BaseAd = require("../models/baseAdSchema");
 const Chat = require("../models/chatSchema");
@@ -74,7 +72,7 @@ exports.updateOfferStatus = async (req, res) => {
       adOwnerApproval,
       userWhoMadeTheOfferApproval,
       ratings,
-      offerStatus, // מוסיפים בדיקה על שדה זה
+      offerStatus,
     } = req.body;
     
     // 1) Find the Offer and its related Ad
@@ -88,17 +86,16 @@ exports.updateOfferStatus = async (req, res) => {
       return res.status(404).json({ success: false, message: "Referenced Ad not found." });
     }
 
-    // ------------------------------------------------
-    // A) אם הגענו עם offerStatus === "Rejected", נטפל
-    // ------------------------------------------------
+    // Logs to debug who is approving and who is the sender
+    console.log("🔹 The user (req.user) who is attempting to update offer:", req.user._id);
+    console.log("🔹 ad.createdBy is:", ad.createdBy.toString());
+    console.log("🔹 offer.sender is:", offer.sender.toString());
+
+    // A) If request wants to set offerStatus === "Rejected"
     if (offerStatus === "Rejected") {
-      // כאן אפשר להוסיף בדיקת הרשאות, למשל:
-      // if (req.user._id.toString() !== ad.createdBy.toString()) {
-      //   return res.status(403).json({ success: false, message: "Not authorized to reject this offer." });
-      // }
       offer.offerStatus = "Rejected";
       await offer.save();
-
+      console.log("🔹 Offer is now Rejected");
       return res.status(200).json({
         success: true,
         message: "Offer rejected successfully",
@@ -106,9 +103,7 @@ exports.updateOfferStatus = async (req, res) => {
       });
     }
 
-    // ------------------------------------------------
-    // B) המשך הלוגיקה הקיימת: אישור והפיכת ההצעה ל-Accepted
-    // ------------------------------------------------
+    // B) If approvals exist -> Offer becomes Accepted
     if (typeof adOwnerApproval !== "undefined") {
       offer.offerConfirmation.adOwnerApproval = adOwnerApproval;
     }
@@ -116,11 +111,25 @@ exports.updateOfferStatus = async (req, res) => {
       offer.offerConfirmation.userWhoMadeTheOfferApproval = userWhoMadeTheOfferApproval;
     }
 
-    // אם לפחות אחד מהצדדים אישר, ההצעה מתקבלת
+    // If at least one side approved -> Offer is accepted
     if (offer.offerConfirmation.adOwnerApproval || offer.offerConfirmation.userWhoMadeTheOfferApproval) {
+      console.log("🔹 The user (req.user) who approved is:", req.user._id);
+      console.log("🔹 offer.sender is:", offer.sender.toString());
+      console.log("🔹 ad.createdBy is:", ad.createdBy.toString());
+
       offer.offerStatus = "Accepted";
 
-      // 3a) Process ratings if provided (default missing values to 0)
+      // Award 10 points to the sender
+      const updatedSender = await User.findByIdAndUpdate(
+        offer.sender,
+        { $inc: { ratingPoints: 10 } },
+        { new: true }
+      );
+      if (updatedSender) {
+        await updateUserBadge(updatedSender);
+      }
+
+      // 3a) Process ratings if provided
       if (ratings) {
         const criteria = ["timeliness", "itemCondition", "descriptionAccuracy"];
         let total = 0;
@@ -143,17 +152,16 @@ exports.updateOfferStatus = async (req, res) => {
         }
       }
 
-      // 3b) Decrement ad.amount by the offerAmount
+      // 3b) Decrement ad.amount
       ad.amount -= offer.offerAmount;
 
-      // 3c) Prepare a note
       let noteMessage = "Note: once the offer is approved it will get auto-deleted from the system.";
 
       // 3d) If the ad is fully donated, complete donation flow
       if (ad.amount < 1) {
         ad.adStatus = "Donation Completed";
 
-        // Award +10 points each to donor and receiver, update badges
+        // Award additional 10 points each to donor and receiver
         const donor = await User.findByIdAndUpdate(
           ad.createdBy,
           { $inc: { ratingPoints: 10 } },
@@ -169,33 +177,48 @@ exports.updateOfferStatus = async (req, res) => {
 
         noteMessage += " As well as your Ad.";
 
-        // Reject pending offers and remove all offers for this ad
+        // Reject pending offers for this ad
         await Offer.updateMany(
           { adId: ad._id, offerStatus: "Pending" },
           { offerStatus: "Rejected" }
         );
         await Offer.deleteMany({ adId: ad._id });
-
-        // Remove the ad from the system
         await BaseAd.findByIdAndDelete(ad._id);
+
+        const io = req.app.get("io");
+        io.to(offer.sender.toString()).emit("offerApproved", {
+          offerTitle: ad.adTitle,
+          receiverName: req.user.firstName + " " + req.user.lastName,
+          awardedPoints: 10,
+          message: `Congrats, the donation Ad Claim request "${ad.adTitle}" you sent to user ${req.user.firstName} was approved. You are awarded 10 points.`,
+        });
 
         return res.status(200).json({
           success: true,
           message: `Donation completed; ad and related offers removed. ${noteMessage}`,
         });
       } else {
-        // Donation is still active: save changes
+        // Donation is still active
         await ad.save();
         await offer.save();
       }
+
+      // Emit socket event to notify the sender
+      const io = req.app.get("io");
+      io.to(offer.sender.toString()).emit("offerApproved", {
+        offerTitle: ad.adTitle,
+        receiverName: req.user.firstName + " " + req.user.lastName,
+        awardedPoints: 10,
+        message: `Congrats, the offer "${ad.adTitle}" sent to user ${req.user.firstName} was approved. You are awarded 10 points.`,
+      });
     } else {
-      // If no approvals yet, simply save the offer changes
+      // If no approvals yet, just save
       await offer.save();
     }
     
     return res.status(200).json({
       success: true,
-      message: `Offer updated successfully! Note: once the offer is approved it will get auto-deleted from the system.`,
+      message: "Offer updated successfully! Note: once the offer is approved it will get auto-deleted from the system.",
       data: offer,
     });
   } catch (error) {
@@ -216,7 +239,7 @@ exports.getUserOffers = async (req, res) => {
         path: "chat",
         populate: {
           path: "messages",
-          select: "text sender timestamp", // Select only required fields
+          select: "text sender timestamp",
         },
       });
 
@@ -258,8 +281,6 @@ exports.deleteOffer = async (req, res) => {
 /**
  * Get pending offers sent by the logged-in user (for ads not created by the user).
  */
-// backend/controllers/offerController.js
-
 exports.getSentOffers = async (req, res) => {
   try {
     const offers = await Offer.find({
@@ -288,7 +309,6 @@ exports.getSentOffers = async (req, res) => {
     res.status(500).json({ success: false, message: "Internal server error" });
   }
 };
-
 
 /**
  * Get pending offers received by the logged-in user (for ads that the user created).

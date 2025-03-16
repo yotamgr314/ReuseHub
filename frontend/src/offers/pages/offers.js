@@ -15,43 +15,77 @@ import {
 } from "@mui/material";
 import { CheckCircle, Cancel, ChatBubbleOutline } from "@mui/icons-material";
 import { useNavigate } from "react-router-dom";
+import io from "socket.io-client";
+import { jwtDecode } from "jwt-decode"; // שימוש בייבוא בשם
 import ApprovalModal from "../components/ApprovalModal";
 
-// ConfirmationModal - רכיב לאישור פעולות
-const ConfirmationModal = ({ open, onClose, onConfirm, message }) => {
-  return (
-    <Modal open={open} onClose={onClose} closeAfterTransition>
-      <Box
-        sx={{
-          position: "absolute",
-          top: "50%",
-          left: "50%",
-          transform: "translate(-50%, -50%)",
-          width: 400,
-          bgcolor: "background.paper",
-          boxShadow: 24,
-          p: 4,
-          borderRadius: 2,
-        }}
-      >
-        <Typography variant="h6" gutterBottom>
-          Confirm Action
-        </Typography>
-        <Typography variant="body1" gutterBottom>
-          {message}
-        </Typography>
-        <Stack direction="row" spacing={2} justifyContent="flex-end" sx={{ mt: 2 }}>
-          <Button variant="outlined" onClick={onClose}>
-            Cancel
-          </Button>
-          <Button variant="contained" color="error" onClick={onConfirm}>
-            Confirm
-          </Button>
-        </Stack>
-      </Box>
-    </Modal>
-  );
-};
+// Socket initialization – ניתן לנהל אותו באופן גלובלי או כאן
+const socket = io("http://localhost:5000");
+
+// Notification modal for approved offer
+const NotificationModal = ({ open, message, onClose }) => (
+  <Modal open={open} onClose={onClose} closeAfterTransition>
+    <Box
+      sx={{
+        position: "absolute",
+        top: "50%",
+        left: "50%",
+        transform: "translate(-50%, -50%)",
+        width: 400,
+        bgcolor: "background.paper",
+        boxShadow: 24,
+        p: 4,
+        borderRadius: 2,
+      }}
+    >
+      <Typography variant="h6" gutterBottom>
+        Offer Approved!
+      </Typography>
+      <Typography variant="body1" gutterBottom>
+        {message}
+      </Typography>
+      <Stack direction="row" spacing={2} justifyContent="flex-end" sx={{ mt: 2 }}>
+        <Button variant="contained" onClick={onClose}>
+          Close
+        </Button>
+      </Stack>
+    </Box>
+  </Modal>
+);
+
+// Confirmation modal for reject action
+const ConfirmationModal = ({ open, onClose, onConfirm, message }) => (
+  <Modal open={open} onClose={onClose} closeAfterTransition>
+    <Box
+      sx={{
+        position: "absolute",
+        top: "50%",
+        left: "50%",
+        transform: "translate(-50%, -50%)",
+        width: 400,
+        bgcolor: "background.paper",
+        boxShadow: 24,
+        p: 4,
+        borderRadius: 2,
+      }}
+    >
+      <Typography variant="h6" gutterBottom>
+        Confirm Action
+      </Typography>
+      <Typography variant="body1" gutterBottom>
+        {message}
+      </Typography>
+      <Stack direction="row" spacing={2} justifyContent="flex-end" sx={{ mt: 2 }}>
+        <Button variant="outlined" onClick={onClose}>
+          Cancel
+        </Button>
+        <Button variant="contained" color="error" onClick={onConfirm}>
+          Confirm
+        </Button>
+      </Stack>
+    </Box>
+  </Modal>
+);
 
 const OffersPage = () => {
   const [sentOffers, setSentOffers] = useState([]);
@@ -60,18 +94,49 @@ const OffersPage = () => {
   const [error, setError] = useState("");
   const [approvalModalOpen, setApprovalModalOpen] = useState(false);
   const [selectedOfferForRating, setSelectedOfferForRating] = useState(null);
-  
-  // State for confirmation modal for reject action
+  // State for confirmation of reject action
   const [confirmModalOpen, setConfirmModalOpen] = useState(false);
   const [selectedOfferForReject, setSelectedOfferForReject] = useState(null);
+  // State for notification modal (for approved offer)
+  const [approvalNotification, setApprovalNotification] = useState({
+    open: false,
+    message: "",
+  });
 
   const token = localStorage.getItem("token");
   const navigate = useNavigate();
 
+  // Join room using user id from token
+  useEffect(() => {
+    if (token) {
+      try {
+        const decoded = jwtDecode(token);
+        const userId = decoded.id; // ודא שהטוקן שלך מכיל את השדה "id"
+        console.log("🔹 joinRoom userId:", userId);
+        socket.emit("joinRoom", userId);
+      } catch (error) {
+        console.error("Error decoding token:", error);
+      }
+    }
+  }, [token]);
+
+  // Setup socket listener for "offerApproved" event
+  useEffect(() => {
+    socket.on("offerApproved", (data) => {
+      console.log("🔸 Received offerApproved event:", data); // מוסיף לוג
+      setApprovalNotification({
+        open: true,
+        message: data.message,
+      });
+    });
+    return () => {
+      socket.off("offerApproved");
+    };
+  }, []);
+
   // Fetch offers from API
   useEffect(() => {
     if (!token) return;
-
     const fetchSentOffers = async () => {
       try {
         const res = await fetch("http://localhost:5000/api/offers/sent", {
@@ -84,7 +149,6 @@ const OffersPage = () => {
         setError(err.message);
       }
     };
-
     const fetchReceivedOffers = async () => {
       try {
         const res = await fetch("http://localhost:5000/api/offers/received", {
@@ -97,7 +161,6 @@ const OffersPage = () => {
         setError(err.message);
       }
     };
-
     fetchSentOffers();
     fetchReceivedOffers();
   }, [token]);
@@ -113,7 +176,7 @@ const OffersPage = () => {
     setApprovalModalOpen(true);
   };
 
-  // Instead of calling reject directly, open confirmation modal
+  // Open confirmation modal for reject action
   const handleRejectClick = (offerId) => {
     setSelectedOfferForReject(offerId);
     setConfirmModalOpen(true);
@@ -131,7 +194,7 @@ const OffersPage = () => {
         body: JSON.stringify({ offerStatus: "Rejected" }),
       });
       const data = await response.json();
-      if (!response.ok) throw new Error(data.message || "Failed to reject offer.");
+      if (!response.ok) throw new Error(data.message || "Failed to reject offer");
 
       // Update local state for both sent and received offers
       setSentOffers((prev) =>
@@ -179,12 +242,9 @@ const OffersPage = () => {
               }}
             />
           </Stack>
-
-          {/* Always display sender's name */}
           <Typography variant="body2" sx={{ mt: 1 }}>
             Sender: {offer.sender?.firstName} {offer.sender?.lastName}
           </Typography>
-
           {isSent ? (
             <Typography variant="body2" sx={{ mt: 1 }}>
               Sent to: {offer.receiver?.firstName} {offer.receiver?.lastName}
@@ -194,9 +254,7 @@ const OffersPage = () => {
               Offer Amount: {offer.offerAmount}
             </Typography>
           )}
-
           <Stack direction="row" spacing={2} sx={{ mt: 2 }}>
-            {/* Accept button only for received offers */}
             {!isSent && offer.offerStatus === "Pending" && (
               <Button
                 variant="contained"
@@ -207,7 +265,6 @@ const OffersPage = () => {
                 Accept
               </Button>
             )}
-            {/* Reject button available if status is pending */}
             {offer.offerStatus === "Pending" && (
               <Button
                 variant="contained"
@@ -243,17 +300,13 @@ const OffersPage = () => {
       <Typography variant="h4" sx={{ fontWeight: "bold", mb: 3 }}>
         My Offers
       </Typography>
-
-      {/* Tabs for toggling between Sent/Received */}
       <Box sx={{ borderBottom: 1, borderColor: "divider", mb: 2 }}>
         <Tabs value={activeTab} onChange={handleTabChange}>
           <Tab label="Sent Offers" />
           <Tab label="Received Offers" />
         </Tabs>
       </Box>
-
       {error && <Typography color="error">{error}</Typography>}
-
       {activeTab === 0 && (
         <Grid container spacing={3}>
           {sentOffers.length === 0 ? (
@@ -263,7 +316,6 @@ const OffersPage = () => {
           )}
         </Grid>
       )}
-
       {activeTab === 1 && (
         <Grid container spacing={3}>
           {receivedOffers.length === 0 ? (
@@ -273,8 +325,6 @@ const OffersPage = () => {
           )}
         </Grid>
       )}
-
-      {/* Approval Modal for Accept */}
       {selectedOfferForRating && (
         <ApprovalModal
           open={approvalModalOpen}
@@ -286,8 +336,6 @@ const OffersPage = () => {
           }}
         />
       )}
-
-      {/* Confirmation Modal for Reject */}
       {confirmModalOpen && (
         <ConfirmationModal
           open={confirmModalOpen}
@@ -296,6 +344,11 @@ const OffersPage = () => {
           message="Are you sure you want to reject this offer?"
         />
       )}
+      <NotificationModal
+        open={approvalNotification.open}
+        message={approvalNotification.message}
+        onClose={() => setApprovalNotification({ open: false, message: "" })}
+      />
     </Container>
   );
 };
