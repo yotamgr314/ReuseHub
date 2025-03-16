@@ -63,10 +63,19 @@ exports.sendOffer = async (req, res) => {
   }
 };
 
+/**
+ * Updates an Offer's status or approvals.
+ * Supports direct 'Rejected' status, or flow of adOwnerApproval/userWhoMadeTheOfferApproval => 'Accepted'
+ */
 exports.updateOfferStatus = async (req, res) => {
   try {
     const { id } = req.params;
-    const { adOwnerApproval, userWhoMadeTheOfferApproval, ratings } = req.body;
+    const {
+      adOwnerApproval,
+      userWhoMadeTheOfferApproval,
+      ratings,
+      offerStatus, // מוסיפים בדיקה על שדה זה
+    } = req.body;
     
     // 1) Find the Offer and its related Ad
     const offer = await Offer.findById(id).populate("adId");
@@ -79,7 +88,27 @@ exports.updateOfferStatus = async (req, res) => {
       return res.status(404).json({ success: false, message: "Referenced Ad not found." });
     }
 
-    // 2) Update offer confirmations
+    // ------------------------------------------------
+    // A) אם הגענו עם offerStatus === "Rejected", נטפל
+    // ------------------------------------------------
+    if (offerStatus === "Rejected") {
+      // כאן אפשר להוסיף בדיקת הרשאות, למשל:
+      // if (req.user._id.toString() !== ad.createdBy.toString()) {
+      //   return res.status(403).json({ success: false, message: "Not authorized to reject this offer." });
+      // }
+      offer.offerStatus = "Rejected";
+      await offer.save();
+
+      return res.status(200).json({
+        success: true,
+        message: "Offer rejected successfully",
+        data: offer,
+      });
+    }
+
+    // ------------------------------------------------
+    // B) המשך הלוגיקה הקיימת: אישור והפיכת ההצעה ל-Accepted
+    // ------------------------------------------------
     if (typeof adOwnerApproval !== "undefined") {
       offer.offerConfirmation.adOwnerApproval = adOwnerApproval;
     }
@@ -87,7 +116,7 @@ exports.updateOfferStatus = async (req, res) => {
       offer.offerConfirmation.userWhoMadeTheOfferApproval = userWhoMadeTheOfferApproval;
     }
 
-    // 3) If either side approves, process the offer as "Accepted"
+    // אם לפחות אחד מהצדדים אישר, ההצעה מתקבלת
     if (offer.offerConfirmation.adOwnerApproval || offer.offerConfirmation.userWhoMadeTheOfferApproval) {
       offer.offerStatus = "Accepted";
 
@@ -117,7 +146,7 @@ exports.updateOfferStatus = async (req, res) => {
       // 3b) Decrement ad.amount by the offerAmount
       ad.amount -= offer.offerAmount;
 
-      // 3c) Prepare a note that applies in every case
+      // 3c) Prepare a note
       let noteMessage = "Note: once the offer is approved it will get auto-deleted from the system.";
 
       // 3d) If the ad is fully donated, complete donation flow
@@ -138,7 +167,6 @@ exports.updateOfferStatus = async (req, res) => {
         if (donor) await updateUserBadge(donor);
         if (receiver) await updateUserBadge(receiver);
 
-        // Append extra note if the offer covers full quantity (donation completed)
         noteMessage += " As well as your Ad.";
 
         // Reject pending offers and remove all offers for this ad
@@ -167,7 +195,7 @@ exports.updateOfferStatus = async (req, res) => {
     
     return res.status(200).json({
       success: true,
-      message: `Offer updated successfully! ${"Note: once the offer is approved it will get auto-deleted from the system."}`,
+      message: `Offer updated successfully! Note: once the offer is approved it will get auto-deleted from the system.`,
       data: offer,
     });
   } catch (error) {
@@ -227,8 +255,9 @@ exports.deleteOffer = async (req, res) => {
   }
 };
 
-
-// Get pending offers sent by the logged-in user (only for ads not created by the user)
+/**
+ * Get pending offers sent by the logged-in user (for ads not created by the user).
+ */
 exports.getSentOffers = async (req, res) => {
   try {
     const offers = await Offer.find({
@@ -238,7 +267,7 @@ exports.getSentOffers = async (req, res) => {
       .populate("adId", "adTitle adStatus amount createdBy")
       .populate("receiver", "firstName lastName");
 
-    // לסנן הצעות שמופיעות על מודעות שהמשתמש עצמו פתח (לא אמורות לקרות אך לטחון למקרה)
+    // סינון הצעות שמופיעות על מודעות שהמשתמש עצמו פתח (edge-case)
     const filteredOffers = offers.filter(offer => 
       offer.adId && offer.adId.createdBy.toString() !== req.user._id.toString()
     );
@@ -254,7 +283,9 @@ exports.getSentOffers = async (req, res) => {
   }
 };
 
-// Get pending offers received by the logged-in user (for ads that the user created)
+/**
+ * Get pending offers received by the logged-in user (for ads that the user created).
+ */
 exports.getReceivedOffers = async (req, res) => {
   try {
     const offers = await Offer.find({
@@ -264,7 +295,7 @@ exports.getReceivedOffers = async (req, res) => {
       .populate("adId", "adTitle adStatus amount createdBy")
       .populate("sender", "firstName lastName");
 
-    // לסנן הצעות אם במקרה השולח הוא המשתמש (לא אמור לקרות)
+    // סינון הצעות אם במקרה השולח הוא המשתמש (לא הגיוני, אבל למנוע edge-case)
     const filteredOffers = offers.filter(offer => 
       offer.sender && offer.sender._id.toString() !== req.user._id.toString()
     );
