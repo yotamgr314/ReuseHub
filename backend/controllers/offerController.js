@@ -63,21 +63,6 @@ exports.sendOffer = async (req, res) => {
   }
 };
 
-/**
- * Merges approval and rating in one request.
- * PATCH /api/offers/:id
- *
- * The request body can include:
- * {
- *   "adOwnerApproval": true, // or "userWhoMadeTheOfferApproval": true,
- *   "ratings": {
- *     "timeliness": 4,
- *     "itemCondition": 5,
- *     "descriptionAccuracy": 3
- *   }
- * }
- * If no ratings are provided, they default to 0.
- */
 exports.updateOfferStatus = async (req, res) => {
   try {
     const { id } = req.params;
@@ -238,6 +223,59 @@ exports.deleteOffer = async (req, res) => {
     });
   } catch (error) {
     console.error("Error deleting offer:", error);
+    res.status(500).json({ success: false, message: "Internal server error" });
+  }
+};
+
+
+// Get pending offers sent by the logged-in user (only for ads not created by the user)
+exports.getSentOffers = async (req, res) => {
+  try {
+    const offers = await Offer.find({
+      sender: req.user._id,
+      offerStatus: "Pending"
+    })
+      .populate("adId", "adTitle adStatus amount createdBy")
+      .populate("receiver", "firstName lastName");
+
+    // לסנן הצעות שמופיעות על מודעות שהמשתמש עצמו פתח (לא אמורות לקרות אך לטחון למקרה)
+    const filteredOffers = offers.filter(offer => 
+      offer.adId && offer.adId.createdBy.toString() !== req.user._id.toString()
+    );
+
+    res.status(200).json({
+      success: true,
+      count: filteredOffers.length,
+      data: filteredOffers
+    });
+  } catch (error) {
+    console.error("Error fetching sent offers:", error);
+    res.status(500).json({ success: false, message: "Internal server error" });
+  }
+};
+
+// Get pending offers received by the logged-in user (for ads that the user created)
+exports.getReceivedOffers = async (req, res) => {
+  try {
+    const offers = await Offer.find({
+      receiver: req.user._id,
+      offerStatus: "Pending"
+    })
+      .populate("adId", "adTitle adStatus amount createdBy")
+      .populate("sender", "firstName lastName");
+
+    // לסנן הצעות אם במקרה השולח הוא המשתמש (לא אמור לקרות)
+    const filteredOffers = offers.filter(offer => 
+      offer.sender && offer.sender._id.toString() !== req.user._id.toString()
+    );
+
+    res.status(200).json({
+      success: true,
+      count: filteredOffers.length,
+      data: filteredOffers
+    });
+  } catch (error) {
+    console.error("Error fetching received offers:", error);
     res.status(500).json({ success: false, message: "Internal server error" });
   }
 };
