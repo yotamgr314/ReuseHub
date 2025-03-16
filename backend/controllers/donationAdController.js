@@ -1,4 +1,6 @@
 const DonationAd = require("../models/donationAdSchema");
+const User = require("../models/userSchema");
+const { updateUserBadge } = require("../utils/badgeHelper");
 
 exports.createDonationAd = async (req, res) => {
   try {
@@ -46,6 +48,12 @@ exports.createDonationAd = async (req, res) => {
     });
 
     await newAd.save();
+    
+    // Inside createDonationAd, after await newAd.save():
+    await User.findByIdAndUpdate(req.user._id, { $inc: { ratingPoints: 5 } });
+    const updatedUser = await User.findById(req.user._id);
+    await updateUserBadge(updatedUser);
+
 
     // Emit event for real-time update
     io.emit("donationAdCreated", newAd);

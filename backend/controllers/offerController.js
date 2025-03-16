@@ -1,18 +1,32 @@
 // backend/controllers/offerController.js
+
 const Offer = require("../models/offerSchema");
 const BaseAd = require("../models/baseAdSchema");
 const Chat = require("../models/chatSchema");
+const User = require("../models/userSchema");
+const { updateUserBadge } = require("../utils/badgeHelper");
 
+/**
+ * Creates a new Offer (unchanged).
+ */
 exports.sendOffer = async (req, res) => {
   try {
     const { adId, offerAmount, message } = req.body;
     console.log("📩 Received sendOffer request:", { adId, offerAmount, message });
 
-    if (!adId) return res.status(400).json({ success: false, message: "Ad ID is required." });
-    if (!offerAmount || offerAmount < 1) return res.status(400).json({ success: false, message: "Offer amount must be at least 1." });
+    if (!adId) {
+      return res.status(400).json({ success: false, message: "Ad ID is required." });
+    }
+    if (!offerAmount || offerAmount < 1) {
+      return res
+        .status(400)
+        .json({ success: false, message: "Offer amount must be at least 1." });
+    }
 
     const ad = await BaseAd.findById(adId);
-    if (!ad) return res.status(404).json({ success: false, message: "Ad not found." });
+    if (!ad) {
+      return res.status(404).json({ success: false, message: "Ad not found." });
+    }
 
     const newOffer = new Offer({
       sender: req.user._id,
@@ -25,7 +39,7 @@ exports.sendOffer = async (req, res) => {
     await newOffer.save();
     console.log("✅ Offer saved:", newOffer);
 
-    // 🔹 Ensure chat is created and properly linked
+    // Create and link chat
     const newChat = new Chat({
       offerId: newOffer._id,
       participants: [req.user._id, ad.createdBy],
@@ -35,7 +49,6 @@ exports.sendOffer = async (req, res) => {
     await newChat.save();
     console.log("✅ Chat saved:", newChat);
 
-    // Link chat to offer
     newOffer.chat = newChat._id;
     await newOffer.save();
 
@@ -50,64 +63,137 @@ exports.sendOffer = async (req, res) => {
   }
 };
 
-
+/**
+ * Merges approval and rating in one request.
+ * PATCH /api/offers/:id
+ *
+ * The request body can include:
+ * {
+ *   "adOwnerApproval": true, // or "userWhoMadeTheOfferApproval": true,
+ *   "ratings": {
+ *     "timeliness": 4,
+ *     "itemCondition": 5,
+ *     "descriptionAccuracy": 3
+ *   }
+ * }
+ * If no ratings are provided, they default to 0.
+ */
 exports.updateOfferStatus = async (req, res) => {
   try {
     const { id } = req.params;
-    const { adOwnerApproval, userWhoMadeTheOfferApproval } = req.body;
+    const { adOwnerApproval, userWhoMadeTheOfferApproval, ratings } = req.body;
     
+    // 1) Find the Offer and its related Ad
     const offer = await Offer.findById(id).populate("adId");
-    if (!offer) return res.status(404).json({ success: false, message: "Offer not found." });
+    if (!offer) {
+      return res.status(404).json({ success: false, message: "Offer not found." });
+    }
 
     const ad = offer.adId;
-    if (!ad) return res.status(404).json({ success: false, message: "Referenced Ad not found." });
+    if (!ad) {
+      return res.status(404).json({ success: false, message: "Referenced Ad not found." });
+    }
 
-    // Update approval status
-    if (adOwnerApproval !== undefined) offer.offerConfirmation.adOwnerApproval = adOwnerApproval;
-    if (userWhoMadeTheOfferApproval !== undefined) offer.offerConfirmation.userWhoMadeTheOfferApproval = userWhoMadeTheOfferApproval;
+    // 2) Update offer confirmations
+    if (typeof adOwnerApproval !== "undefined") {
+      offer.offerConfirmation.adOwnerApproval = adOwnerApproval;
+    }
+    if (typeof userWhoMadeTheOfferApproval !== "undefined") {
+      offer.offerConfirmation.userWhoMadeTheOfferApproval = userWhoMadeTheOfferApproval;
+    }
 
-    // Check if both approvals are true
+    // 3) If either side approves, process the offer as "Accepted"
     if (offer.offerConfirmation.adOwnerApproval || offer.offerConfirmation.userWhoMadeTheOfferApproval) {
       offer.offerStatus = "Accepted";
 
-      // Reduce the Ad's item amount based on the offer
+      // 3a) Process ratings if provided (default missing values to 0)
+      if (ratings) {
+        const criteria = ["timeliness", "itemCondition", "descriptionAccuracy"];
+        let total = 0;
+        let count = 0;
+        criteria.forEach((key) => {
+          const val = parseInt(ratings[key] ?? 0, 10);
+          if (!isNaN(val)) {
+            total += val;
+            count++;
+          }
+        });
+        const avgRating = count > 0 ? total / count : 0;
+        if (avgRating > 0) {
+          const userToRate = await User.findById(offer.sender);
+          if (userToRate) {
+            userToRate.ratingPoints += avgRating;
+            await userToRate.save();
+            await updateUserBadge(userToRate);
+          }
+        }
+      }
+
+      // 3b) Decrement ad.amount by the offerAmount
       ad.amount -= offer.offerAmount;
-      
+
+      // 3c) Prepare a note that applies in every case
+      let noteMessage = "Note: once the offer is approved it will get auto-deleted from the system.";
+
+      // 3d) If the ad is fully donated, complete donation flow
       if (ad.amount < 1) {
-        // Mark the Ad as "Donation Completed"
         ad.adStatus = "Donation Completed";
 
-        // Reject all pending offers related to this Ad
+        // Award +10 points each to donor and receiver, update badges
+        const donor = await User.findByIdAndUpdate(
+          ad.createdBy,
+          { $inc: { ratingPoints: 10 } },
+          { new: true }
+        );
+        const receiver = await User.findByIdAndUpdate(
+          offer.sender,
+          { $inc: { ratingPoints: 10 } },
+          { new: true }
+        );
+        if (donor) await updateUserBadge(donor);
+        if (receiver) await updateUserBadge(receiver);
+
+        // Append extra note if the offer covers full quantity (donation completed)
+        noteMessage += " As well as your Ad.";
+
+        // Reject pending offers and remove all offers for this ad
         await Offer.updateMany(
           { adId: ad._id, offerStatus: "Pending" },
           { offerStatus: "Rejected" }
         );
-
-        // Delete all offers related to the completed Ad
         await Offer.deleteMany({ adId: ad._id });
 
-        // Remove the Ad from the system
+        // Remove the ad from the system
         await BaseAd.findByIdAndDelete(ad._id);
 
+        return res.status(200).json({
+          success: true,
+          message: `Donation completed; ad and related offers removed. ${noteMessage}`,
+        });
       } else {
-        await ad.save(); // Save the updated ad amount
+        // Donation is still active: save changes
+        await ad.save();
+        await offer.save();
       }
+    } else {
+      // If no approvals yet, simply save the offer changes
+      await offer.save();
     }
     
-    res.status(200).json({
+    return res.status(200).json({
       success: true,
-      message: "Offer updated successfully!",
+      message: `Offer updated successfully! ${"Note: once the offer is approved it will get auto-deleted from the system."}`,
       data: offer,
     });
   } catch (error) {
     console.error("Error updating offer:", error);
-    res.status(500).json({ success: false, message: "Internal server error" });
+    return res.status(500).json({ success: false, message: "Internal server error" });
   }
 };
 
-
-
-
+/**
+ * Gets the list of Offers for the logged-in user (unchanged).
+ */
 exports.getUserOffers = async (req, res) => {
   try {
     const offers = await Offer.find({ receiver: req.user._id })
@@ -132,18 +218,21 @@ exports.getUserOffers = async (req, res) => {
   }
 };
 
-
-// ✅ Delete an Offer (Only if ad is deleted or canceled)
+/**
+ * Deletes an Offer (unchanged).
+ */
 exports.deleteOffer = async (req, res) => {
   try {
     const { id } = req.params;
 
     const offer = await Offer.findById(id);
-    if (!offer) return res.status(404).json({ success: false, message: "Offer not found." });
+    if (!offer) {
+      return res.status(404).json({ success: false, message: "Offer not found." });
+    }
 
     await offer.remove();
 
-    res.status(200).json({
+    return res.status(200).json({
       success: true,
       message: "Offer deleted successfully!",
     });

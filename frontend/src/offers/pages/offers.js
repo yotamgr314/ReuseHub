@@ -1,10 +1,10 @@
+// frontend/src/offers/pages/Offers.js
 import React, { useEffect, useState } from "react";
 import {
   Container,
   Typography,
   Grid,
   Card,
-  CardMedia,
   CardContent,
   Chip,
   Stack,
@@ -14,12 +14,15 @@ import {
 } from "@mui/material";
 import { CheckCircle, Cancel, ChatBubbleOutline } from "@mui/icons-material";
 import { useNavigate } from "react-router-dom";
+import ApprovalModal from "../components/ApprovalModal"; // NEW: Import ApprovalModal
 
 const Offers = () => {
   const [offers, setOffers] = useState([]);
   const [error, setError] = useState("");
   const [openModal, setOpenModal] = useState(false);
   const [modalMessage, setModalMessage] = useState("");
+  const [selectedOfferForRating, setSelectedOfferForRating] = useState(null); // NEW
+  const [approvalModalOpen, setApprovalModalOpen] = useState(false); // NEW
   const token = localStorage.getItem("token");
   const navigate = useNavigate();
 
@@ -39,7 +42,8 @@ const Offers = () => {
         const responseData = await response.json();
         console.log("📩 Offers received:", responseData);
 
-        if (!response.ok) throw new Error(responseData.message || "Failed to fetch offers.");
+        if (!response.ok)
+          throw new Error(responseData.message || "Failed to fetch offers.");
 
         setOffers(responseData.data);
       } catch (err) {
@@ -50,31 +54,10 @@ const Offers = () => {
     fetchOffers();
   }, [token]);
 
-  const handleApproveOffer = async (offerId, adId) => {
-    try {
-      const response = await fetch(`http://localhost:5000/api/offers/${offerId}`, {
-        method: "PATCH",
-        headers: {
-          Authorization: `Bearer ${token}`,
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({ userWhoMadeTheOfferApproval: true }),
-      });
-
-      const data = await response.json();
-      console.log("✅ Offer approved:", data);
-
-      if (!response.ok) throw new Error(data.message || "Failed to approve offer.");
-
-      // Remove the approved offer and its associated ad
-      setOffers((prevOffers) => prevOffers.filter((offer) => offer._id !== offerId && offer.adId?._id !== adId));
-
-      setModalMessage("Offer approved successfully!");
-      setOpenModal(true);
-    } catch (error) {
-      setModalMessage(`Error: ${error.message}`);
-      setOpenModal(true);
-    }
+  const handleOpenApprovalModal = (offerId, adId) => {
+    // Optionally, you could check that the offer exists here before opening
+    setSelectedOfferForRating(offerId);
+    setApprovalModalOpen(true);
   };
 
   const handleRejectOffer = async (offerId) => {
@@ -100,6 +83,21 @@ const Offers = () => {
       );
     } catch (error) {
       console.error("Error rejecting offer:", error);
+      setModalMessage(`Error: ${error.message}`);
+      setOpenModal(true);
+    }
+  };
+
+  // Called when approval + rating is submitted successfully
+  const handleApprovalSuccess = (data) => {
+    console.log("Approval & rating submitted:", data);
+    // If donation is complete, the server may indicate that in the message.
+    if (data.message?.includes("Donation completed")) {
+      setOffers([]); // Clear offers or trigger a refresh
+      setModalMessage("Donation completed! The ad and related offers are removed.");
+      setOpenModal(true);
+    } else {
+      // For partial donation, you might update the offers list accordingly.
     }
   };
 
@@ -125,15 +123,11 @@ const Offers = () => {
                 "&:hover": { boxShadow: "0px 8px 30px rgba(0,0,0,0.15)" },
               }}
             >
-              {/* Left Side - Image Fix Applied */}
- 
-              {/* Right Side - Details */}
-              <CardContent sx={{ flex: 1, ml: 2 }}>
+              <CardContent sx={{ flex: 1 }}>
                 <Stack direction="row" justifyContent="space-between" alignItems="center">
-                  <Typography variant="h6" sx={{ fontWeight: "bold", color: "#2C3E50" }}>
+                  <Typography variant="h6" sx={{ fontWeight: "bold" }}>
                     {offer.adId?.adTitle || "Unknown Ad"}
                   </Typography>
-
                   <Chip
                     label={offer.offerStatus}
                     sx={{
@@ -149,39 +143,27 @@ const Offers = () => {
                   />
                 </Stack>
 
-                {/* Offer Message */}
-                <Typography variant="body2" sx={{ mt: 1, color: "#555" }}>
+                <Typography variant="body2" sx={{ mt: 1 }}>
                   <strong>Message:</strong>{" "}
-                  {offer.chat?.messages?.length > 0 ? offer.chat.messages[0].text : "No message sent"}
+                  {offer.chat?.messages?.[0]?.text || "No message sent"}
                 </Typography>
 
-                {/* Action Buttons */}
-                <Stack direction="row" spacing={2} justifyContent="flex-start" sx={{ mt: 2 }}>
+                <Stack direction="row" spacing={2} sx={{ mt: 2 }}>
                   <Button
                     variant="contained"
                     startIcon={<CheckCircle />}
-                    sx={{
-                      bgcolor: "#28A745",
-                      "&:hover": { bgcolor: "#218838" },
-                      borderRadius: 20,
-                      textTransform: "none",
-                    }}
-                    onClick={() => handleApproveOffer(offer._id, offer.adId?._id)}
+                    onClick={() => handleOpenApprovalModal(offer._id, offer.adId?._id)}
+                    sx={{ bgcolor: "#28A745", "&:hover": { bgcolor: "#218838" } }}
                   >
-                    Approve
+                    Accept
                   </Button>
 
                   <Button
                     variant="contained"
                     startIcon={<Cancel />}
-                    sx={{
-                      bgcolor: "#DC3545",
-                      "&:hover": { bgcolor: "#C82333" },
-                      borderRadius: 20,
-                      textTransform: "none",
-                    }}
                     onClick={() => handleRejectOffer(offer._id)}
                     disabled={offer.offerStatus === "Rejected"}
+                    sx={{ bgcolor: "#DC3545", "&:hover": { bgcolor: "#C82333" } }}
                   >
                     Reject
                   </Button>
@@ -189,14 +171,7 @@ const Offers = () => {
                   <Button
                     variant="contained"
                     startIcon={<ChatBubbleOutline />}
-                    sx={{
-                      bgcolor: "#007BFF",
-                      "&:hover": { bgcolor: "#0056B3" },
-                      borderRadius: 20,
-                      textTransform: "none",
-                    }}
                     onClick={() => {
-                      console.log("🔗 Navigating to chat:", offer.chat?._id);
                       if (offer.chat && offer.chat._id) {
                         navigate(`/chat/${offer.chat._id}`);
                       } else {
@@ -204,6 +179,7 @@ const Offers = () => {
                       }
                     }}
                     disabled={!offer.chat}
+                    sx={{ bgcolor: "#007BFF", "&:hover": { bgcolor: "#0056B3" } }}
                   >
                     Start Chat
                   </Button>
@@ -214,7 +190,7 @@ const Offers = () => {
         ))}
       </Grid>
 
-      {/* Confirmation Modal */}
+      {/* Generic Confirmation/Error Modal */}
       <Modal open={openModal} onClose={() => setOpenModal(false)}>
         <Box
           sx={{
@@ -234,6 +210,16 @@ const Offers = () => {
           </Button>
         </Box>
       </Modal>
+
+      {/* Rating (Approval) Modal */}
+      {selectedOfferForRating && (
+        <ApprovalModal
+          open={approvalModalOpen}
+          onClose={() => setApprovalModalOpen(false)}
+          offerId={selectedOfferForRating}
+          onSubmitSuccess={handleApprovalSuccess}
+        />
+      )}
     </Container>
   );
 };
