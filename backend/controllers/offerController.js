@@ -258,17 +258,19 @@ exports.deleteOffer = async (req, res) => {
 /**
  * Get pending offers sent by the logged-in user (for ads not created by the user).
  */
+// backend/controllers/offerController.js
+
 exports.getSentOffers = async (req, res) => {
   try {
     const offers = await Offer.find({
       sender: req.user._id,
-      offerStatus: "Pending"
+      offerStatus: { $in: ["Pending", "Rejected"] } // כולל גם Pending וגם Rejected
     })
       .populate("adId", "adTitle adStatus amount createdBy")
       .populate("receiver", "firstName lastName");
 
-    // סינון הצעות שמופיעות על מודעות שהמשתמש עצמו פתח (edge-case)
-    const filteredOffers = offers.filter(offer => 
+    // סינון הצעות על מודעות שהמשתמש עצמו יצר (edge-case)
+    const filteredOffers = offers.filter(offer =>
       offer.adId && offer.adId.createdBy.toString() !== req.user._id.toString()
     );
 
