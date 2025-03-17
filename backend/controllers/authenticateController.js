@@ -1,4 +1,3 @@
-// backend/controllers/authenticateController.js
 const UserModel = require("../models/userSchema");
 const jwt = require("jsonwebtoken");
 
@@ -32,15 +31,18 @@ exports.register = async (req, res) => {
       return res.status(400).json({ success: false, message: "Email already registered" });
     }
 
-    // Create the new user; if a file was uploaded, use its file path for profilePic
-    const newUser = new UserModel({
+    // Create new user. If a file was uploaded, save its URL in profilePic.
+    const newUserData = {
       firstName,
       lastName,
       email,
       password,
-      profilePic: req.file ? "/uploads/" + req.file.filename : "",
-    });
+    };
+    if (req.file) {
+      newUserData.profilePic = "/uploads/" + req.file.filename;
+    }
 
+    const newUser = new UserModel(newUserData);
     await newUser.save();
 
     // Generate JWT Token
@@ -55,7 +57,7 @@ exports.register = async (req, res) => {
         firstName: newUser.firstName,
         lastName: newUser.lastName,
         email: newUser.email,
-        profilePic: newUser.profilePic,
+        profilePic: newUser.profilePic, // include profilePic in response
       },
     });
   } catch (error) {
@@ -64,35 +66,29 @@ exports.register = async (req, res) => {
   }
 };
 
-
 exports.login = async (req, res) => {
   try {
     const { email, password } = req.body;
 
-    if (!password) 
-    {
+    if (!password) {
       return res.status(400).json({ message: "password is required." });
     }
-
-    if(!email)
-    {
+    if (!email) {
       return res.status(400).json({ message: "Email is required." });
     }
 
     const user = await UserModel.findOne({ email });
-    if (!user)
-    {
+    if (!user) {
       return res.status(401).json({ success: false, message: "Invalid email" });
     }
 
     // Compare entered password with stored hashed password
     const isMatch = await user.matchPassword(password);
-    if (!isMatch)
-    {
+    if (!isMatch) {
       return res.status(401).json({ success: false, message: "Invalid password" });
     }
 
-    // ✅ Generate JWT Token
+    // Generate JWT Token
     const token = jwt.sign({ id: user._id }, process.env.JWT_SECRET, { expiresIn: "1h" });
 
     res.status(200).json({
@@ -104,6 +100,7 @@ exports.login = async (req, res) => {
         firstName: user.firstName,
         lastName: user.lastName,
         email: user.email,
+        profilePic: user.profilePic, // include profilePic in login response
       },
     });
   } catch (error) {

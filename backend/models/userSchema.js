@@ -13,6 +13,7 @@ const userSchema = new mongoose.Schema(
   {
     firstName: { type: String, required: true, trim: true, minlength: 2 },
     lastName: { type: String, required: true, trim: true, minlength: 2 },
+
     email: {
       type: String,
       required: true,
@@ -21,10 +22,16 @@ const userSchema = new mongoose.Schema(
       lowercase: true,
       match: [/^\S+@\S+\.\S+$/, "Please enter a valid email address"],
     },
+
     password: { type: String, required: true, minlength: 5 },
-    profilePic: { type: String, default: "" }, // NEW field for profile picture URL
+
+    // NEW: Add profilePic field
+    profilePic: { type: String, default: "" },
+
     ratingPoints: { type: Number, default: 0, min: 0 },
+
     ads: [{ type: mongoose.Schema.Types.ObjectId, ref: "BaseAd" }],
+
     badges: {
       type: [badgeSchema],
       default: [

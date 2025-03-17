@@ -9,16 +9,16 @@ const Register = () => {
     email: "",
     password: "",
   });
-  const [profilePic, setProfilePic] = useState(null); // new state for profile picture
+  const [profilePic, setProfilePic] = useState(null);
   const [error, setError] = useState("");
   const [success, setSuccess] = useState("");
+
   const navigate = useNavigate();
 
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
 
-  // Handle file input change
   const handleFileChange = (e) => {
     setProfilePic(e.target.files[0]);
   };
@@ -44,9 +44,15 @@ const Register = () => {
       });
 
       const data = await response.json();
+
       if (!response.ok) {
         throw new Error(data.message || "Registration failed");
       }
+
+      // Optionally store the user object if you want to auto-login or make it available
+      // Here, we just store it before navigating to the login page.
+      localStorage.setItem("user", JSON.stringify(data.user));
+
       setSuccess("Registration successful! Please log in.");
       navigate("/login");
     } catch (err) {
@@ -103,10 +109,17 @@ const Register = () => {
             value={formData.password}
             onChange={handleChange}
           />
-          <Button variant="outlined" component="label" fullWidth sx={{ mt: 2 }}>
-            Upload Profile Picture
-            <input type="file" name="profilePic" hidden onChange={handleFileChange} accept="image/*" />
-          </Button>
+          <Box mt={2}>
+            <Button variant="outlined" component="label">
+              Upload Profile Picture
+              <input type="file" accept="image/*" hidden onChange={handleFileChange} />
+            </Button>
+            {profilePic && (
+              <Typography variant="body2" sx={{ mt: 1 }}>
+                Selected: {profilePic.name}
+              </Typography>
+            )}
+          </Box>
           {error && <Typography color="error">{error}</Typography>}
           {success && <Typography color="primary">{success}</Typography>}
           <Button type="submit" fullWidth variant="contained" sx={{ mt: 3, mb: 3 }}>
