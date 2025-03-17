@@ -78,31 +78,36 @@ export default function DrawerAppBar(props) {
     console.error("Error parsing user data from localStorage:", error);
   }
 
-  // Determine the profile picture URL.
-  // If the stored URL does not start with "http", prepend the backend URL.
-  // Also, use a placeholder that works reliably.
+  // Determine the profile picture URL
   const profilePic =
     user.profilePic && user.profilePic !== ""
-      ? (user.profilePic.startsWith("http")
-          ? user.profilePic
-          : `http://localhost:5000${user.profilePic}`)
-      : "https://via.placeholder.com/40?text=Avatar";
+      ? user.profilePic.startsWith("http")
+        ? user.profilePic
+        : `http://localhost:5000${user.profilePic}`
+      : "https://via.placeholder.com/40";
 
+  // MOBILE drawer content
   const drawer = (
-    <Box onClick={handleDrawerToggle} sx={{ textAlign: "center" }}>
+    <Box sx={{ textAlign: "left" }}>
       <Typography
         variant="h6"
-        sx={{ my: 2, cursor: "pointer" }}
-        onClick={() => navigate("/homePage")}
+        sx={{ my: 2, ml: 2, cursor: "pointer" }}
+        onClick={() => {
+          setMobileOpen(false);
+          navigate("/homePage");
+        }}
       >
         ReuseHub
       </Typography>
       <Divider />
       <List>
         {navItems.map((item) => (
-          <ListItem key={item.label} disablePadding sx={{ mb: 2.5 }}>
+          <ListItem key={item.label} disablePadding>
             {item.type === "link" ? (
-              <ListItemButton sx={{ textAlign: "center", py: 2 }}>
+              <ListItemButton
+                sx={{ py: 2 }}
+                onClick={() => setMobileOpen(false)}
+              >
                 <NavLink
                   to={item.path}
                   style={({ isActive }) => ({
@@ -111,22 +116,37 @@ export default function DrawerAppBar(props) {
                     fontWeight: isActive ? "bold" : "normal",
                   })}
                 >
-                  {item.icon}
-                  <ListItemText primary={item.label} sx={{ ml: 1 }} />
+                  <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
+                    {item.icon}
+                    <ListItemText primary={item.label} />
+                  </Box>
                 </NavLink>
               </ListItemButton>
             ) : item.type === "chat" ? (
-              <ListItemButton sx={{ textAlign: "center", py: 2 }} onClick={handleChatNavigation}>
-                {item.icon}
-                <ListItemText primary={item.label} sx={{ ml: 1 }} />
+              <ListItemButton
+                sx={{ py: 2 }}
+                onClick={() => {
+                  handleChatNavigation();
+                  setMobileOpen(false);
+                }}
+              >
+                <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
+                  {item.icon}
+                  <ListItemText primary={item.label} />
+                </Box>
               </ListItemButton>
             ) : (
               <ListItemButton
-                sx={{ textAlign: "center", py: 2 }}
-                onClick={() => handleLogout(navigate)}
+                sx={{ py: 2 }}
+                onClick={() => {
+                  setMobileOpen(false);
+                  handleLogout(navigate);
+                }}
               >
-                {item.icon}
-                <ListItemText primary={item.label} sx={{ ml: 1 }} />
+                <Box sx={{ display: "flex", alignItems: "center", gap: 1 }}>
+                  {item.icon}
+                  <ListItemText primary={item.label} />
+                </Box>
               </ListItemButton>
             )}
           </ListItem>
@@ -140,70 +160,86 @@ export default function DrawerAppBar(props) {
   return (
     <Box sx={{ display: "flex" }}>
       <CssBaseline />
+
       <AppBar component="nav" color="navbar">
-        <Toolbar>
-          <IconButton
-            color="inherit"
-            aria-label="open drawer"
-            edge="start"
-            onClick={handleDrawerToggle}
-            sx={{ mr: 2, display: { sm: "none" } }}
-          >
-            <MenuIcon />
-          </IconButton>
-          <Typography
-            variant="h6"
-            component="div"
-            onClick={() => navigate("/homePage")}
-            sx={{
-              flexGrow: 1,
-              display: { xs: "none", sm: "block" },
-              cursor: "pointer",
-            }}
-          >
-            ReuseHub
-          </Typography>
-          <Box sx={{ display: { xs: "none", sm: "flex" }, gap: 1.5 }}>
-            {navItems.map((item) =>
-              item.type === "link" ? (
-                <Button key={item.label} sx={{ color: "text.primary" }}>
-                  <NavLink
-                    to={item.path}
-                    style={({ isActive }) => ({
-                      textDecoration: "none",
-                      color: isActive ? "blue" : "inherit",
-                      fontWeight: isActive ? "bold" : "normal",
-                    })}
+        <Toolbar sx={{ display: "flex", alignItems: "center", pl: 2, pr: 2 }}>
+          {/* Left side: hamburger + brand */}
+          <Box sx={{ display: "flex", alignItems: "center" }}>
+            <IconButton
+              color="inherit"
+              aria-label="open drawer"
+              edge="start"
+              onClick={handleDrawerToggle}
+              sx={{ mr: 1, display: { sm: "none" } }}
+            >
+              <MenuIcon />
+            </IconButton>
+
+            {/* Show brand on ALL screen sizes (removed the xs: "none") */}
+            <Typography
+              variant="h6"
+              component="div"
+              onClick={() => navigate("/homePage")}
+              sx={{
+                cursor: "pointer",
+              }}
+            >
+              ReuseHub
+            </Typography>
+          </Box>
+
+          {/* Right side: nav items + avatar */}
+          <Box sx={{ display: "flex", alignItems: "center", ml: "auto" }}>
+            {/* Desktop nav items */}
+            <Box sx={{ display: { xs: "none", sm: "flex" }, gap: 3, mr: 3 }}>
+              {navItems.map((item) =>
+                item.type === "link" ? (
+                  <Button key={item.label} sx={{ color: "text.primary" }}>
+                    <NavLink
+                      to={item.path}
+                      style={({ isActive }) => ({
+                        textDecoration: "none",
+                        color: isActive ? "blue" : "inherit",
+                        fontWeight: isActive ? "bold" : "normal",
+                      })}
+                    >
+                      {item.icon}
+                      {item.label}
+                    </NavLink>
+                  </Button>
+                ) : item.type === "chat" ? (
+                  <Button
+                    key={item.label}
+                    onClick={handleChatNavigation}
+                    sx={{ color: "text.primary" }}
                   >
                     {item.icon}
                     {item.label}
-                  </NavLink>
-                </Button>
-              ) : item.type === "chat" ? (
-                <Button key={item.label} onClick={handleChatNavigation} sx={{ color: "text.primary" }}>
-                  {item.icon}
-                  {item.label}
-                </Button>
-              ) : (
-                <Button
-                  key={item.label}
-                  onClick={() => handleLogout(navigate)}
-                  sx={{ color: "text.primary" }}
-                >
-                  {item.icon}
-                  {item.label}
-                </Button>
-              )
-            )}
+                  </Button>
+                ) : (
+                  <Button
+                    key={item.label}
+                    onClick={() => handleLogout(navigate)}
+                    sx={{ color: "text.primary" }}
+                  >
+                    {item.icon}
+                    {item.label}
+                  </Button>
+                )
+              )}
+            </Box>
+
+            {/* Avatar (always on right) */}
+            <Avatar
+              alt={user.firstName || "User"}
+              src={profilePic}
+              sx={{ width: 40, height: 40 }}
+            />
           </Box>
-          {/* Display the user's profile picture */}
-          <Avatar
-            alt={user.firstName || "User"}
-            src={profilePic}
-            sx={{ width: 40, height: 40, ml: 2 }}
-          />
         </Toolbar>
       </AppBar>
+
+      {/* Mobile drawer */}
       <nav>
         <Drawer
           container={container}
@@ -222,7 +258,9 @@ export default function DrawerAppBar(props) {
           {drawer}
         </Drawer>
       </nav>
+
       <Box component="main" sx={{ p: 3 }}>
+        {/* to offset the AppBar height */}
         <Toolbar />
       </Box>
     </Box>
