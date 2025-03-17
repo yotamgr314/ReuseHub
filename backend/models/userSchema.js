@@ -1,4 +1,3 @@
-// backend/models/userSchema.js
 const mongoose = require("mongoose");
 const bcrypt = require("bcryptjs");
 
@@ -26,6 +25,9 @@ const userSchema = new mongoose.Schema(
 
     password: { type: String, required: true, minlength: 5 },
 
+    // NEW: Add profilePic field
+    profilePic: { type: String, default: "" },
+
     ratingPoints: { type: Number, default: 0, min: 0 },
 
     ads: [{ type: mongoose.Schema.Types.ObjectId, ref: "BaseAd" }],
@@ -44,7 +46,7 @@ const userSchema = new mongoose.Schema(
   { timestamps: true }
 );
 
-// ✅ Pre-save hook for hashing the password before saving
+// Pre-save hook for hashing the password before saving
 userSchema.pre("save", async function (next) {
   if (!this.isModified("password")) return next();
   const salt = await bcrypt.genSalt(12);
@@ -52,7 +54,7 @@ userSchema.pre("save", async function (next) {
   next();
 });
 
-// ✅ Method to compare passwords
+// Method to compare passwords
 userSchema.methods.matchPassword = async function (enteredPassword) {
   return await bcrypt.compare(enteredPassword, this.password);
 };

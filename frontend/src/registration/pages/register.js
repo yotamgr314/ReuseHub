@@ -9,7 +9,7 @@ const Register = () => {
     email: "",
     password: "",
   });
-
+  const [profilePic, setProfilePic] = useState(null);
   const [error, setError] = useState("");
   const [success, setSuccess] = useState("");
 
@@ -19,16 +19,29 @@ const Register = () => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
 
+  const handleFileChange = (e) => {
+    setProfilePic(e.target.files[0]);
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError("");
     setSuccess("");
 
     try {
+      const dataToSend = new FormData();
+      dataToSend.append("firstName", formData.firstName);
+      dataToSend.append("lastName", formData.lastName);
+      dataToSend.append("email", formData.email);
+      dataToSend.append("password", formData.password);
+      if (profilePic) {
+        dataToSend.append("profilePic", profilePic);
+      }
+
       const response = await fetch("https://reusehub-h9o5.onrender.com/api/authenticate/register", {
+
         method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(formData),
+        body: dataToSend,
       });
 
       const data = await response.json();
@@ -36,6 +49,10 @@ const Register = () => {
       if (!response.ok) {
         throw new Error(data.message || "Registration failed");
       }
+
+      // Optionally store the user object if you want to auto-login or make it available
+      // Here, we just store it before navigating to the login page.
+      localStorage.setItem("user", JSON.stringify(data.user));
 
       setSuccess("Registration successful! Please log in.");
       navigate("/login");
@@ -93,6 +110,17 @@ const Register = () => {
             value={formData.password}
             onChange={handleChange}
           />
+          <Box mt={2}>
+            <Button variant="outlined" component="label">
+              Upload Profile Picture
+              <input type="file" accept="image/*" hidden onChange={handleFileChange} />
+            </Button>
+            {profilePic && (
+              <Typography variant="body2" sx={{ mt: 1 }}>
+                Selected: {profilePic.name}
+              </Typography>
+            )}
+          </Box>
           {error && <Typography color="error">{error}</Typography>}
           {success && <Typography color="primary">{success}</Typography>}
           <Button type="submit" fullWidth variant="contained" sx={{ mt: 3, mb: 3 }}>

@@ -1,4 +1,3 @@
-// frontend/src/login/pages/login.js
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import {
@@ -17,7 +16,6 @@ const Login = () => {
   });
   const [error, setError] = useState("");
 
-  // Initialized useNavigate to enable navigation to different routes - without reloading the page
   const navigate = useNavigate();
 
   const handleChange = (e) => {
@@ -46,7 +44,10 @@ const Login = () => {
         throw new Error(data.message || "Login failed");
       }
 
-      localStorage.setItem("token", data.token); // saved JWT token to the localStorage.
+      // Save token and complete user object (including profilePic) to localStorage
+      localStorage.setItem("token", data.token);
+      localStorage.setItem("user", JSON.stringify(data.user));
+
       navigate("/homePage"); // Redirect to the homepage
     } catch (err) {
       setError(err.message);
@@ -66,11 +67,7 @@ const Login = () => {
         <Typography variant="h4" gutterBottom>
           Login
         </Typography>
-        <Box
-          component="form"
-          onSubmit={handleSubmit}
-          sx={{ mt: 1, width: "100%" }}
-        >
+        <Box component="form" onSubmit={handleSubmit} sx={{ mt: 1, width: "100%" }}>
           <TextField
             margin="normal"
             required
@@ -94,20 +91,12 @@ const Login = () => {
             onChange={handleChange}
           />
           {error && <Typography color="error">{error}</Typography>}
-          <Button
-            type="submit"
-            fullWidth
-            variant="contained"
-            sx={{ mt: 3, mb: 2 }}
-          >
+          <Button type="submit" fullWidth variant="contained" sx={{ mt: 3, mb: 2 }}>
             Login
           </Button>
 
           {/* STYLED REGISTER LINK BELOW LOGIN BUTTON */}
-          <Typography
-            variant="body2"
-            sx={{ textAlign: "center", color: "gray" }}
-          >
+          <Typography variant="body2" sx={{ textAlign: "center", color: "gray" }}>
             Don't have an account?{" "}
             <Link
               component="button"
@@ -115,11 +104,11 @@ const Login = () => {
               sx={{
                 color: "primary.main",
                 fontWeight: "bold",
-                fontSize: "1rem", // MADE TEXT SLIGHTLY BIGGER
+                fontSize: "1rem",
                 textDecoration: "none",
                 "&:hover": { textDecoration: "underline" },
               }}
-              onClick={() => navigate("/register")} // NAVIGATES TO REGISTER PAGE
+              onClick={() => navigate("/register")}
             >
               Register
             </Link>

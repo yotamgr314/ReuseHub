@@ -1,13 +1,7 @@
-// backend/routes/authenticateRouter.js
 const express = require("express");
 const { register, login } = require("../controllers/authenticateController");
+const upload = require("../middlewares/uploadMiddleware");
+const router = express.Router();
 
-const authenticateRouter = express.Router();
-
-// Register a new user
-authenticateRouter.post("/register", register); // https://reusehub-h9o5.onrender.com/api/authenticate/register
-
-// Login user
-authenticateRouter.post("/login", login); 
-
-module.exports = authenticateRouter;
+router.post("/register", upload.single("profilePic"), register);
+router.post("/login", login);
