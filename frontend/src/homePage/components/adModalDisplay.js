@@ -41,7 +41,11 @@ const AdModalDisplay = ({ selectedAd, onClose }) => {
     }
 
     try {
-      const token = localStorage.getItem("TOKEN");
+      const token = localStorage.getItem("token"); // Correct token key here
+      if (!token) {
+        alert("You need to be logged in to make an offer.");
+        return;
+      }
       const response = await fetch("https://reusehub-h9o5.onrender.com/api/offers", {
         method: "POST",
         headers: {
@@ -58,7 +62,7 @@ const AdModalDisplay = ({ selectedAd, onClose }) => {
       const data = await response.json();
       if (!response.ok) throw new Error(data.message || "Failed to send offer.");
       alert("Offer sent successfully!");
-      onClose();
+      onClose(); // Close the modal after the offer is sent
     } catch (error) {
       alert(`Error sending offer: ${error.message}`);
     }
