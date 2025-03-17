@@ -86,7 +86,7 @@ export default function DrawerAppBar(props) {
     user.profilePic && user.profilePic !== ""
       ? user.profilePic.startsWith("http")
         ? user.profilePic
-        : `http://localhost:5000${user.profilePic}`
+        : `https://reusehub-h9o5.onrender.com${user.profilePic}`
       : "https://via.placeholder.com/40";
 
   // MOBILE drawer content
