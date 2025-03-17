@@ -173,7 +173,7 @@ exports.updateOfferStatus = async (req, res) => {
         const io = req.app.get("io");
         io.to(offer.sender.toString()).emit("offerApproved", {
           offerTitle: ad.adTitle,
-          message: `Congratulations! Your offer for the Ad "${ad.adTitle}" has been officially approved by its owner: ${req.user.firstName} ${req.user.lastName}. You have been awarded 10 system based points for your contribution! Keep on Reusing!`,
+          message: `Congratulations! Your offer for the Ad "${ad.adTitle}" has been officially approved by its owner: ${req.user.firstName} ${req.user.lastName}. You have been awarded system points for your contribution! Keep on Reusing!`,
         });
         
         return res.status(200).json({
@@ -189,7 +189,7 @@ exports.updateOfferStatus = async (req, res) => {
       const io = req.app.get("io");
       io.to(offer.sender.toString()).emit("offerApproved", {
         offerTitle: ad.adTitle,
-        message: `Congratulations! Your offer for the Ad "${ad.adTitle}" has been officially approved by its owner: ${req.user.firstName} ${req.user.lastName}. You have been awarded 10 points for your contribution!`,
+        message: `Congratulations! Your offer for the Ad "${ad.adTitle}" has been officially approved by its owner: ${req.user.firstName} ${req.user.lastName}. You have been awarded system points for your contribution!`,
       });
     } else {
       await offer.save();
