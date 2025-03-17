@@ -55,14 +55,13 @@ const AdModalDisplay = ({ selectedAd, onClose }) => {
         body: JSON.stringify({
           adId: selectedAd._id,
           offerAmount: parseInt(itemCount, 10),
-          message, // Attach initial chat message
+          message, 
         }),
       });
 
       const data = await response.json();
       if (!response.ok) throw new Error(data.message || "Failed to send offer.");
-      alert("Offer sent successfully!");
-      onClose(); // Close the modal after the offer is sent
+      onClose(); 
     } catch (error) {
       alert(`Error sending offer: ${error.message}`);
     }
