@@ -4,7 +4,7 @@ import io from "socket.io-client";
 import { Box, Typography, TextField, Button, Paper } from "@mui/material";
 import "../styles/chat.css"; // ✅ קובץ CSS לעיצוב נוסף
 
-const socket = io("http://localhost:5000");
+const socket = io("https://reusehub-h9o5.onrender.com");
 
 // ✅ צבעים שונים לכל משתמש
 const COLORS = ["#FFDD94", "#AFCBFF"];
@@ -25,7 +25,7 @@ const Chat = () => {
 
     useEffect(() => {
         const fetchUserId = async () => {
-            const response = await fetch("http://localhost:5000/api/authenticate/me", {
+            const response = await fetch("https://reusehub-h9o5.onrender.com/api/authenticate/me", {
                 headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
             });
             const data = await response.json();
@@ -42,7 +42,7 @@ const Chat = () => {
         socket.emit("joinChat", chatId);
 
         const fetchChatMessages = async () => {
-            const response = await fetch(`http://localhost:5000/api/chat/${chatId}`, {
+            const response = await fetch(`https://reusehub-h9o5.onrender.com/api/chat/${chatId}`, {
                 headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
             });
             const data = await response.json();
@@ -72,7 +72,7 @@ const Chat = () => {
 
     const sendMessage = async () => {
         if (!messageText.trim()) return;
-        const response = await fetch(`http://localhost:5000/api/chat/${chatId}`, {
+        const response = await fetch(`https://reusehub-h9o5.onrender.com/api/chat/${chatId}`, {
             method: "POST",
             headers: {
                 "Content-Type": "application/json",

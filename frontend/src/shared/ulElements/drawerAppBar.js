@@ -56,7 +56,7 @@ export default function DrawerAppBar(props) {
 
   const handleChatNavigation = async () => {
     try {
-        const response = await fetch("http://localhost:5000/api/chat", {
+        const response = await fetch("https://reusehub-h9o5.onrender.com/api/chat", {
             headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
         });
 

@@ -30,7 +30,7 @@ const MyAds = () => {
 
     const fetchMyAds = async () => {
       try {
-        const response = await fetch("http://localhost:5000/api/ads/myAds", {
+        const response = await fetch("https://reusehub-h9o5.onrender.com/api/ads/myAds", {
           method: "GET",
           headers: { 
             "Authorization": `Bearer ${token}`,
