@@ -54,7 +54,7 @@ const ApprovalModal = ({ open, onClose, offerId, onSubmitSuccess }) => {
         ratings: ratings,
       };
 
-      const response = await fetch(`https://reusehub-h9o5.onrender.com/api/offers/${offerId}`, {
+      const response = await fetch(`http://localhost:5000/api/offers/${offerId}`, {
         method: 'PATCH',
         headers: {
           'Content-Type': 'application/json',

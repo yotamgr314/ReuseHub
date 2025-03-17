@@ -12,7 +12,7 @@ const HomePage = () => {
     const fetchAds = async () => {
       try {
         const token = localStorage.getItem("token");
-        const response = await fetch("https://reusehub-h9o5.onrender.com/api/ads", {
+        const response = await fetch("http://localhost:5000/api/ads", {
           method: "GET",
           headers: {
             "Content-Type": "application/json",
@@ -35,7 +35,7 @@ const HomePage = () => {
 
     fetchAds();
 
-    const socket = io("https://reusehub-h9o5.onrender.com");
+    const socket = io("http://localhost:5000");
 
     socket.on("donationAdCreated", (newAd) => {
       if (newAd && newAd._id) {

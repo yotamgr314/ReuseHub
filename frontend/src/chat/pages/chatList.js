@@ -11,7 +11,7 @@ const ChatList = () => {
     useEffect(() => {
         const fetchChats = async () => {
             try {
-                const response = await fetch("https://reusehub-h9o5.onrender.com/api/chat", {
+                const response = await fetch("http://localhost:5000/api/chat", {
                     headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
                 });
                 const data = await response.json();

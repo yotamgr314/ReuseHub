@@ -74,7 +74,7 @@ server side:
 06) learn about winston logger.
 
 
-https://reusehub-h9o5.onrender.com/api/users/:id/category/:category - example of multiple path params
+http://localhost:5000/api/users/:id/category/:category - example of multiple path params
 
 
 NOTE FOCUS: 

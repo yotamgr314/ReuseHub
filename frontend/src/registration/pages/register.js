@@ -38,7 +38,7 @@ const Register = () => {
         dataToSend.append("profilePic", profilePic);
       }
 
-      const response = await fetch("https://reusehub-h9o5.onrender.com/api/authenticate/register", {
+      const response = await fetch("http://localhost:5000/api/authenticate/register", {
 
         method: "POST",
         body: dataToSend,

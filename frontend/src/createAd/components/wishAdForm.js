@@ -83,7 +83,7 @@ const WishAdForm = ({ token, navigate }) => {
     }
 
     try {
-      const response = await fetch(`https://reusehub-h9o5.onrender.com/api/wishAds`, {
+      const response = await fetch(`http://localhost:5000/api/wishAds`, {
         method: "POST",
         headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}` },
         body: JSON.stringify(formData),
