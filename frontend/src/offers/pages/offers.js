@@ -310,7 +310,21 @@ const OffersPage = () => {
       {activeTab === 0 && (
         <Grid container spacing={3}>
           {sentOffers.length === 0 ? (
-            <Typography>No sent offers found.</Typography>
+            <Typography
+              variant="h5"
+              sx={{
+                color: "gray",
+                fontWeight: "bold",
+                backgroundColor: "#f2f2f2",
+                padding: "15px",
+                borderRadius: "8px",
+                textAlign: "center",
+                width: "100%",
+                marginTop: "20px",
+              }}
+            >
+              No sent offers found.
+            </Typography>
           ) : (
             sentOffers.map((offer) => renderOfferCard(offer, true))
           )}
@@ -319,7 +333,21 @@ const OffersPage = () => {
       {activeTab === 1 && (
         <Grid container spacing={3}>
           {receivedOffers.length === 0 ? (
-            <Typography>No received offers found.</Typography>
+            <Typography
+              variant="h5"
+              sx={{
+                color: "gray",
+                fontWeight: "bold",
+                backgroundColor: "#f2f2f2",
+                padding: "15px",
+                borderRadius: "8px",
+                textAlign: "center",
+                width: "100%",
+                marginTop: "20px",
+              }}
+            >
+              No received offers found.
+            </Typography>
           ) : (
             receivedOffers.map((offer) => renderOfferCard(offer, false))
           )}
