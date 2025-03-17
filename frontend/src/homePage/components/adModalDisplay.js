@@ -1,5 +1,4 @@
-// frontend/src/homePage/components/adModalDisplay.js
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import {
   Modal,
   Box,
@@ -19,8 +18,20 @@ import CloseIcon from "@mui/icons-material/Close";
 const AdModalDisplay = ({ selectedAd, onClose }) => {
   const [message, setMessage] = useState(""); // Chat message input
   const [itemCount, setItemCount] = useState(1); // New state: number of items to donate/claim
+  const [currentUserId, setCurrentUserId] = useState(null); // Current user id state
 
-  if (!selectedAd) return null;
+  // Fetch the current user's ID from localStorage
+  useEffect(() => {
+    const user = JSON.parse(localStorage.getItem("user"));
+    if (user) {
+      setCurrentUserId(user.id);
+    }
+  }, []);
+
+  if (!selectedAd || !currentUserId) return null; // Ensure both selectedAd and currentUserId exist
+
+  // Check if the current user is the owner of the ad
+  const isAdOwner = selectedAd.createdBy._id === currentUserId;
 
   const handleSendOffer = async () => {
     // Validate itemCount
@@ -30,7 +41,7 @@ const AdModalDisplay = ({ selectedAd, onClose }) => {
     }
 
     try {
-      const token = localStorage.getItem("token");
+      const token = localStorage.getItem("TOKEN");
       const response = await fetch("https://reusehub-h9o5.onrender.com/api/offers", {
         method: "POST",
         headers: {
@@ -111,37 +122,39 @@ const AdModalDisplay = ({ selectedAd, onClose }) => {
               )}
 
             {/* Chat Message Input */}
-            <TextField
-  label="Message to Receiver"
-  variant="outlined"
-  fullWidth
-  multiline
-  value={message}
-  onChange={(e) => setMessage(e.target.value)}
-  sx={{ mb: 2 }}
-  minRows={4}       // Fixed number of rows
-  maxRows={4}       // Fixed number of rows
-  inputProps={{
-    style: {
-      overflowY: "auto", // Show vertical scrollbar when content exceeds 4 rows
-      resize: "none",    // Disable manual resizing
-    },
-  }}
-/>
-
-
+            {!isAdOwner && (
+              <TextField
+                label="Message to Receiver"
+                variant="outlined"
+                fullWidth
+                multiline
+                value={message}
+                onChange={(e) => setMessage(e.target.value)}
+                sx={{ mb: 2 }}
+                minRows={4} // Fixed number of rows
+                maxRows={4} // Fixed number of rows
+                inputProps={{
+                  style: {
+                    overflowY: "auto", // Show vertical scrollbar when content exceeds 4 rows
+                    resize: "none", // Disable manual resizing
+                  },
+                }}
+              />
+            )}
 
             {/* New: Input for the number of items */}
-            <TextField
-              label="Number of Items"
-              variant="outlined"
-              type="number"
-              fullWidth
-              value={itemCount}
-              onChange={(e) => setItemCount(e.target.value)}
-              sx={{ mb: 2 }}
-              inputProps={{ min: 1 }}
-            />
+            {!isAdOwner && (
+              <TextField
+                label="Number of Items"
+                variant="outlined"
+                type="number"
+                fullWidth
+                value={itemCount}
+                onChange={(e) => setItemCount(e.target.value)}
+                sx={{ mb: 2 }}
+                inputProps={{ min: 1 }}
+              />
+            )}
 
             <Grid container spacing={2}>
               <Grid item xs={6}>
@@ -185,16 +198,18 @@ const AdModalDisplay = ({ selectedAd, onClose }) => {
                       <strong>Status:</strong> {selectedAd.adStatus}
                     </Typography>
                   </Grid>
-                  <Grid item xs={12}>
-                    <Button
-                      fullWidth
-                      variant="contained"
-                      color="primary"
-                      onClick={handleSendOffer}
-                    >
-                      Send a Claim Request
-                    </Button>
-                  </Grid>
+                  {!isAdOwner && (
+                    <Grid item xs={12}>
+                      <Button
+                        fullWidth
+                        variant="contained"
+                        color="primary"
+                        onClick={handleSendOffer}
+                      >
+                        Send a Claim Request
+                      </Button>
+                    </Grid>
+                  )}
                 </>
               ) : (
                 <>
@@ -203,16 +218,18 @@ const AdModalDisplay = ({ selectedAd, onClose }) => {
                       <strong>Urgency:</strong> {selectedAd.urgency}
                     </Typography>
                   </Grid>
-                  <Grid item xs={12}>
-                    <Button
-                      fullWidth
-                      variant="contained"
-                      color="secondary"
-                      onClick={handleSendOffer}
-                    >
-                      Offer to Donate
-                    </Button>
-                  </Grid>
+                  {!isAdOwner && (
+                    <Grid item xs={12}>
+                      <Button
+                        fullWidth
+                        variant="contained"
+                        color="secondary"
+                        onClick={handleSendOffer}
+                      >
+                        Offer to Donate
+                      </Button>
+                    </Grid>
+                  )}
                 </>
               )}
             </Grid>
