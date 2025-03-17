@@ -6,7 +6,7 @@ import io from 'socket.io-client';
 import { jwtDecode } from 'jwt-decode';
 
 // Initialize socket (can be managed globally or here)
-const socket = io("http://localhost:5000");
+const socket = io("https://reusehub-h9o5.onrender.com");
 
 const NotificationManager = () => {
   const [notification, setNotification] = useState({

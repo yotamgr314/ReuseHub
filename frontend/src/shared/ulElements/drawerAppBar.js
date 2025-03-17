@@ -55,15 +55,18 @@ export default function DrawerAppBar(props) {
 
   const handleChatNavigation = async () => {
     try {
-      const response = await fetch("http://localhost:5000/api/chat", {
-        headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
-      });
-      const data = await response.json();
-      if (response.ok && data.data.length > 0) {
-        navigate("/chat");
-      } else {
-        alert("No active chats found. Please start a conversation.");
-      }
+
+        const response = await fetch("https://reusehub-h9o5.onrender.com/api/chat", {
+            headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
+        });
+
+        const data = await response.json();
+        if (response.ok && data.data.length > 0) {
+            const lastChat = data.data[0]._id;  // ✅ בוחר את הצ'אט האחרון
+            navigate("/chat"); // ✅ מעביר את המשתמש לרשימת כל הצ'אטים שלוביר את המשתמש לרשימת כל הצ'אטים שלו
+        } else {
+            alert("No active chats found. Please start a conversation.");
+        }
     } catch (error) {
       console.error("Error fetching chats:", error);
       alert("Unable to load chats. Please try again.");

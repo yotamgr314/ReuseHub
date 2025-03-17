@@ -20,7 +20,7 @@ import { jwtDecode } from "jwt-decode"; // שימוש בייבוא בשם
 import ApprovalModal from "../components/ApprovalModal";
 
 // Socket initialization – ניתן לנהל אותו באופן גלובלי או כאן
-const socket = io("http://localhost:5000");
+const socket = io("https://reusehub-h9o5.onrender.com");
 
 // Notification modal for approved offer
 const NotificationModal = ({ open, message, onClose }) => (
@@ -139,7 +139,7 @@ const OffersPage = () => {
     if (!token) return;
     const fetchSentOffers = async () => {
       try {
-        const res = await fetch("http://localhost:5000/api/offers/sent", {
+        const res = await fetch("https://reusehub-h9o5.onrender.com/api/offers/sent", {
           headers: { Authorization: `Bearer ${token}` },
         });
         const data = await res.json();
@@ -151,7 +151,7 @@ const OffersPage = () => {
     };
     const fetchReceivedOffers = async () => {
       try {
-        const res = await fetch("http://localhost:5000/api/offers/received", {
+        const res = await fetch("https://reusehub-h9o5.onrender.com/api/offers/received", {
           headers: { Authorization: `Bearer ${token}` },
         });
         const data = await res.json();
@@ -185,7 +185,7 @@ const OffersPage = () => {
   // After confirmation, execute reject logic
   const handleConfirmReject = async () => {
     try {
-      const response = await fetch(`http://localhost:5000/api/offers/${selectedOfferForReject}`, {
+      const response = await fetch(`https://reusehub-h9o5.onrender.com/api/offers/${selectedOfferForReject}`, {
         method: "PATCH",
         headers: {
           "Content-Type": "application/json",

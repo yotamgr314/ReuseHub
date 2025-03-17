@@ -31,7 +31,7 @@ const AdModalDisplay = ({ selectedAd, onClose }) => {
 
     try {
       const token = localStorage.getItem("token");
-      const response = await fetch("http://localhost:5000/api/offers", {
+      const response = await fetch("https://reusehub-h9o5.onrender.com/api/offers", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -94,7 +94,7 @@ const AdModalDisplay = ({ selectedAd, onClose }) => {
                   {selectedAd.items.images.map((imgUrl, index) => {
                     const imageUrl = imgUrl.startsWith("http")
                       ? imgUrl
-                      : `http://localhost:5000${imgUrl}`;
+                      : `https://reusehub-h9o5.onrender.com${imgUrl}`;
                     return (
                       <ImageListItem key={index}>
                         <CardMedia
