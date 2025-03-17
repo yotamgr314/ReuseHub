@@ -1,3 +1,5 @@
+// OPTION A
+// frontend/src/shared/ulElements/drawerAppBar.js
 import React, { useState } from "react";
 import AppBar from "@mui/material/AppBar";
 import Box from "@mui/material/Box";
@@ -23,7 +25,8 @@ import LeaderboardIcon from "@mui/icons-material/Leaderboard";
 import LogoutIcon from "@mui/icons-material/Logout";
 import { NavLink, useNavigate, useLocation } from "react-router-dom";
 import { handleLogout } from "../utilis/handleLogout";
-import { Snackbar, Alert } from "@mui/material";
+import Snackbar from "@mui/material/Snackbar";
+import Alert from "@mui/material/Alert";
 
 const drawerWidth = 240;
 
@@ -42,12 +45,8 @@ export default function DrawerAppBar(props) {
   const [mobileOpen, setMobileOpen] = React.useState(false);
   const navigate = useNavigate();
   const location = useLocation();
-
-  // ADDING STATE FOR SNACKBAR
-  // ***********************
-  const [openSnackbar, setOpenSnackbar] = useState(false);  // State for Snackbar visibility
+  const [openSnackbar, setOpenSnackbar] = useState(false); // Snackbar state
   const [snackbarMessage, setSnackbarMessage] = useState(""); // Snackbar message
-  // ***********************
 
   // Hide navbar on these routes
   const hideAppBarRoutes = ["/register", "/login"];
@@ -61,23 +60,22 @@ export default function DrawerAppBar(props) {
 
   const handleChatNavigation = async () => {
     try {
+      const response = await fetch("http://localhost:5000/api/chat", {
+        headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
+      });
 
-        const response = await fetch("http://localhost:5000/api/chat", {
-            headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
-        });
-
-        const data = await response.json();
-        if (response.ok && data.data.length > 0) {
-            const lastChat = data.data[0]._id;  // ✅ בוחר את הצ'אט האחרון
-            navigate("/chat"); // ✅ מעביר את המשתמש לרשימת כל הצ'אטים שלו
-        } else {
-            setSnackbarMessage("No active chats found. Please start a conversation.");
-            setOpenSnackbar(true); // Show custom Snackbar for no active chats
-        }
+      const data = await response.json();
+      if (response.ok && data.data.length > 0) {
+        const lastChat = data.data[0]._id;  // ✅ בוחר את הצ'אט האחרון
+        navigate("/chat"); // ✅ מעביר את המשתמש לרשימת כל הצ'אטים
+      } else {
+        setSnackbarMessage("No active chats found. Please start a conversation.");
+        setOpenSnackbar(true); // Show snackbar with custom message
+      }
     } catch (error) {
       console.error("Error fetching chats:", error);
       setSnackbarMessage("Unable to load chats. Please try again.");
-      setOpenSnackbar(true); // Show custom Snackbar for error
+      setOpenSnackbar(true); // Show snackbar with error message
     }
   };
 
@@ -270,7 +268,12 @@ export default function DrawerAppBar(props) {
         </Drawer>
       </nav>
 
-      {/* Custom Snackbar - ADDITIONAL */}
+      <Box component="main" sx={{ p: 3 }}>
+        {/* to offset the AppBar height */}
+        <Toolbar />
+      </Box>
+
+      {/* Snackbar for error or no chats */}
       <Snackbar
         open={openSnackbar}
         autoHideDuration={4000}
@@ -280,15 +283,21 @@ export default function DrawerAppBar(props) {
           horizontal: "center",
         }}
       >
-        <Alert onClose={() => setOpenSnackbar(false)} severity="info">
+        <Alert
+          onClose={() => setOpenSnackbar(false)}
+          severity="error"
+          sx={{
+            width: "auto",
+            fontSize: "1.2rem",
+            padding: "12px 16px",
+            textAlign: "center",
+            borderRadius: "8px",
+            boxShadow: 3,
+          }}
+        >
           {snackbarMessage}
         </Alert>
       </Snackbar>
-
-      <Box component="main" sx={{ p: 3 }}>
-        {/* to offset the AppBar height */}
-        <Toolbar />
-      </Box>
     </Box>
   );
 }
