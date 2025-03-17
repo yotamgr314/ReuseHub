@@ -1,4 +1,3 @@
-// frontend/src/ads/pages/myAds.js
 import React, { useEffect, useState } from "react";
 import {
   Container,
@@ -11,6 +10,7 @@ import {
   Box,
   Divider,
   Fade,
+  Paper,
 } from "@mui/material";
 import VolunteerActivismTwoToneIcon from "@mui/icons-material/VolunteerActivismTwoTone"; // Donation Ad icon
 import StickyNote2TwoToneIcon from "@mui/icons-material/StickyNote2TwoTone"; // Wishlist Ad icon
@@ -32,7 +32,7 @@ const MyAds = () => {
       try {
         const response = await fetch("https://reusehub-h9o5.onrender.com/api/ads/myAds", {
           method: "GET",
-          headers: { 
+          headers: {
             "Authorization": `Bearer ${token}`,
             "Content-Type": "application/json",
           },
@@ -72,14 +72,40 @@ const MyAds = () => {
 
       {/* Donation Ads Section */}
       <Box sx={{ mb: 6 }}>
-        <Typography variant="h5" fontWeight="bold" sx={{ display: "flex", alignItems: "center", mb: 3, color: "primary.main" }}>
+        <Typography
+          variant="h5"
+          fontWeight="bold"
+          sx={{ display: "flex", alignItems: "center", mb: 3, color: "primary.main" }}
+        >
           <VolunteerActivismTwoToneIcon sx={{ mr: 1, fontSize: 32 }} /> My Donation Ads
         </Typography>
         <Grid container spacing={3}>
           {donationAds.length === 0 ? (
-            <Typography variant="body1" color="textSecondary">
-              No donation ads created yet.
-            </Typography>
+            <Paper
+              sx={{
+                padding: { xs: 2, sm: 3 },
+                backgroundColor: "#f4f6f8",
+                borderRadius: 2,
+                textAlign: "center",
+                boxShadow: 2,
+                marginTop: 3,
+                marginBottom: 5,
+                marginLeft: "10px",
+                marginRight: "10px",
+              }}
+            >
+              <Typography
+                variant="body1"
+                color="textSecondary"
+                sx={{
+                  fontWeight: "bold",
+                  fontSize: { xs: "1rem", sm: "1.2rem" },
+                  lineHeight: 1.6,
+                }}
+              >
+                You don't have any donation ads yet.
+              </Typography>
+            </Paper>
           ) : (
             donationAds.map((ad) => (
               <Grid item xs={12} sm={6} md={4} key={ad._id}>
@@ -111,14 +137,40 @@ const MyAds = () => {
 
       {/* Wishlist Ads Section */}
       <Box>
-        <Typography variant="h5" fontWeight="bold" sx={{ display: "flex", alignItems: "center", mb: 3, color: "secondary.main" }}>
+        <Typography
+          variant="h5"
+          fontWeight="bold"
+          sx={{ display: "flex", alignItems: "center", mb: 3, color: "secondary.main" }}
+        >
           <StickyNote2TwoToneIcon sx={{ mr: 1, fontSize: 32 }} /> My Wishlist Ads
         </Typography>
         <Grid container spacing={3}>
           {wishAds.length === 0 ? (
-            <Typography variant="body1" color="textSecondary">
-              No wishlist ads created yet.
-            </Typography>
+            <Paper
+              sx={{
+                padding: { xs: 2, sm: 3 },
+                backgroundColor: "#f4f6f8",
+                borderRadius: 2,
+                textAlign: "center",
+                boxShadow: 2,
+                marginTop: 3,
+                marginBottom: 5,
+                marginLeft: "10px",
+                marginRight: "10px",
+              }}
+            >
+              <Typography
+                variant="body1"
+                color="textSecondary"
+                sx={{
+                  fontWeight: "bold",
+                  fontSize: { xs: "1rem", sm: "1.2rem" },
+                  lineHeight: 1.6,
+                }}
+              >
+                You don't have any wishlist ads yet.
+              </Typography>
+            </Paper>
           ) : (
             wishAds.map((ad) => (
               <Grid item xs={12} sm={6} md={4} key={ad._id}>
