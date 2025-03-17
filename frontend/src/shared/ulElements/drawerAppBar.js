@@ -1,5 +1,4 @@
-// frontend/src/shared/ulElements/drawerAppBar.js
-import React from "react";
+import React, { useState } from "react";
 import AppBar from "@mui/material/AppBar";
 import Box from "@mui/material/Box";
 import CssBaseline from "@mui/material/CssBaseline";
@@ -24,6 +23,7 @@ import LeaderboardIcon from "@mui/icons-material/Leaderboard";
 import LogoutIcon from "@mui/icons-material/Logout";
 import { NavLink, useNavigate, useLocation } from "react-router-dom";
 import { handleLogout } from "../utilis/handleLogout";
+import { Snackbar, Alert } from "@mui/material";
 
 const drawerWidth = 240;
 
@@ -42,6 +42,12 @@ export default function DrawerAppBar(props) {
   const [mobileOpen, setMobileOpen] = React.useState(false);
   const navigate = useNavigate();
   const location = useLocation();
+
+  // ADDING STATE FOR SNACKBAR
+  // ***********************
+  const [openSnackbar, setOpenSnackbar] = useState(false);  // State for Snackbar visibility
+  const [snackbarMessage, setSnackbarMessage] = useState(""); // Snackbar message
+  // ***********************
 
   // Hide navbar on these routes
   const hideAppBarRoutes = ["/register", "/login"];
@@ -63,13 +69,15 @@ export default function DrawerAppBar(props) {
         const data = await response.json();
         if (response.ok && data.data.length > 0) {
             const lastChat = data.data[0]._id;  // ✅ בוחר את הצ'אט האחרון
-            navigate("/chat"); // ✅ מעביר את המשתמש לרשימת כל הצ'אטים שלוביר את המשתמש לרשימת כל הצ'אטים שלו
+            navigate("/chat"); // ✅ מעביר את המשתמש לרשימת כל הצ'אטים שלו
         } else {
-            alert("No active chats found. Please start a conversation.");
+            setSnackbarMessage("No active chats found. Please start a conversation.");
+            setOpenSnackbar(true); // Show custom Snackbar for no active chats
         }
     } catch (error) {
       console.error("Error fetching chats:", error);
-      alert("Unable to load chats. Please try again.");
+      setSnackbarMessage("Unable to load chats. Please try again.");
+      setOpenSnackbar(true); // Show custom Snackbar for error
     }
   };
 
@@ -261,6 +269,21 @@ export default function DrawerAppBar(props) {
           {drawer}
         </Drawer>
       </nav>
+
+      {/* Custom Snackbar - ADDITIONAL */}
+      <Snackbar
+        open={openSnackbar}
+        autoHideDuration={4000}
+        onClose={() => setOpenSnackbar(false)}
+        anchorOrigin={{
+          vertical: "top",
+          horizontal: "center",
+        }}
+      >
+        <Alert onClose={() => setOpenSnackbar(false)} severity="info">
+          {snackbarMessage}
+        </Alert>
+      </Snackbar>
 
       <Box component="main" sx={{ p: 3 }}>
         {/* to offset the AppBar height */}
