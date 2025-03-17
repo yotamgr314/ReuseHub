@@ -103,7 +103,7 @@ const MyAds = () => {
                   lineHeight: 1.6,
                 }}
               >
-                You don't have any donation ads yet.
+                You don't have any donation ads yet. Start by adding a new one to your donation list!
               </Typography>
             </Paper>
           ) : (
@@ -136,7 +136,7 @@ const MyAds = () => {
       <Divider sx={{ my: 5 }} />
 
       {/* Wishlist Ads Section */}
-      <Box>
+      <Box sx={{ mt: 7, mb: 8 }}> {/* Increased gap between sections */}
         <Typography
           variant="h5"
           fontWeight="bold"
@@ -168,7 +168,7 @@ const MyAds = () => {
                   lineHeight: 1.6,
                 }}
               >
-                You don't have any wishlist ads yet.
+                You don't have any wishlist ads yet. Start by adding a new one to your wishlist!
               </Typography>
             </Paper>
           ) : (
