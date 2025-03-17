@@ -2,38 +2,27 @@
 const UserModel = require("../models/userSchema");
 const jwt = require("jsonwebtoken");
 
-
 exports.register = async (req, res) => {
   try {
     const { firstName, lastName, email, password } = req.body;
 
-    if(!firstName)
-    {
+    if (!firstName) {
       return res.status(400).json({ message: "first name is required." });
     }
-
-    if(!lastName)
-    {
+    if (!lastName) {
       return res.status(400).json({ message: "last name is required." });
     }
-    
-    if(!email)
-    {
+    if (!email) {
       return res.status(400).json({ message: "email is required." });
     }
-
-    if(!password)
-    {
-      return res.status(400).json({ message: "password." });
+    if (!password) {
+      return res.status(400).json({ message: "password is required." });
     }
-
-
 
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     if (!emailRegex.test(email)) {
       return res.status(400).json({ message: "Invalid email format." });
     }
-
     if (password.length < 5) {
       return res.status(400).json({ message: "Password must be at least 5 characters long." });
     }
@@ -43,12 +32,13 @@ exports.register = async (req, res) => {
       return res.status(400).json({ success: false, message: "Email already registered" });
     }
 
-    // Construct new user (password hashing is handled in the schema)
+    // Create the new user; if a file was uploaded, use its file path for profilePic
     const newUser = new UserModel({
       firstName,
       lastName,
       email,
       password,
+      profilePic: req.file ? "/uploads/" + req.file.filename : "",
     });
 
     await newUser.save();
@@ -65,6 +55,7 @@ exports.register = async (req, res) => {
         firstName: newUser.firstName,
         lastName: newUser.lastName,
         email: newUser.email,
+        profilePic: newUser.profilePic,
       },
     });
   } catch (error) {

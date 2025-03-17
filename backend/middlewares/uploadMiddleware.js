@@ -1,7 +1,7 @@
 const multer = require("multer");
 const path = require("path");
 
-// הגדרת אחסון התמונות בתיקיית uploads
+// Define storage settings for the uploaded images
 const storage = multer.diskStorage({
   destination: function (req, file, cb) {
     cb(null, "uploads/");
@@ -11,7 +11,7 @@ const storage = multer.diskStorage({
   },
 });
 
-// הגדרת מסנן קבצים שיאפשר רק תמונות
+// File filter to allow only images
 const fileFilter = (req, file, cb) => {
   const allowedTypes = ["image/jpeg", "image/png", "image/gif"];
   if (allowedTypes.includes(file.mimetype)) {
@@ -21,11 +21,11 @@ const fileFilter = (req, file, cb) => {
   }
 };
 
-// יצירת middleware להעלאת קבצים
+// Create middleware for file uploads
 const upload = multer({
   storage: storage,
   fileFilter: fileFilter,
-  limits: { fileSize: 5 * 1024 * 1024 }, // מגבלת גודל קובץ (5MB)
+  limits: { fileSize: 5 * 1024 * 1024 }, // Limit file size to 5MB
 });
 
 module.exports = upload;
