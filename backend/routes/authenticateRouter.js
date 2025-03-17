@@ -5,3 +5,6 @@ const router = express.Router();
 
 router.post("/register", upload.single("profilePic"), register);
 router.post("/login", login);
+
+
+module.exports = router;
