@@ -1,109 +1,173 @@
 # ReuseHub
 
-**ReuseHub** is a full-stack MERN web application that promotes sustainability by enabling users to donate and request second-hand items through an intuitive, near real-time map-based interface which visualizes offers,Adsetc.. and vi chat. The platform empowers communities to reduce waste and reuse valuable items through real-time collaboration, gamified incentives, and location-based search.
-
-## Table of Contents
-
-- [Overview](#overview)  
-- [Features](#features)  
-- [Tech Stack](#tech-stack)  
-- [Demo](#demo)  
-- [Getting Started](#getting-started)  
-  - [Prerequisites](#prerequisites)  
-  - [Installation](#installation)  
-  - [Environment Variables](#environment-variables)  
-  - [Running the App](#running-the-app)  
-- [API Reference](#api-reference)  
-- [Real-time Updates](#real-time-updates)  
-- [Map Integration](#map-integration)  
-- [Folder Structure](#folder-structure)  
-- [Contributing](#contributing)  
-- [License](#license)  
-- [Contact](#contact)
+ReuseHub is a full-stack MERN web application that promotes sustainability by enabling users to donate and request second-hand items through an intuitive, near real-time map-based interface which visualizes offers,Adsetc.. and via chat. The platform empowers communities to reduce waste and reuse valuable items through real-time collaboration, gamified incentives, and location-based search.
 
 ---
 
-## Overview
+## 📸 Screenshots
 
-ReuseHub connects community members who want to donate items, post wishlists, and negotiate offers—all within a geographically-aware interface. Built as the final project for a software engineering methods course, it demonstrates:
+### 🗺️ Homepage with Interactive Map
+![Homepage Screenshot](docs/screenshots/homePage.png)
 
-- **Full CRUD** for donation and wishlist ads  
-- **User authentication** (JWT + bcrypt)  
-- **Real-time updates** via Socket.io  
-- **Location visualization** with Google Maps markers  
-- **Offer/request workflow** between users :contentReference[oaicite:0]{index=0}
+### 📦 My Ads Page
+A personalized dashboard showing all ads created by the logged-in user, with options to edit or delete.
+![My Ads](docs/screenshots/myAdsPage.png)
 
----
+### 🪄 Create Ad Modal (Floating Prompt)
+Interactive modal that allows quick access to creating either a donation or wishlist ad.
+![Create Ad Modal](docs/screenshots/createAdModal.png)
 
-## Features
+### ➕ Create Donation Ad
+![Create Ad Screenshot](docs/screenshots/donationAdCreation.png)
 
-- **User Management**  
-  - Registration & login with JWT and HttpOnly cookies  
-  - Profile pictures (upload & display)  
-- **Ads & Items**  
-  - Create, edit & delete **Donation Ads**  
-  - Create, edit & delete **Wishlist Ads**  
-  - Automatic item-quantity tracking & “donation completed” logic  
-- **Offers Workflow**  
-  - Send donation/wish offers to ad owners  
-  - Dual-approval system: adOwnerApproval + requesterApproval  
-  - Automatic status updates & notifications on completion  
-- **Real-Time Map & List**  
-  - Home page lists all ads; map shows markers (distinct icons for donation vs. wish)  
-  - Socket.io pushes new ads to all clients without refresh  
-- **Ratings & Leaderboard**  
-  - Rate users post-transaction  
-  - Leaderboard of top-rated contributors  
-- **Material-UI (MUI)** for responsive design  
-- **Logging & Monitoring** with Morgan & Winston  
+### 💬 Real-Time Chat with WebSocket
+![Chat Screenshot](docs/screenshots/Chat.png)
+
+### 📈 Leaderboard Page
+Displays top contributors in the community with gamification elements like points and badges.
+![Leaderboard](docs/screenshots/leaderBoard.png)
+
+### 📱 Mobile Responsiveness
+Example of how the platform adapts gracefully to smaller screen sizes on mobile devices.
+![Mobile View](docs/screenshots/mobileResponsivess.png)
+
+*(Screenshots available in `/docs/screenshots`)*
 
 ---
 
-## Tech Stack
+##  Features
 
-- **Frontend**  
-  - React (Hooks, Context API)  
-  - Material-UI (MUI)  
-  - Socket.io-client  
-  - Google Maps JavaScript API  
-- **Backend**  
-  - Node.js & Express  
-  - MongoDB & Mongoose (with discriminators for BaseAd → DonationAd/WishlistAd)  
-  - Socket.io  
-  - JWT for auth, bcryptjs for password hashing  
-  - Morgan & Winston for logging  
-- **Deployment**  
-  - Hosted on [Render.com](https://reusehub-h9o5.onrender.com) :contentReference[oaicite:1]{index=1}  
+### 🔄 Real-Time Item Exchange System
+- Post donation or wishlist ads with images, description, and geolocation
+- Ads auto-update across all clients using **Socket.IO**
 
----
+### 🗺️ Interactive Google Maps Integration
+- See donation/wishlist ads near you
+- Clickable item markers with filters by category, type, and condition
 
-## Demo
+### 👥 Community Engagement
+- Gamification: badges, points, and leaderboard ranking
+- User profiles with ratings based on successful exchanges
 
-> Live app: https://reusehub-h9o5.onrender.com
+### 💬 Real-Time Messaging & Offers
+- Built-in chat using WebSockets
+- Users can submit, accept, or reject offers directly through the interface
 
-*(login with a new account to explore creating ads, offers, and watching them appear in real time on the map)*
+### 🔐 Secure Authentication
+- JWT-based login and registration
+- Role-based access and secure password hashing
 
 ---
 
-## Getting Started
+## 🧱 Tech Stack
+
+| Layer             | Technology                                        |
+|------------------|---------------------------------------------------|
+| Frontend         | React.js, Material UI, Google Maps API            |
+| Backend          | Node.js, Express.js, Socket.IO                    |
+| Database         | MongoDB + Mongoose (2dsphere indexing for geo)    |
+| Hosting          | Netlify (frontend), Render (backend)              |
+| Auth & Security  | JWT, bcrypt, secure API design                    |
+
+---
+
+## 📁 Folder Structure
+
+```
+📦 reusehub/
+├── backend/
+│   ├── config/
+│   ├── controllers/
+│   ├── models/   ← Mongoose schemas with discriminator inheritance
+│   ├── routes/
+│   ├── services/ ← WebSocket integration (socket.io)
+│   └── utils/    ← JWT, validation, etc.
+├── frontend/
+│   ├── src/
+│   │   ├── ads/
+│   │   ├── createAd/
+│   │   ├── homePage/
+│   │   ├── offers/
+│   │   ├── chat/
+│   │   ├── leaderboard/
+│   │   ├── registration/
+│   │   ├── shared/ ← Components, map, layout, jwt guard
+│   │   └── styles/
+└── README.md
+```
+
+---
+
+## ⚙️ Setup Instructions
 
 ### Prerequisites
+- Node.js v18+
+- MongoDB local or Atlas
+- Google Maps API key
 
-- [Node.js](https://nodejs.org/) v18.x  
-- [npm](https://www.npmjs.com/) v9.x  
-- A MongoDB Atlas cluster (or local MongoDB)
-
-### Installation
+### Backend
 
 ```bash
-# Clone the repo
-git clone https://github.com/yotamgr314/ReuseHub.git
-cd ReuseHub
-
-# Install backend deps
 cd backend
 npm install
+npm run dev
+```
 
-# Install frontend deps
-cd ../frontend
+### Frontend
+
+```bash
+cd frontend
 npm install
+npm start
+```
+
+Create a `.env` file in both frontend and backend folders with:
+
+```env
+# Backend .env
+MONGO_URI=your_mongodb_url
+JWT_SECRET=your_secret_key
+
+# Frontend .env
+REACT_APP_GOOGLE_MAPS_API_KEY=your_maps_key
+REACT_APP_BACKEND_URL=http://localhost:5000
+```
+
+---
+
+## 📊 System Architecture
+
+The system follows a 3-tier architecture:
+
+- **Presentation Tier:** React + Material UI + Google Maps (Netlify)
+- **Service Tier:** Express + Socket.IO + JWT (Render)
+- **Data Tier:** MongoDB Atlas + Mongoose with geospatial indexing
+
+Refer to the diagrams in `the SDD / project book`.
+
+---
+
+## ✅ Testing & Validation
+
+- ✅ **Unit Tests** with Jest (frontend & backend)
+- ✅ **Integration Tests** using Postman
+- ✅ **Load Testing** with JMeter and k6 for Socket.IO
+- ✅ **Security Audits** with OWASP ZAP
+
+---
+
+## 🧩 Future Features
+
+- Mobile native app (React Native or Flutter).
+- publish our complete API in Postman.
+- Moderation tools (admin panel for content control).
+- Bulk donation uploads (CSV/API).
+- Scheduled pickups with calendar view.
+
+---
+
+## 👥 Authors
+
+- Yotam Greenstein — [GitHub](https://github.com/yotamgr314)  
+- Rodion Novakovski  
+---
