@@ -1,7 +1,6 @@
 # ReuseHub
 
-ReuseHub is a full-stack MERN web application that promotes sustainability by enabling users to donate and request second-hand items through an intuitive, near real-time map-based interface which visualizes offers,Adsetc.. and via chat. The platform empowers communities to reduce waste and reuse valuable items through real-time collaboration, gamified incentives, and location-based search.
-
+ReuseHub is a full-stack MERN web application that promotes sustainability by enabling users to donate and request second-hand items through an intuitive, near real-time, map-based interface that visualizes ads, offers, and user activity. The platform empowers communities to reduce waste and extend the lifecycle of valuable items through real-time collaboration, location-based search, system and user based rating as well as gamified incentives.
 ---
 
 ## 📸 Screenshots
