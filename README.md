@@ -168,6 +168,6 @@ Refer to the diagrams in `the SDD / project book`.
 
 ## 👥 Authors
 
-- Yotam Greenstein — [GitHub](https://github.com/yotamgr314)  
-- Rodion Novakovski  
+- Yotam Greenstein.
+- Rodion Novakovski.  
 ---
