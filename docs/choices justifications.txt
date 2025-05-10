@@ -65,11 +65,6 @@ EMBEDDING BADGES INSIDE USES.
 01) Since badges are only relevant to a specific user, it makes sense to embed them. If the User is deleted, all the user's badges are also removed.
 
 
-
-
-
-
-
 RELATIONS: 
 ONE TO MANY:
 User --> ad donatio, wishlsit donation.
