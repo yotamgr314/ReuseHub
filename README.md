@@ -168,5 +168,6 @@ Refer to the diagrams in `the SDD / project book`.
 ## 👥 Authors
 
 - Yotam Greenstein.
-- Rodion Novakovski.  
+- Rodion Novakovski.
+- Nitzan Jarus.
 ---
