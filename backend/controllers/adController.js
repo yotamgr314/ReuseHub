@@ -12,7 +12,7 @@ exports.getAllAds = async (req, res) => {
       if (!["donationAd", "wishAd"].includes(req.query.kind)) {
         return res.status(400).json({ success: false, message: "Invalid ad type. Allowed values: donationAd, wishAd" });
       }
-      filter.kind = req.query.kind; // 🔹 Apply kind filter (optional)
+      filter.kind = req.query.kind; // Apply kind filter (optional)
     }
 
     const totalCount = await BaseAd.countDocuments(filter);
@@ -90,7 +90,7 @@ exports.getMyAds = async (req, res) => {
       if (!["donationAd", "wishAd"].includes(req.query.kind)) {
         return res.status(400).json({ success: false, message: "Invalid ad type. Allowed values: donationAd, wishAd" });
       }
-      filter.kind = req.query.kind; // 🔹 Apply kind filter (optional)
+      filter.kind = req.query.kind; // Apply kind filter (optional)
     }
 
     const myAds = await BaseAd.find(filter)

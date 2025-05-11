@@ -37,19 +37,17 @@
     box-shadow: 0px 2px 5px rgba(0, 0, 0, 0.15);
 }
 
-/* שם השולח */
 .message-sender {
     font-weight: bold;
     margin-bottom: 4px;
 }
 
-/* ✅ 2 צבעים בלבד */
 .message.green {
-    background-color: #A8D5BA !important; /* ירקרק בהיר */
+    background-color: #A8D5BA !important; 
     color: #333;
 }
 
 .message.gray {
-    background-color: #D3D3D3 !important; /* אפור עדין */
+    background-color: #D3D3D3 !important; 
     color: #333;
 }

@@ -3,11 +3,11 @@ import { createTheme } from "@mui/material/styles";
 const theme = createTheme({
   palette: {
     navbar: {
-      main: "#d3d3d3", // Greyish navbar background color
-      contrastText: "#000000", // Black text on navbar
+      main: "#d3d3d3", 
+      contrastText: "#000000", 
     },
     text: {
-      primary: "#000000", // Black text for nav items
+      primary: "#000000", 
     },
   },
 });

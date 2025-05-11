@@ -13,7 +13,7 @@ module.exports = function (io) {
         });
 
         socket.on("sendMessage", (data) => {
-            io.to(data.chatId).emit("newMessage", data); // שליחת ההודעה למשתמשים בצ'אט
+            io.to(data.chatId).emit("newMessage", data); 
         });
 
         socket.on("disconnect", () => {

@@ -50,8 +50,6 @@ const Register = () => {
         throw new Error(data.message || "Registration failed");
       }
 
-      // Optionally store the user object if you want to auto-login or make it available
-      // Here, we just store it before navigating to the login page.
       localStorage.setItem("user", JSON.stringify(data.user));
 
       setSuccess("Registration successful! Please log in.");

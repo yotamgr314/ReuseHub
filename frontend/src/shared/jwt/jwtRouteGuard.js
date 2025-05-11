@@ -8,7 +8,7 @@ const JwtRouteGuard = ({ children }) => {
   const token = localStorage.getItem('token'); // Check if token exists in localStorage
 
   if (!token) {
-    // 🟠 If no token, redirect to login
+    // If no token, redirect to login
     return <Navigate to="/login" />;
   }
 
@@ -17,12 +17,12 @@ const JwtRouteGuard = ({ children }) => {
     const currentTime = Date.now() / 1000; // Current time in seconds
 
     if (decodedToken.exp < currentTime) {
-      // 🟠 If token has expired, remove it from localStorage and redirect
+      // If token has expired, remove it from localStorage and redirect
       localStorage.removeItem('token');
       return <Navigate to="/login" />;
     }
   } catch (error) {
-    // 🟠 If the token is malformed (invalid), remove it and redirect
+    // If the token is malformed (invalid), remove it and redirect
     localStorage.removeItem('token');
     return <Navigate to="/login" />;
   }

@@ -11,7 +11,7 @@ const offerSchema = new mongoose.Schema({
     adOwnerApproval: { type: Boolean, default: false },
     userWhoMadeTheOfferApproval: { type: Boolean, default: false },
   },
-  chat: { type: mongoose.Schema.Types.ObjectId, ref: "Chat" }, // 🔹 Link Chat to Offer
+  chat: { type: mongoose.Schema.Types.ObjectId, ref: "Chat" }, // Link Chat to Offer
   createdAt: { type: Date, default: Date.now },
 });
 

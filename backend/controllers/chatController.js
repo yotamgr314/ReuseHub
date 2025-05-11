@@ -15,7 +15,7 @@ exports.getOrCreateChat = async (req, res) => {
             return res.status(400).json({ success: false, message: "Invalid chat ID format" });
         }
 
-        chatId = new mongoose.Types.ObjectId(chatId);  // Convert to ObjectId
+        chatId = new mongoose.Types.ObjectId(chatId);  
 
         let chat = await Chat.findById(chatId)
             .populate("messages.sender", "firstName lastName")
@@ -51,7 +51,7 @@ exports.sendMessage = async (req, res) => {
         const message = {
             sender: {
                 _id: req.user._id,
-                firstName: req.user.firstName,  // ✅ שולחים את השם של המשתמש
+                firstName: req.user.firstName, 
                 lastName: req.user.lastName
             },
             text,
@@ -60,8 +60,7 @@ exports.sendMessage = async (req, res) => {
 
         chat.messages.push(message);
         await chat.save();
-
-        // ✅ שליחת ההודעה עם שם המשתמש המלא בזמן אמת
+        // sending messages with user name in real time 
         const io = req.app.get("io");
         chat.participants.forEach((user) => {
             io.to(user.toString()).emit("newMessage", { chatId, message });
@@ -83,7 +82,7 @@ exports.getUserChats = async (req, res) => {
         const chats = await Chat.find({ participants: userId }) 
             .populate("participants", "firstName lastName") 
             .populate("messages.sender", "firstName lastName")
-            .sort({ updatedAt: -1 }); // 
+            .sort({ updatedAt: -1 });  
 
         res.status(200).json({ success: true, data: chats });
     } catch (error) {

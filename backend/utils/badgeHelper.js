@@ -14,7 +14,6 @@ module.exports.updateUserBadge = async (user) => {
     });
   
     if (newBadge) {
-      // Replace the user's badges array with the latest badge (or add to it if desired)
       user.badges = [newBadge];
       await user.save();
     }

@@ -5,13 +5,12 @@ const authenticateMiddleware = require("../middlewares/authenticateMiddleware");
 
 const router = express.Router();
 
-// אחזור רשימת כל השיחות של המשתמש
+// Retrive all the chats belongs to a user.
 router.get("/", authenticateMiddleware, getUserChats);
 
-//  קבלת צ'אט מסוים או יצירתו אם לא קיים
 router.get("/:chatId", authenticateMiddleware, getOrCreateChat);
 
-//  שליחת הודעה בצ'אט קיים
+// Sends a message in an existing chat.
 router.post("/:chatId", authenticateMiddleware, sendMessage);
 
 module.exports = router;

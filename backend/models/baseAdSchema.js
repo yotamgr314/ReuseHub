@@ -30,7 +30,7 @@ const baseAdSchema = new mongoose.Schema(
     },
 
     items:{ type: itemSchema}, // store only one item 
-    amount: { type: Number, default: 1, min: 1 }, // 🔹 Store how many of the same item
+    amount: { type: Number, default: 1, min: 1 }, 
 
     category: {
       type: String,
@@ -76,7 +76,7 @@ const baseAdSchema = new mongoose.Schema(
     createdAt: { type: Date, default: Date.now },
   },
 
-  { discriminatorKey: "kind", collection: "ads", timestamps: true } // Adds createdAt and updatedAt fields
+  { discriminatorKey: "kind", collection: "ads", timestamps: true } 
 );
 
 baseAdSchema.index({ location: "2dsphere" });

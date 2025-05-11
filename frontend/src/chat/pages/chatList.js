@@ -31,7 +31,7 @@ const ChatList = () => {
             sx={{ 
                 width: "100vw", 
                 height: "100vh", 
-                bgcolor: "linear-gradient(to bottom, #f3f6fa, #ffffff)", // ✅ רקע עדין יותר
+                bgcolor: "linear-gradient(to bottom, #f3f6fa, #ffffff)", 
                 display: "flex",
                 flexDirection: "column",
                 alignItems: "center",
@@ -56,7 +56,7 @@ const ChatList = () => {
                 </Typography>
             </Box>
 
-            {/* רשימת הצ'אטים */}
+            {/* ChatList*/}
             <Box 
                 sx={{ 
                     width: "100%", 
@@ -84,9 +84,9 @@ const ChatList = () => {
                                         onClick={() => navigate(`/chat/${chat._id}`)}
                                         sx={{ 
                                             width: "100%", 
-                                            bgcolor: "#f7f9fc", // ✅ רקע בהיר יותר לשורות צ'אט
+                                            bgcolor: "#f7f9fc", 
                                             "&:hover": { 
-                                                bgcolor: "#dbe6f1", // ✅ אפקט hover כהה יותר
+                                                bgcolor: "#dbe6f1", 
                                                 boxShadow: "0px 4px 12px rgba(0,0,0,0.1)"
                                             }, 
                                             transition: "0.3s",
@@ -99,7 +99,7 @@ const ChatList = () => {
                                             borderRadius: "5px"
                                         }}
                                     >
-                                        <Box sx={{ display: "flex", alignItems: "center", ml: 1 }}> {/* ✅ הזזתי מעט ימינה */}
+                                        <Box sx={{ display: "flex", alignItems: "center", ml: 1 }}> 
                                             <Tooltip title={otherParticipant?.firstName || "User"}>
                                                 <Avatar 
                                                     src={avatarUrl} 
@@ -132,8 +132,6 @@ const ChatList = () => {
                                                 }
                                             />
                                         </Box>
-                                        
-                                        {/* ✅ חץ לחיץ בצד ימין */}
                                         <ArrowForwardIosIcon sx={{ color: "#555", fontSize: "1.2rem" }} />
                                     </ListItem>
                                 </React.Fragment>

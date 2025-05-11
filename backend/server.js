@@ -1,4 +1,5 @@
 // backend/server.js
+
 // IMPORTS SECTION
 const app = require("./app.js");
 const http = require("http");
@@ -9,7 +10,7 @@ const { Server } = require("socket.io");
 const newServer = http.createServer(app);
 const io = new Server(newServer, {
   cors: {
-    origin: "*", // Allow all origins for WebSocket connections
+    origin: "*", 
     methods: ["GET", "POST"],
   },
 });

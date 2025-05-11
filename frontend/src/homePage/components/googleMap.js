@@ -1,9 +1,9 @@
 import React, { useState, useEffect } from "react";
 import { GoogleMap, LoadScriptNext, OverlayView, Marker } from "@react-google-maps/api";
 import { useNavigate } from "react-router-dom";
-import StickyNote2TwoToneIcon from "@mui/icons-material/StickyNote2TwoTone"; // Wishlist Ad icon
-import VolunteerActivismTwoToneIcon from "@mui/icons-material/VolunteerActivismTwoTone"; // Donation Ad icon
-import AddCircleOutlineIcon from "@mui/icons-material/AddCircleOutline"; // Create Ad icon
+import StickyNote2TwoToneIcon from "@mui/icons-material/StickyNote2TwoTone"; 
+import VolunteerActivismTwoToneIcon from "@mui/icons-material/VolunteerActivismTwoTone"; 
+import AddCircleOutlineIcon from "@mui/icons-material/AddCircleOutline"; 
 import AdModalDisplay from "./adModalDisplay"; 
 import { Fab, Tooltip } from "@mui/material";
 

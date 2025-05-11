@@ -1,7 +1,7 @@
 // backend/controllers/wishAdController.js
 const WishAd = require("../models/wishAdSchema");
 
-// ✅ Create a new wish ad
+// Create a new wish ad
 exports.createWishAd = async (req, res) => {
   try {
     const io = req.app.get("io"); // Get WebSocket instance

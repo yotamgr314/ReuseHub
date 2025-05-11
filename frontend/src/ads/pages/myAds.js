@@ -12,8 +12,8 @@ import {
   Fade,
   Paper,
 } from "@mui/material";
-import VolunteerActivismTwoToneIcon from "@mui/icons-material/VolunteerActivismTwoTone"; // Donation Ad icon
-import StickyNote2TwoToneIcon from "@mui/icons-material/StickyNote2TwoTone"; // Wishlist Ad icon
+import VolunteerActivismTwoToneIcon from "@mui/icons-material/VolunteerActivismTwoTone"; 
+import StickyNote2TwoToneIcon from "@mui/icons-material/StickyNote2TwoTone"; 
 
 const MyAds = () => {
   const [wishAds, setWishAds] = useState([]);
@@ -136,7 +136,7 @@ const MyAds = () => {
       <Divider sx={{ my: 5 }} />
 
       {/* Wishlist Ads Section */}
-      <Box sx={{ mt: 7, mb: 8 }}> {/* Increased gap between sections */}
+      <Box sx={{ mt: 7, mb: 8 }}> 
         <Typography
           variant="h5"
           fontWeight="bold"

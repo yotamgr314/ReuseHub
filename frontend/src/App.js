@@ -21,15 +21,10 @@ import Footer from "./shared/ulElements/footer"; // <-- Updated Footer component
 const App = () => {
   return (
     <BrowserRouter>
-      {/* 
-        Parent Box with minHeight: "100vh" so the footer sits at the bottom.
-        flexDirection: "column" => header + content + footer stacked vertically.
-      */}
       <Box sx={{ display: "flex", flexDirection: "column", minHeight: "100vh" }}>
         <DrawerAppBar />
         <NotificationManager />
 
-        {/* Main content gets flexGrow:1 => pushes footer down */}
         <Box sx={{ flexGrow: 1 }}>
           <Routes>
             <Route path="/homePage" element={<JwtRouteGuard><HomePage /></JwtRouteGuard>} />
@@ -45,8 +40,6 @@ const App = () => {
             <Route path="*" element={<Navigate to="/homePage" />} />
           </Routes>
         </Box>
-
-        {/* Footer at the bottom of the page */}
         <Footer />
       </Box>
     </BrowserRouter>

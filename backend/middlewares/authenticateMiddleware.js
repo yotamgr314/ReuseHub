@@ -5,11 +5,11 @@ const User = require('../models/userSchema');
 const protectMiddleware = async (req, res, next) => {
   let token;
 
-  if (req.headers.authorization && req.headers.authorization.startsWith('Bearer'))  // NOTE: checks if the authenticate header exists, (Authorization header looks like that: Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9)
+  if (req.headers.authorization && req.headers.authorization.startsWith('Bearer')) 
   {
     try {
-      token = req.headers.authorization.split(' ')[1]; // NOTE: parsing the JWT token. 
-      const decoded = jwt.verify(token, process.env.JWT_SECRET); //a JWT api method which decodes some of the components the JWT token was built from, aka user email..
+      token = req.headers.authorization.split(' ')[1]; 
+      const decoded = jwt.verify(token, process.env.JWT_SECRET); 
 
 
       req.user = await User.findById(decoded.id).select('-password');

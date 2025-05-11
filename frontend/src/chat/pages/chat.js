@@ -2,15 +2,14 @@ import React, { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import io from "socket.io-client";
 import { Box, Typography, TextField, Button, Paper } from "@mui/material";
-import "../styles/chat.css"; // ✅ קובץ CSS לעיצוב נוסף
+import "../styles/chat.css"; 
 
 const socket = io("https://reusehub-h9o5.onrender.com");
 
-// ✅ צבעים שונים לכל משתמש
 const COLORS = ["#FFDD94", "#AFCBFF"];
 
 const getUserColor = (userToken, otherToken) => {
-    if (!userToken) return COLORS[0]; // ברירת מחדל
+    if (!userToken) return COLORS[0]; 
     return userToken > otherToken ? COLORS[0] : COLORS[1];
 };
 
@@ -90,24 +89,23 @@ const Chat = () => {
     return (
         <Box 
             sx={{
-                width: "100vw", // ✅ כעת תופס את כל המסך
+                width: "100vw", 
                 height: "100vh",
                 display: "flex",
                 flexDirection: "column",
                 alignItems: "center",
                 bgcolor: "#f8f9fa",
-                overflow: "hidden", // ✅ מסיר את הסקרול בר החיצוני
+                overflow: "hidden", 
             }}
         >
             <Typography variant="h5" sx={{ mt: 2, mb: 2, fontWeight: "bold", color: "#222" }}>
                 Chat with {participants.map((p) => p.firstName).join(", ")}
             </Typography>
 
-            {/* חלון הצ'אט מתפרס על כל המסך */}
             <Paper
                 sx={{
                     flexGrow: 1,
-                    width: "100%", // ✅ מתפרס על כל רוחב הדף
+                    width: "100%", 
                     display: "flex",
                     flexDirection: "column",
                     p: 2,
@@ -144,7 +142,7 @@ const Chat = () => {
             {/* שורת ההקלדה */}
             <Box
                 sx={{
-                    width: "100%", // ✅ מתאים לכל רוחב העמוד
+                    width: "100%", 
                     display: "flex",
                     alignItems: "center",
                     bgcolor: "white",

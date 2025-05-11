@@ -5,7 +5,7 @@ const User = require("../models/userSchema");
 const { updateUserBadge } = require("../utils/badgeHelper");
 
 /**
- * Creates a new Offer (unchanged).
+ * Creates a new Offer.
  */
 exports.sendOffer = async (req, res) => {
   try {
@@ -35,7 +35,7 @@ exports.sendOffer = async (req, res) => {
     });
 
     await newOffer.save();
-    console.log("✅ Offer saved:", newOffer);
+    console.log("Offer saved:", newOffer);
 
     // Create and link chat
     const newChat = new Chat({
@@ -56,7 +56,7 @@ exports.sendOffer = async (req, res) => {
       data: { newOffer, newChat },
     });
   } catch (error) {
-    console.error("❌ Error creating offer:", error);
+    console.error("Error creating offer:", error);
     res.status(500).json({ success: false, message: "Internal server error" });
   }
 };
@@ -85,7 +85,7 @@ exports.updateOfferStatus = async (req, res) => {
       return res.status(404).json({ success: false, message: "Referenced Ad not found." });
     }
     
-    // A) טיפול בערך offerStatus === "Rejected"
+    // A)  offerStatus === "Rejected"
     if (offerStatus === "Rejected") {
       offer.offerStatus = "Rejected";
       await offer.save();
@@ -96,7 +96,7 @@ exports.updateOfferStatus = async (req, res) => {
       });
     }
     
-    // B) טיפול באישורים לאישור ההצעה
+    // B) Handling offer acceptance.
     if (typeof adOwnerApproval !== "undefined") {
       offer.offerConfirmation.adOwnerApproval = adOwnerApproval;
     }
@@ -104,7 +104,7 @@ exports.updateOfferStatus = async (req, res) => {
       offer.offerConfirmation.userWhoMadeTheOfferApproval = userWhoMadeTheOfferApproval;
     }
     
-    // אם לפחות אחד מהצדדים אישר – ההצעה מתקבלת
+    // If at least once of the sides accepts - offer status is updated to "accepted".
     if (offer.offerConfirmation.adOwnerApproval || offer.offerConfirmation.userWhoMadeTheOfferApproval) {
       offer.offerStatus = "Accepted";
       
@@ -140,13 +140,13 @@ exports.updateOfferStatus = async (req, res) => {
           }
         }
       }
-      
-      // הפחתת הכמות במודעה
+
+      // reduce amount of items in the Ad.
       ad.amount -= offer.offerAmount;
       
       let noteMessage = "Note: once the offer is approved it will get auto-deleted from the system.";
       
-      // במקרה שהמודעה הושלמה
+      // incase the ad is fully donated - update status, delete from DB, and updated referenced objects accordingly.
       if (ad.amount < 1) {
         ad.adStatus = "Donation Completed";
         const donor = await User.findByIdAndUpdate(
@@ -305,7 +305,8 @@ exports.getReceivedOffers = async (req, res) => {
         populate: { path: "messages", select: "text sender timestamp" }
       });
 
-    // סינון edge-case: לא להציג הצעות אם השולח הוא המשתמש עצמו
+
+    // edge case.
     const filteredOffers = offers.filter(offer =>
       offer.sender && offer.sender._id.toString() !== req.user._id.toString()
     );

@@ -25,7 +25,7 @@ const Footer = () => {
         direction={isMobile ? "column" : "row"}
         alignItems="center"
         justifyContent="space-between"
-        sx={{ width: "100%", px: 2 }} // px adds horizontal padding
+        sx={{ width: "100%", px: 2 }} 
       >
         <Typography variant="body2" color="text.secondary" sx={{ textAlign: isMobile ? "center" : "left" }}>
           © 2025 ReuseHub. All rights reserved.

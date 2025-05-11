@@ -20,12 +20,12 @@ const DonationAdForm = ({ token, navigate }) => {
   const [formData, setFormData] = useState({
     adTitle: "",
     adDescription: "",
-    category: "Furniture", // יש לוודא שיש ערך ברירת מחדל
+    category: "Furniture", 
     amount: 1,
     donationMethod: "Pickup",
     itemCondition: "Gently Used",
     item: { name: "", description: "", images: [] },
-    location: { type: "Point", coordinates: [0, 0] }, // תיקון ברירת המחדל
+    location: { type: "Point", coordinates: [0, 0] }, 
     });
   
 
